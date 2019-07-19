@@ -13,4 +13,8 @@ $Lista_CI->addField("1 AS admin");
 $Lista_CI->addFrom("tb_usuario_admin");
 $Lista_CI->setLimit(1);
 
-echo $Lista_CI->getHtmlTable();
+$Lista_CI->addFilter("usa_id", "id", "numeric");
+$Lista_CI->addFilter("usa_usuario", "Usuário");
+$Lista_CI->addFilter("usa_ativo", "Ativo", "numeric");
+
+echo $Lista_CI->getHtml();

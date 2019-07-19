@@ -11,6 +11,8 @@ class Lista_CII
   private $_offset;
   private $_colorClass;
   private $_ID;
+  private $_currentFilter;
+  private $_currentFilterTxt;
   private $_currentPage;
   private $_currentOrder;
   private $_currentOrderAD;
@@ -19,20 +21,23 @@ class Lista_CII
   private $_baseUrl;
   private $_arrSql;
   private $_arrAlign;
+  private $_arrFilter;
 
   function __construct($database)
   {
-    $this->_database       = $database;
-    $this->_limit          = 50;
-    $this->_offset         = 0;
-    $this->_ID             = "table_".date("YmdHis");
-    $this->_colorClass     = "success";
-    $this->_currentPage    = 1;
-    $this->_currentOrder   = "";
-    $this->_currentOrderAD = "";
-    $this->_orderArrow     = "";
-    $this->_pageSlideItens = 3;
-    $this->_baseUrl        = (function_exists("base_url")) ? base_url(): "";
+    $this->_database         = $database;
+    $this->_limit            = 50;
+    $this->_offset           = 0;
+    $this->_ID               = "table_".date("YmdHis");
+    $this->_colorClass       = "success";
+    $this->_currentFilter    = "";
+    $this->_currentFilterTxt = "";
+    $this->_currentPage      = 1;
+    $this->_currentOrder     = "";
+    $this->_currentOrderAD   = "";
+    $this->_orderArrow       = "";
+    $this->_pageSlideItens   = 3;
+    $this->_baseUrl          = (function_exists("base_url")) ? base_url(): "";
 
     $this->_arrSql           = [];
     $this->_arrSql["fields"] = [];
@@ -41,6 +46,7 @@ class Lista_CII
     $this->_arrSql["where"]  = [];
     $this->_arrSql["order"]  = "";
     $this->_arrAlign         = [];
+    $this->_arrFilter        = [];
   }
 
   public function configFromJsonStr($jsonStr)
@@ -115,6 +121,31 @@ class Lista_CII
     $this->_arrSql["order"] = $order;
   }
 
+  /**
+   * $type -> numeric | text
+   */
+  public function addFilter($field, $label, $type="text")
+  {
+    $this->_arrFilter[$field] = array(
+      "field"=>$field,
+      "label"=>$label,
+      "type" =>$type,
+    );
+  }
+
+  private function getFilterStr()
+  {
+    $filterStr = "";
+    $type      = $this->_arrFilter[$this->_currentFilter]["type"] ?? "";
+    if($type == "numeric"){
+      $filterStr = $this->_currentFilter  . " = " . $this->_currentFilterTxt;
+    } else {
+      $filterStr = $this->_currentFilter  . " LIKE '" . $this->_currentFilterTxt . "%'";
+    }
+
+    return $filterStr;
+  }
+
   private function generateSql($countOnly=false)
   {
     $V_SQL  = "SELECT ";
@@ -129,6 +160,10 @@ class Lista_CII
     if(count($this->_arrSql["where"]) > 0){
       $V_SQL .= implode(" AND ", $this->_arrSql["where"]);
     }
+    if($this->_currentFilter != "" && $this->_currentFilterTxt != ""){
+      $filterStr = $this->getFilterStr();
+      $V_SQL    .= " AND $filterStr ";
+    }
     if($this->_arrSql["order"] != "" && !$countOnly){
       $V_SQL .= " ORDER BY " . $this->_arrSql["order"];
     }
@@ -142,6 +177,13 @@ class Lista_CII
   public function changePage($pageNr)
   {
     $this->_currentPage = $pageNr;
+  }
+
+  public function filterPage($filter="", $filterTxt="")
+  {
+    $this->_currentFilter    = $filter;
+    $this->_currentFilterTxt = $filterTxt;
+    $this->_currentPage      = 1;
   }
 
   public function changeOrderCol($colNbr)
@@ -200,6 +242,41 @@ class Lista_CII
     #filter_lista_ci(url_request_base, lista_ci_id, filter, filter_val, changePage, orderBy)
     return "filter_lista_ci('".$this->_baseUrl."', '".$this->_ID."', '$filter', '$filter_val', $changePage, '$orderBy')";
   }
+  
+  private function getHtmlFilter()
+  {
+    if(empty($this->_arrFilter)){
+      return "";
+    }
+
+    $V_HTML  = "";
+    $V_HTML .= "<div class='row' id='dv-row-filter-lista-ci-".$this->_ID."' data-lista-ci-id='".$this->_ID."' data-url-request-base='".$this->_baseUrl."'>";
+    $V_HTML .= "  <div class='col-lg-3 col-sm-4'>";
+    $V_HTML .= "    <div class='form-group has-".$this->_colorClass." bmd-form-group'>";
+    $V_HTML .= "      <select name='filter_field' id='filter_field_lista_ci' class='form-control' size='0'>";
+    $V_HTML .= "        <option value=''>Filtrar por ...</option>";
+    foreach($this->_arrFilter as $filter){
+      $field    = $filter["field"] ?? "";
+      $label    = $filter["label"] ?? "";
+      $selected = ($field == $this->_currentFilter) ? "selected": "";
+
+      if($field != "" && $label != ""){
+        $V_HTML .= "    <option $selected value='$field'>$label</option>";
+      }
+    }
+    $V_HTML .= "      </select>";
+    $V_HTML .= "    </div>";
+    $V_HTML .= "  </div>";
+    $V_HTML .= "  <div class='col-lg-9 col-sm-8'>";
+    $V_HTML .= "    <div class='form-group has-".$this->_colorClass." bmd-form-group'>";
+    $V_HTML .= "      <label for='filter_text_".$this->_ID."' class='bmd-label-floating'>Filtro</label>";
+    $V_HTML .= "      <input onkeydown=\"input_filter_click(event, '".$this->_ID."')\" name='filter_text' id='filter_text_lista_ci' type='text' class='form-control' placeholder='' value='".$this->_currentFilterTxt."' />";
+    $V_HTML .= "    </div>";
+    $V_HTML .= "  </div>";
+    $V_HTML .= "</div>";
+
+    return $V_HTML;
+  }
 
   public function getHtmlTable()
   {
@@ -224,7 +301,8 @@ class Lista_CII
       $V_ARR_BODY[] = (array) $row;
     }
 
-    $V_HTML = "<table class='table' id='".$this->_ID."'>";
+    $V_HTML  = $this->getHtmlFilter();
+    $V_HTML .= "<table class='table' id='".$this->_ID."'>";
     $V_HTML .= "  <thead class='text-".$this->_colorClass."'>";
     $V_HTML .= "    <tr>";
     $i       = 0;
@@ -260,8 +338,6 @@ class Lista_CII
     $V_HTML .= "    <tr>";
     $V_HTML .= "      <td colspan='".count($V_ARR_HEADER)."'>";
     if ($V_TOTAL_PAGES > 1) {
-      $OBJ_BASE_64 = $this->generateJsonConfig();
-
       $V_HTML .= "      <ul class='pagination pagination-".$this->_colorClass."'>";
       $V_HTML .= "        <li class='page-item'>";
       $V_HTML .= "          <a href='javascript:;' onClick=\"".$this->getJsFunction("", "", 1)."\" class='item item-".$this->_colorClass." page-link'>&#60; Primeira</a>";
@@ -289,9 +365,18 @@ class Lista_CII
     $V_HTML .= "  </tfoot>";
     $V_HTML .= "</table>";
 
+    $OBJ_BASE_64 = $this->generateJsonConfig();
+    $V_HTML     .= "  <input type='hidden' id='hddn_".$this->_ID."' value='$OBJ_BASE_64' />";
+
+    return $V_HTML;
+  }
+
+  public function getHtml()
+  {
+    $V_HTML      = $this->getHtmlTable();
+    
     $V_HTML_RET  = "<span class='spn_Lista_CI' id='spn_".$this->_ID."'>";
     $V_HTML_RET .= "  $V_HTML";
-    $V_HTML_RET .= "  <input type='hidden' id='hddn_".$this->_ID."' value='$OBJ_BASE_64' />";
     $V_HTML_RET .= "</span>";
     return $V_HTML_RET;
   }

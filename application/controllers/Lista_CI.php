@@ -32,6 +32,11 @@ class Lista_CI extends CI_Controller
       if($orderBy != ""){
         $Lista_CI->changeOrderCol($orderBy);
       }
+      if($filter != "" && $filter_val != ""){
+        $Lista_CI->filterPage($filter, $filter_val);
+      } else if($changePage <= 0) {
+        $Lista_CI->filterPage();
+      }
 
       echo $Lista_CI->getHtmlTable();
     }

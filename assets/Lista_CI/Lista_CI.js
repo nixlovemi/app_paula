@@ -16,3 +16,16 @@ function filter_lista_ci(url_request_base, lista_ci_id, filter, filter_val, chan
     }
   });
 }
+
+function input_filter_click(e, lista_ci_id)
+{
+  if (e.which == 13 || e.keyCode == 13) {
+    var Lista_CI_ROW = $('#dv-row-filter-lista-ci-' + lista_ci_id);
+    var filter    = Lista_CI_ROW.find('#filter_field_lista_ci').val();
+    var filterTxt = Lista_CI_ROW.find('#filter_text_lista_ci').val();
+    var urlBase   = Lista_CI_ROW.data('url-request-base');
+    var listaId   = Lista_CI_ROW.data('lista-ci-id');
+    
+    filter_lista_ci(urlBase, listaId, filter, filterTxt, 0, '');
+  }
+}
