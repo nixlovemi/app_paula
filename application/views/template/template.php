@@ -824,6 +824,8 @@ $MENU_SELEC = false;
   <script src="<?php echo $BASE_URL; ?>template/assets/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script src="<?php echo $BASE_URL; ?>template/assets/demo/demo.js"></script>
+  <!-- Lista CI -->
+  <script src="<?php echo $BASE_URL; ?>assets/Lista_CI/Lista_CI.js"></script>
   <script>
     $(document).ready(function() {
       $().ready(function() {
