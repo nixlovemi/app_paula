@@ -1,20 +1,51 @@
-<?php
-require_once(APPPATH."/helpers/utils_helper.php");
-$CI = pega_instancia();
-$CI->load->database();
-
-require_once(FCPATH."/assets/Lista_CI/Lista_CI.php");
-$Lista_CI = new Lista_CII($CI->db);
-$Lista_CI->addField("usa_id AS id");
-$Lista_CI->addField("usa_usuario AS usuario", "L");
-$Lista_CI->addField("usa_senha AS senha", "L");
-$Lista_CI->addField("usa_ativo AS ativo");
-$Lista_CI->addField("1 AS admin");
-$Lista_CI->addFrom("tb_usuario_admin");
-$Lista_CI->setLimit(1);
-
-$Lista_CI->addFilter("usa_id", "id", "numeric");
-$Lista_CI->addFilter("usa_usuario", "Usuário");
-$Lista_CI->addFilter("usa_ativo", "Ativo", "numeric");
-
-echo $Lista_CI->getHtml();
+<div class="row">
+  <div class="col-md-4">
+    <div class="card card-chart">
+      <div class="card-header card-header-success">
+        <div class="ct-chart" id="dailySalesChart"></div>
+      </div>
+      <div class="card-body">
+        <h4 class="card-title">Daily Sales</h4>
+        <p class="card-category">
+          <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>
+      </div>
+      <div class="card-footer">
+        <div class="stats">
+          <i class="material-icons">access_time</i> updated 4 minutes ago
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-chart">
+      <div class="card-header card-header-warning">
+        <div class="ct-chart" id="websiteViewsChart"></div>
+      </div>
+      <div class="card-body">
+        <h4 class="card-title">Email Subscriptions</h4>
+        <p class="card-category">Last Campaign Performance</p>
+      </div>
+      <div class="card-footer">
+        <div class="stats">
+          <i class="material-icons">access_time</i> campaign sent 2 days ago
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-chart">
+      <div class="card-header card-header-danger">
+        <div class="ct-chart" id="completedTasksChart"></div>
+      </div>
+      <div class="card-body">
+        <h4 class="card-title">Completed Tasks</h4>
+        <p class="card-category">Last Campaign Performance</p>
+      </div>
+      <div class="card-footer">
+        <div class="stats">
+          <i class="material-icons">access_time</i> campaign sent 2 days ago
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

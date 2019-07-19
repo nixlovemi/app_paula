@@ -93,7 +93,7 @@ class Lista_CII
   }
 
   /**
-   * $align: L->Left, C->Center, R->Right, I->Invisible
+   * $align: L->Left, C->Center, R->Right
    */
   public function addField($fieldName, $align="C")
   {
@@ -288,6 +288,13 @@ class Lista_CII
     $query           = $this->_database->query($V_SQL_COUNT);
     $row             = $query->row();
     $V_TOTAL_RECORDS = $row->cnt ?? 0;
+    if($V_TOTAL_RECORDS <= 0){
+      return "
+        <div class='alert alert-gray'>
+          <span>Nenhuma informação para exibir =(</span>
+        </div>
+      ";
+    }
     $V_TOTAL_PAGES   = ceil($V_TOTAL_RECORDS / $this->_limit);
     $res             = $this->_database->query($V_SQL);
 
