@@ -37,6 +37,16 @@ function processaPost()
   return (object) $jsonVars;
 }
 
-function gera_titulo_template($titulo, $href="javascript:;"){
+function gera_titulo_template($titulo, $href="javascript:;")
+{
   return "<a class='navbar-brand' href='$href'>$titulo<div class='ripple-container'></div></a>";
+}
+
+/**
+ * type = ['', 'info', 'danger', 'success', 'warning', 'rose', 'primary'];
+*/
+function geraNotificacao($titulo, $mensagem, $tipo)
+{
+  $CI = pega_instancia();
+  $CI->session->set_flashdata('geraNotificacao', array("titulo"=>$titulo, "mensagem"=>$mensagem, "tipo"=>$tipo));
 }

@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class UsuarioCfgTipo extends CI_Controller
 {
-
   public function __construct()
   {
     CI_Controller::__construct();
@@ -12,23 +11,8 @@ class UsuarioCfgTipo extends CI_Controller
 
   public function index()
   {
-    require_once(APPPATH."/helpers/utils_helper.php");
-    $CI = pega_instancia();
-    $CI->load->database();
-
-    require_once(FCPATH."/assets/Lista_CI/Lista_CI.php");
-    $Lista_CI = new Lista_CII($CI->db);
-    $Lista_CI->addField("uct_id AS id");
-    $Lista_CI->addField("uct_descricao AS \"Descrição\"", "L");
-    $Lista_CI->addField("uct_ativo AS \"Ativo\"");
-    $Lista_CI->addFrom("tb_usuario_cfg_tipo");
-    $Lista_CI->changeOrderCol(2);
-
-    $Lista_CI->addFilter("uct_id", "id", "numeric");
-    $Lista_CI->addFilter("uct_descricao", "Descrição");
-    $Lista_CI->addFilter("uct_ativo", "Ativo", "numeric");
-
-    $htmlLista = $Lista_CI->getHtml();
+    require_once(APPPATH."/models/TbUsuarioCfgTipo.php");
+    $htmlLista = pegaListaUsuCfgTipo(true, true, true);
 
     $this->template->load(TEMPLATE_STR, 'TbUsuarioCfgTipo/index', array(
       "titulo"    => gera_titulo_template("Tipo de Configuração"),
@@ -38,8 +22,49 @@ class UsuarioCfgTipo extends CI_Controller
 
   public function novo()
   {
+    $UsuarioCfgTipo = $this->session->flashdata('UsuarioCfgTipo') ?? array();
+
     $this->template->load(TEMPLATE_STR, 'TbUsuarioCfgTipo/novo', array(
-      "titulo"    => gera_titulo_template("Tipo de Configuração - Novo"),
+      "titulo"         => gera_titulo_template("Tipo de Configuração - Novo"),
+      "UsuarioCfgTipo" => $UsuarioCfgTipo,
     ));
+  }
+
+  public function postNovo()
+  {
+    $variaveisPost  = processaPost();
+    $vDescricao     = $variaveisPost->descricao ?? "";
+
+    $UsuarioCfgTipo = [];
+    $UsuarioCfgTipo["uct_descricao"] = $vDescricao;
+    $this->session->set_flashdata('UsuarioCfgTipo', $UsuarioCfgTipo);
+
+    require_once(APPPATH."/models/TbUsuarioCfgTipo.php");
+    $retInserir = insereUsuCfgTipo($UsuarioCfgTipo);
+    
+    if($retInserir["erro"]){
+      geraNotificacao("Aviso!", $retInserir["msg"], "warning");
+      redirect(BASE_URL . 'UsuarioCfgTipo/novo');
+    } else {
+      geraNotificacao("Sucesso!", $retInserir["msg"], "success");
+      redirect(BASE_URL . 'UsuarioCfgTipo');
+    }
+  }
+
+  public function visualizar($id)
+  {
+    require_once(APPPATH."/models/TbUsuarioCfgTipo.php");
+    $ret = pegaUsuCfgTipo($id);
+
+    if($ret["erro"]){
+      geraNotificacao("Aviso!", $ret["msg"], "warning");
+      redirect(BASE_URL . 'UsuarioCfgTipo');
+    } else {
+      $this->template->load(TEMPLATE_STR, 'TbUsuarioCfgTipo/visualizar', array(
+        "titulo"         => gera_titulo_template("Tipo de Configuração - Visualizar"),
+        "UsuarioCfgTipo" => $ret["UsuarioCfgTipo"],
+        "detalha"        => true,
+      ));
+    }
   }
 }

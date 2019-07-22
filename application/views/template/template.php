@@ -30,10 +30,11 @@ function checaMenuSelecionado($controller, $menu_selecionado, $CI)
   return array($strSelecionado, $SELECIONADO_CI);
 }
 
-$BASE_URL   = base_url();
-$ARR_MENU   = $this->session->template_menu ?? array();
-$TITULO     = $titulo ?? "";
-$MENU_SELEC = false;
+$BASE_URL         = base_url();
+$ARR_MENU         = $this->session->template_menu ?? array();
+$TITULO           = $titulo ?? "";
+$ARR_NOTIFICACAO  = $this->session->flashdata('geraNotificacao') ?? array();
+$ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
 ?>
 
 <!DOCTYPE html>
@@ -58,6 +59,20 @@ $MENU_SELEC = false;
 </head>
 
 <body class="">
+  <?php
+  if(isset($ARR_NOTIFICACAO["titulo"]) && isset($ARR_NOTIFICACAO["mensagem"]) && isset($ARR_NOTIFICACAO["tipo"])){
+    if($ARR_NOTIFICACAO["titulo"] != "" && $ARR_NOTIFICACAO["mensagem"] != "" && $ARR_NOTIFICACAO["tipo"] != ""){
+      echo "<div style='display:none;' id='dvMostraNotificacao' data-titulo='".$ARR_NOTIFICACAO["titulo"]."' data-tipo='".$ARR_NOTIFICACAO["tipo"]."'>";
+      echo "" . $ARR_NOTIFICACAO["mensagem"];
+      echo "</div>";
+    }
+  }
+
+  foreach($ARR_REC_LISTA_CI as $idListaCi => $jsonListaCi){
+    echo "<input type='hidden' class='inptHddnRecListaCi' id='inptHddnRecListaCi__$idListaCi' value='$jsonListaCi'  />";
+  }
+  ?>
+
   <div class="wrapper">
     <div class="sidebar" data-color="green" data-background-color="white" data-image="<?php echo $BASE_URL; ?>template/assets/img/sidebar-1.jpg">
       <!--
@@ -74,7 +89,7 @@ $MENU_SELEC = false;
       <div class="sidebar-wrapper">
         <ul class="nav">
           <?php
-          list($strSelecionado, $MENU_SELEC) = checaMenuSelecionado("Dashboard", $MENU_SELEC, $this);
+          list($strSelecionado, $MENU_SELEC) = checaMenuSelecionado("Dashboard", false, $this);
           ?>
           <li class="nav-item <?php echo $strSelecionado; ?>">
             <a class="nav-link" href="<?php echo $BASE_URL . "Dashboard"; ?>">

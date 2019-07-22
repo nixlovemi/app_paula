@@ -22,11 +22,12 @@
       <div class="col-md-4 col-sm-6 ml-auto mr-auto">
         <div class="card card-signup">
           <form id="formLogin" class="form" method="POST" action="<?php echo BASE_URL; ?>Login/executaLogin">
-            <div class="card-header card-header-primary text-center">
+            <div class="card-header card-header-success text-center">
               <h4 class="card-title">Entrar</h4>
             </div>
             <div class="card-body">
-              <span class="bmd-form-group"><div class="input-group">
+              <span class="bmd-form-group">
+                <div class="input-group has-success">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
                       <i class="material-icons">mail</i>
@@ -35,7 +36,8 @@
                   <input name="usuario" type="email" class="form-control" placeholder="Email..." value="<?php echo $vUsuario; ?>" />
                 </div>
               </span>
-              <span class="bmd-form-group"><div class="input-group">
+              <span class="bmd-form-group">
+                <div class="input-group has-success">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
                       <i class="material-icons">lock_outline</i>
@@ -46,7 +48,7 @@
               </span>
             </div>
             <div class="footer text-center">
-              <a href="javascript:;" onClick="$('#formLogin').submit();" class="btn btn-primary align-center">
+              <a href="javascript:;" onClick="$('#formLogin').submit();" class="btn btn-success align-center">
                 Entrar
                 <div class="ripple-container"></div>
               </a>

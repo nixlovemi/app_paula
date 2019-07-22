@@ -1,3 +1,44 @@
+function mostraNotificacao(titulo, mensagem, tipo)
+{
+  //type = ['', 'info', 'danger', 'success', 'warning', 'rose', 'primary'];
+  //color = Math.floor((Math.random() * 6) + 1);
+  
+  var html = '';
+  html    += '<h2 style="margin: 0 0 10px 0; font-size: unset; line-height: unset;"><b><u style="font-size: 30px !important;">'+titulo+'</u></b></h2>';
+  html    += mensagem;
+
+  $.notify({
+    message: html
+  }, {
+    type: tipo,
+    autoHide: false,
+    clickToHide: false,
+    placement: {
+      from: 'top',
+      align: 'left'
+    },
+    timer: 60000
+    //position:"center"
+  });
+}
+
+$( document ).ready(function() {
+  if( $('#dvMostraNotificacao').length > 0 ){
+    var titulo   = $('#dvMostraNotificacao').data('titulo');
+    var mensagem = $('#dvMostraNotificacao').html();
+    var tipo     = $('#dvMostraNotificacao').data('tipo');
+    
+    if(titulo !== "" && mensagem !== "" && tipo !== ""){
+      mostraNotificacao(titulo, mensagem, tipo);
+    }
+    
+    $('#dvMostraNotificacao').remove();
+  }
+});
+
+
+
+
 /*
 
 demo = {

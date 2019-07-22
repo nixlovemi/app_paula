@@ -49,6 +49,16 @@ class Lista_CII
     $this->_arrFilter        = [];
   }
 
+  public function getId()
+  {
+    return $this->_ID;
+  }
+
+  public function setId($id)
+  {
+    $this->_ID = $id;
+  }
+
   public function configFromJsonStr($jsonStr)
   {
     $vDecodedJson = $this->base64url_decode($jsonStr);
@@ -288,89 +298,91 @@ class Lista_CII
     $query           = $this->_database->query($V_SQL_COUNT);
     $row             = $query->row();
     $V_TOTAL_RECORDS = $row->cnt ?? 0;
+    $V_TOTAL_PAGES   = ceil($V_TOTAL_RECORDS / $this->_limit);
+
+    $V_HTML  = $this->getHtmlFilter();
     if($V_TOTAL_RECORDS <= 0){
-      return "
+      $V_HTML .= "
         <div class='alert alert-gray'>
           <span>Nenhuma informação para exibir =(</span>
         </div>
       ";
-    }
-    $V_TOTAL_PAGES   = ceil($V_TOTAL_RECORDS / $this->_limit);
-    $res             = $this->_database->query($V_SQL);
+    } else {
+      $res             = $this->_database->query($V_SQL);
 
-    $V_ARR_HEADER = [];
-    $V_ARR_BODY   = [];
-    foreach ($res->result() as $row) {
-      if (empty($V_ARR_HEADER)) {
-        $V_ARR_HEADER = array_keys((array) $row);
+      $V_ARR_HEADER = [];
+      $V_ARR_BODY   = [];
+      foreach ($res->result() as $row) {
+        if (empty($V_ARR_HEADER)) {
+          $V_ARR_HEADER = array_keys((array) $row);
+        }
+
+        $V_ARR_BODY[] = (array) $row;
       }
 
-      $V_ARR_BODY[] = (array) $row;
-    }
-
-    $V_HTML  = $this->getHtmlFilter();
-    $V_HTML .= "<table class='table' id='".$this->_ID."'>";
-    $V_HTML .= "  <thead class='text-".$this->_colorClass."'>";
-    $V_HTML .= "    <tr>";
-    $i       = 0;
-    foreach ($V_ARR_HEADER as $title) {
-      $strAlign = $this->getAlignStrByIdx($i);
-      $colNbr   = $i + 1;
-      $arrow    = ($colNbr == $this->_currentOrder) ? $this->_orderArrow: "";
-
-      $V_HTML .= "    <td align='$strAlign'>";
-      $V_HTML .= "      <a class='text-".$this->_colorClass."' style='font-weight: bold;' href='javascript:;' onClick=\"".$this->getJsFunction("", "", 0, $colNbr)."\">";
-      $V_HTML .= "        $title";
-      $V_HTML .= "      </a>";
-      $V_HTML .= "      $arrow";
-      $V_HTML .= "    </td>";
-      $i++;
-    }
-    $V_HTML .= "    </tr>";
-    $V_HTML .= "  </thead>";
-    $V_HTML .= "  <tbody>";
-    foreach ($V_ARR_BODY as $row) {
-      $V_HTML .= "  <tr>";
+      $V_HTML .= "<table class='table' id='".$this->_ID."'>";
+      $V_HTML .= "  <thead class='text-".$this->_colorClass."'>";
+      $V_HTML .= "    <tr>";
       $i       = 0;
-      foreach ($row as $column) {
+      foreach ($V_ARR_HEADER as $title) {
         $strAlign = $this->getAlignStrByIdx($i);
+        $colNbr   = $i + 1;
+        $arrow    = ($colNbr == $this->_currentOrder) ? $this->_orderArrow: "";
 
-        $V_HTML .= "  <td align='$strAlign'>$column</td>";
+        $V_HTML .= "    <td align='$strAlign'>";
+        $V_HTML .= "      <a class='text-".$this->_colorClass."' style='font-weight: bold;' href='javascript:;' onClick=\"".$this->getJsFunction("", "", 0, $colNbr)."\">";
+        $V_HTML .= "        $title";
+        $V_HTML .= "      </a>";
+        $V_HTML .= "      $arrow";
+        $V_HTML .= "    </td>";
         $i++;
       }
-      $V_HTML .= "  </tr>";
-    }
-    $V_HTML .= "  </tbody>";
-    $V_HTML .= "  <tfoot>";
-    $V_HTML .= "    <tr>";
-    $V_HTML .= "      <td colspan='".count($V_ARR_HEADER)."'>";
-    if ($V_TOTAL_PAGES > 1) {
-      $V_HTML .= "      <ul class='pagination pagination-".$this->_colorClass."'>";
-      $V_HTML .= "        <li class='page-item'>";
-      $V_HTML .= "          <a href='javascript:;' onClick=\"".$this->getJsFunction("", "", 1)."\" class='item item-".$this->_colorClass." page-link'>&#60; Primeira</a>";
-      $V_HTML .= "        </li>";
+      $V_HTML .= "    </tr>";
+      $V_HTML .= "  </thead>";
+      $V_HTML .= "  <tbody>";
+      foreach ($V_ARR_BODY as $row) {
+        $V_HTML .= "  <tr>";
+        $i       = 0;
+        foreach ($row as $column) {
+          $strAlign = $this->getAlignStrByIdx($i);
 
-      $V_INI_LIMIT = ($this->_currentPage - $this->_pageSlideItens) < 1 ? 1 : ($this->_currentPage
-        - $this->_pageSlideItens);
-      $V_END_LIMIT = ($this->_currentPage + $this->_pageSlideItens) > $V_TOTAL_PAGES
-          ? $V_TOTAL_PAGES : ($this->_currentPage + $this->_pageSlideItens);
-
-      for ($i = $V_INI_LIMIT; $i <= $V_END_LIMIT; $i++) {
-        $cssClass = ($i == $this->_currentPage) ? " active " : "";
-
-        $V_HTML .= "      <li class='page-item'>";
-        $V_HTML .= "        <a href='javascript:;' onClick=\"".$this->getJsFunction("", "", $i)."\" class='item item-".$this->_colorClass." page-link $cssClass'>$i</a>";
-        $V_HTML .= "      </li>";
+          $V_HTML .= "  <td align='$strAlign'>$column</td>";
+          $i++;
+        }
+        $V_HTML .= "  </tr>";
       }
-      $V_HTML .= "        <li class='page-item'>";
-      $V_HTML .= "          <a href='javascript:;' onClick=\"".$this->getJsFunction("", "", $V_TOTAL_PAGES)."\" class='item item-".$this->_colorClass." page-link'>Última &#62;</a>";
-      $V_HTML .= "        </li>";
-      $V_HTML .= "      </ul>";
+      $V_HTML .= "  </tbody>";
+      $V_HTML .= "  <tfoot>";
+      $V_HTML .= "    <tr>";
+      $V_HTML .= "      <td colspan='".count($V_ARR_HEADER)."'>";
+      if ($V_TOTAL_PAGES > 1) {
+        $V_HTML .= "      <ul class='pagination pagination-".$this->_colorClass."'>";
+        $V_HTML .= "        <li class='page-item'>";
+        $V_HTML .= "          <a href='javascript:;' onClick=\"".$this->getJsFunction("", "", 1)."\" class='item item-".$this->_colorClass." page-link'>&#60; Primeira</a>";
+        $V_HTML .= "        </li>";
+
+        $V_INI_LIMIT = ($this->_currentPage - $this->_pageSlideItens) < 1 ? 1 : ($this->_currentPage
+          - $this->_pageSlideItens);
+        $V_END_LIMIT = ($this->_currentPage + $this->_pageSlideItens) > $V_TOTAL_PAGES
+            ? $V_TOTAL_PAGES : ($this->_currentPage + $this->_pageSlideItens);
+
+        for ($i = $V_INI_LIMIT; $i <= $V_END_LIMIT; $i++) {
+          $cssClass = ($i == $this->_currentPage) ? " active " : "";
+
+          $V_HTML .= "      <li class='page-item'>";
+          $V_HTML .= "        <a href='javascript:;' onClick=\"".$this->getJsFunction("", "", $i)."\" class='item item-".$this->_colorClass." page-link $cssClass'>$i</a>";
+          $V_HTML .= "      </li>";
+        }
+        $V_HTML .= "        <li class='page-item'>";
+        $V_HTML .= "          <a href='javascript:;' onClick=\"".$this->getJsFunction("", "", $V_TOTAL_PAGES)."\" class='item item-".$this->_colorClass." page-link'>Última &#62;</a>";
+        $V_HTML .= "        </li>";
+        $V_HTML .= "      </ul>";
+      }
+      $V_HTML .= "      </td>";
+      $V_HTML .= "    </tr>";
+      $V_HTML .= "  </tfoot>";
+      $V_HTML .= "</table>";
     }
-    $V_HTML .= "      </td>";
-    $V_HTML .= "    </tr>";
-    $V_HTML .= "  </tfoot>";
-    $V_HTML .= "</table>";
 
     $OBJ_BASE_64 = $this->generateJsonConfig();
     $V_HTML     .= "  <input type='hidden' id='hddn_".$this->_ID."' value='$OBJ_BASE_64' />";

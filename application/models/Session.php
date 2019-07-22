@@ -31,4 +31,5 @@ function inicia_session($template_menu=array(), $usuario_info=""){
 function fecha_session(){
   $arrSession = getArrSession();
   salva_session($arrSession);
+  session_destroy();
 }

@@ -1,4 +1,5 @@
-function filter_lista_ci(url_request_base, lista_ci_id, filter, filter_val, changePage, orderBy) {
+function filter_lista_ci(url_request_base, lista_ci_id, filter, filter_val, changePage, orderBy)
+{
   var json_lista_ci = $('#hddn_' + lista_ci_id).val();
   
   $.ajax({
@@ -29,3 +30,29 @@ function input_filter_click(e, lista_ci_id)
     filter_lista_ci(urlBase, listaId, filter, filterTxt, 0, '');
   }
 }
+
+$( document ).ready(function() {
+  $( ".inptHddnRecListaCi" ).each(function( index ) {
+    var jsonParamLst = $(this).val();
+    var varIdListaCi = $(this).attr("id").replace("inptHddnRecListaCi__", "");
+    var dcRowLista   = $('div#dv-row-filter-lista-ci-' + varIdListaCi);
+    
+    if(dcRowLista.length > 0){
+      var url_request_base = dcRowLista.data("url-request-base");
+      $.ajax({
+        url: url_request_base + 'Lista_CI/reload',
+        type: 'POST',
+        data: {jsonParamLst: jsonParamLst},
+        error: function () {
+          $("#spn_" + varIdListaCi).html("Erro ao recarregar listagem!");
+        },
+        beforeSend: function () {
+          $("#spn_" + varIdListaCi).html("<img style='width:96px; height:96px;' src='"+url_request_base+"assets/Lista_CI/ajax-loader.gif' />");
+        },
+        success: function (data) {
+          $("#spn_" + varIdListaCi).html(data);
+        }
+      });
+    }
+  });
+});
