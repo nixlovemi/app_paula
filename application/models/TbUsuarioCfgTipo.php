@@ -55,7 +55,15 @@ function pegaListaUsuCfgTipo($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("ativo AS \"Ativo\"");
   if($detalhes){
     $url = base_url() . "UsuarioCfgTipo/visualizar";
-    $Lista_CI->addField(" CONCAT('<a href=\"$url/', uct_id, '\"><i class=\"material-icons text-success\">visibility</i></a>') AS \"Visualizar\" ");
+    $Lista_CI->addField(" CONCAT('<a href=\"$url/', uct_id, '\"><i class=\"material-icons text-success\">visibility</i></a>') AS \"Visualizar\" ", "C", "3%");
+  }
+  if($edicao){
+    $url = base_url() . "UsuarioCfgTipo/editar";
+    $Lista_CI->addField(" CONCAT('<a href=\"$url/', uct_id, '\"><i class=\"material-icons text-success\">create</i></a>') AS \"Editar\" ", "C", "3%");
+  }
+  if($exclusao){
+    //delete
+    //block
   }
   $Lista_CI->addFrom("v_tb_usuario_cfg_tipo");
   $Lista_CI->changeOrderCol(2);
@@ -148,6 +156,47 @@ function insereUsuCfgTipo($UsuarioCfgTipo)
   } else {
     $arrRetorno["erro"] = false;
     $arrRetorno["msg"]  = "Tipo de Configuração inserido com sucesso.";
+  }
+
+  return $arrRetorno;
+}
+
+function editaUsuCfgTipo($UsuarioCfgTipo)
+{
+  $arrRetorno         = [];
+  $arrRetorno["erro"] = false;
+  $arrRetorno["msg"]  = "";
+
+  $strValida = validaEditaUsuCfgTipo($UsuarioCfgTipo);
+  if($strValida != ""){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $strValida;
+
+    return $arrRetorno;
+  }
+
+  $vId        = $UsuarioCfgTipo["uct_id"] ?? "";
+  $vDescricao = $UsuarioCfgTipo["uct_descricao"] ?? "";
+  $vAtivo     = (int) $UsuarioCfgTipo["uct_ativo"] ?? 1;
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $data = array(
+    "uct_descricao" => $vDescricao,
+    "uct_ativo"     => $vAtivo,
+  );
+  $CI->db->where('uct_id', $vId);
+  $ret = $CI->db->update('tb_usuario_cfg_tipo', $data);
+
+  if(!$ret){
+    $error = $CI->db->error();
+
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao editar Tipo de Configuração. Mensagem: " . $error["message"];
+  } else {
+    $arrRetorno["erro"] = false;
+    $arrRetorno["msg"]  = "Tipo de Configuração editado com sucesso.";
   }
 
   return $arrRetorno;

@@ -21,6 +21,7 @@ class Lista_CII
   private $_baseUrl;
   private $_arrSql;
   private $_arrAlign;
+  private $_arrSize;
   private $_arrFilter;
 
   function __construct($database)
@@ -46,6 +47,7 @@ class Lista_CII
     $this->_arrSql["where"]  = [];
     $this->_arrSql["order"]  = "";
     $this->_arrAlign         = [];
+    $this->_arrSize          = [];
     $this->_arrFilter        = [];
   }
 
@@ -105,10 +107,11 @@ class Lista_CII
   /**
    * $align: L->Left, C->Center, R->Right
    */
-  public function addField($fieldName, $align="C")
+  public function addField($fieldName, $align="C", $size="")
   {
     $this->_arrSql["fields"][] = $fieldName;
     $this->_arrAlign[]         = $align;
+    $this->_arrSize[]          = $size;
   }
 
   public function addFrom($table)
@@ -345,8 +348,9 @@ class Lista_CII
         $i       = 0;
         foreach ($row as $column) {
           $strAlign = $this->getAlignStrByIdx($i);
+          $strSize  = $this->_arrSize[$i] ?? "";
 
-          $V_HTML .= "  <td align='$strAlign'>$column</td>";
+          $V_HTML .= "  <td width='$strSize' align='$strAlign'>$column</td>";
           $i++;
         }
         $V_HTML .= "  </tr>";

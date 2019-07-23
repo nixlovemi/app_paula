@@ -63,8 +63,50 @@ class UsuarioCfgTipo extends CI_Controller
       $this->template->load(TEMPLATE_STR, 'TbUsuarioCfgTipo/visualizar', array(
         "titulo"         => gera_titulo_template("Tipo de Configuração - Visualizar"),
         "UsuarioCfgTipo" => $ret["UsuarioCfgTipo"],
-        "detalha"        => true,
       ));
+    }
+  }
+
+  public function editar($id)
+  {
+    require_once(APPPATH."/models/TbUsuarioCfgTipo.php");
+    $ret = pegaUsuCfgTipo($id);
+
+    if($ret["erro"]){
+      geraNotificacao("Aviso!", $ret["msg"], "warning");
+      redirect(BASE_URL . 'UsuarioCfgTipo');
+    } else {
+      $UsuarioCfgTipo = $this->session->flashdata('UsuarioCfgTipo') ?? $ret["UsuarioCfgTipo"];
+
+      $this->template->load(TEMPLATE_STR, 'TbUsuarioCfgTipo/editar', array(
+        "titulo"         => gera_titulo_template("Tipo de Configuração - Editar"),
+        "UsuarioCfgTipo" => $UsuarioCfgTipo,
+      ));
+    }
+  }
+
+  public function postEditar()
+  {
+    $variaveisPost = processaPost();
+    $vId           = $variaveisPost->id ?? "";
+    $vDescricao    = $variaveisPost->descricao ?? "";
+    $vAtivo        = $variaveisPost->ativo ?? "";
+
+    $UsuarioCfgTipo = [];
+    $UsuarioCfgTipo["uct_id"]        = $vId;
+    $UsuarioCfgTipo["uct_descricao"] = $vDescricao;
+    $UsuarioCfgTipo["uct_ativo"]     = $vAtivo;
+    $this->session->set_flashdata('UsuarioCfgTipo', $UsuarioCfgTipo);
+
+    require_once(APPPATH."/models/TbUsuarioCfgTipo.php");
+    $retInserir = editaUsuCfgTipo($UsuarioCfgTipo);
+
+    if($retInserir["erro"]){
+      geraNotificacao("Aviso!", $retInserir["msg"], "warning");
+      redirect(BASE_URL . 'UsuarioCfgTipo/editar/' . $vId);
+    } else {
+      geraNotificacao("Sucesso!", $retInserir["msg"], "success");
+      redirect(BASE_URL . 'UsuarioCfgTipo');
     }
   }
 }
