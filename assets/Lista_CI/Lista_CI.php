@@ -171,7 +171,9 @@ class Lista_CII
     $V_SQL .= implode(" ", $this->_arrSql["joins"]);
     $V_SQL .= " WHERE TRUE ";
     if(count($this->_arrSql["where"]) > 0){
-      $V_SQL .= implode(" AND ", $this->_arrSql["where"]);
+      foreach($this->_arrSql["where"] as $where){
+        $V_SQL .= " AND  $where ";
+      }
     }
     if($this->_currentFilter != "" && $this->_currentFilterTxt != ""){
       $filterStr = $this->getFilterStr();

@@ -1,3 +1,7 @@
+<?php
+$vLoginMsg = $vLoginMsg ?? "";
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -46,6 +50,20 @@
                   <input name="senha" type="password" class="form-control" placeholder="Senha..." />
                 </div>
               </span>
+              <?php
+              if($vLoginMsg != ""){
+                ?>
+                <div class="alert alert-warning">
+                  <button onclick="fechaAviso()" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <i class="material-icons">close</i>
+                  </button>
+                  <span>
+                    <?php echo $vLoginMsg; ?>
+                  </span>
+                </div>
+                <?php
+              }
+              ?>
             </div>
             <div class="footer text-center">
               <a href="javascript:;" onClick="$('#formLogin').submit();" class="btn btn-success align-center">
@@ -67,5 +85,9 @@
         $('#formLogin').submit(); // Submit form code
       }
     });
+
+    function fechaAviso(){
+      $('div.alert').remove();
+    }
   </script>
 </html>

@@ -1,3 +1,5 @@
+// sweet alert
+
 function filter_lista_ci(url_request_base, lista_ci_id, filter, filter_val, changePage, orderBy)
 {
   var json_lista_ci = $('#hddn_' + lista_ci_id).val();
@@ -20,7 +22,7 @@ function filter_lista_ci(url_request_base, lista_ci_id, filter, filter_val, chan
 
 function input_filter_click(e, lista_ci_id)
 {
-  if (e.which == 13 || e.keyCode == 13) {
+  if (e.which == 13 || e.keyCode == 13 || e == 13) {
     var Lista_CI_ROW = $('#dv-row-filter-lista-ci-' + lista_ci_id);
     var filter    = Lista_CI_ROW.find('#filter_field_lista_ci').val();
     var filterTxt = Lista_CI_ROW.find('#filter_text_lista_ci').val();
@@ -31,8 +33,34 @@ function input_filter_click(e, lista_ci_id)
   }
 }
 
-$( document ).ready(function() {
-  $( ".inptHddnRecListaCi" ).each(function( index ) {
+function reload_list(lista_ci_id)
+{
+  input_filter_click(13, lista_ci_id);
+}
+
+function confirm_delete(lista_ci_id, controller, action, vars, url_base)
+{
+  Swal.fire({
+    title: 'Confirmar exclusão',
+    text: "Você confirma a exclusão desse item?",
+    //html: "",
+    type: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#4caf50',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirmar!',
+    cancelButtonText: '.. Cancelar'
+  }).then((result) => {
+    if (result.value) {
+      vars = vars + '&lista_ci_id=' + lista_ci_id;
+      mvc_post_ajax_var(url_base, controller, action, vars);
+    }
+  });
+}
+
+$( document ).ready(function()
+{
+  $( ".inptHddnRecListaCi" ).each(function() {
     var jsonParamLst = $(this).val();
     var varIdListaCi = $(this).attr("id").replace("inptHddnRecListaCi__", "");
     var dcRowLista   = $('div#dv-row-filter-lista-ci-' + varIdListaCi);

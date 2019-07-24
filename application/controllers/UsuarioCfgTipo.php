@@ -1,11 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class UsuarioCfgTipo extends CI_Controller
+class UsuarioCfgTipo extends MY_Controller
 {
   public function __construct()
   {
-    CI_Controller::__construct();
+    parent::__construct();
     $this->load->helper("utils_helper");
   }
 

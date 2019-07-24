@@ -22,7 +22,8 @@ function mostraNotificacao(titulo, mensagem, tipo)
   });
 }
 
-$( document ).ready(function() {
+$( document ).ready(function()
+{
   if( $('#dvMostraNotificacao').length > 0 ){
     var titulo   = $('#dvMostraNotificacao').data('titulo');
     var mensagem = $('#dvMostraNotificacao').html();
@@ -36,246 +37,76 @@ $( document ).ready(function() {
   }
 });
 
-
-
-
-/*
-
-demo = {
-  initDocumentationCharts: function() {
-    if ($('#dailySalesChart').length != 0 && $('#websiteViewsChart').length != 0) {
-      // ----------==========     Daily Sales Chart initialization For Documentation    ==========----------
-
-      dataDailySalesChart = {
-        labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-        series: [
-          [12, 17, 7, 17, 23, 18, 38]
-        ]
-      };
-
-      optionsDailySalesChart = {
-        lineSmooth: Chartist.Interpolation.cardinal({
-          tension: 0
-        }),
-        low: 0,
-        high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-        chartPadding: {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0
-        },
-      }
-
-      var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-
-      var animationHeaderChart = new Chartist.Line('#websiteViewsChart', dataDailySalesChart, optionsDailySalesChart);
-    }
-  },
-
-  initDashboardPageCharts: function() {
-
-    if ($('#dailySalesChart').length != 0 || $('#completedTasksChart').length != 0 || $('#websiteViewsChart').length != 0) {
-      // ----------==========     Daily Sales Chart initialization    ==========----------
-
-      dataDailySalesChart = {
-        labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-        series: [
-          [12, 17, 7, 17, 23, 18, 38]
-        ]
-      };
-
-      optionsDailySalesChart = {
-        lineSmooth: Chartist.Interpolation.cardinal({
-          tension: 0
-        }),
-        low: 0,
-        high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-        chartPadding: {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0
-        },
-      }
-
-      var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-
-      md.startAnimationForLineChart(dailySalesChart);
-
-
-
-      // ----------==========     Completed Tasks Chart initialization    ==========----------
-
-      dataCompletedTasksChart = {
-        labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
-        series: [
-          [230, 750, 450, 300, 280, 240, 200, 190]
-        ]
-      };
-
-      optionsCompletedTasksChart = {
-        lineSmooth: Chartist.Interpolation.cardinal({
-          tension: 0
-        }),
-        low: 0,
-        high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-        chartPadding: {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0
+function mvc_post_ajax_var(url_request_base, controller, action, vars)
+{
+  $.ajax({
+    url: url_request_base + controller + '/' + action,
+    data:vars,
+    type: 'POST',
+    dataType: 'json',
+    error: function () {
+      mostraNotificacao('Aviso!', 'Erro ao carregar página.', 'danger');
+    },
+    beforeSend: function () {
+      
+    },
+    success: function (data) {
+      if(typeof data.html !== 'undefined' && typeof data.html_selector !== 'undefined'){
+        if(data.html !== "" && data.html_selector !== ""){
+          $(data.html_selector).html(data.html);
         }
       }
-
-      var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
-
-      // start animation for the Completed Tasks Chart - Line Chart
-      md.startAnimationForLineChart(completedTasksChart);
-
-
-      // ----------==========     Emails Subscription Chart initialization    ==========----------
-
-      var dataWebsiteViewsChart = {
-        labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-        series: [
-          [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
-
-        ]
-      };
-      var optionsWebsiteViewsChart = {
-        axisX: {
-          showGrid: false
-        },
-        low: 0,
-        high: 1000,
-        chartPadding: {
-          top: 0,
-          right: 5,
-          bottom: 0,
-          left: 0
+      
+      if(typeof data.msg !== 'undefined' && typeof data.msg_titulo !== 'undefined' && typeof data.msg_tipo !== 'undefined'){
+        if(data.msg !== "" && data.msg_titulo !== "" && data.msg_tipo !== ""){
+          mostraNotificacao(data.msg_titulo, data.msg, data.msg_tipo);
         }
-      };
-      var responsiveOptions = [
-        ['screen and (max-width: 640px)', {
-          seriesBarDistance: 5,
-          axisX: {
-            labelInterpolationFnc: function(value) {
-              return value[0];
-            }
-          }
-        }]
-      ];
-      var websiteViewsChart = Chartist.Bar('#websiteViewsChart', dataWebsiteViewsChart, optionsWebsiteViewsChart, responsiveOptions);
-
-      //start animation for the Emails Subscription Chart
-      md.startAnimationForBarChart(websiteViewsChart);
+      }
+      
+      if(typeof data.callback !== 'undefined'){
+        if(data.callback !== ""){
+          setTimeout(data.callback, 200);
+        }
+      }
     }
-  },
+  });
+  
+  
+  
+  /*if (typeof (hide_loading) === 'undefined')
+    hide_loading = true;
 
-  initGoogleMaps: function() {
-    var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
-    var mapOptions = {
-      zoom: 13,
-      center: myLatlng,
-      scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
-      styles: [{
-        "featureType": "water",
-        "stylers": [{
-          "saturation": 43
-        }, {
-          "lightness": -11
-        }, {
-          "hue": "#0088ff"
-        }]
-      }, {
-        "featureType": "road",
-        "elementType": "geometry.fill",
-        "stylers": [{
-          "hue": "#ff0000"
-        }, {
-          "saturation": -100
-        }, {
-          "lightness": 99
-        }]
-      }, {
-        "featureType": "road",
-        "elementType": "geometry.stroke",
-        "stylers": [{
-          "color": "#808080"
-        }, {
-          "lightness": 54
-        }]
-      }, {
-        "featureType": "landscape.man_made",
-        "elementType": "geometry.fill",
-        "stylers": [{
-          "color": "#ece2d9"
-        }]
-      }, {
-        "featureType": "poi.park",
-        "elementType": "geometry.fill",
-        "stylers": [{
-          "color": "#ccdca1"
-        }]
-      }, {
-        "featureType": "road",
-        "elementType": "labels.text.fill",
-        "stylers": [{
-          "color": "#767676"
-        }]
-      }, {
-        "featureType": "road",
-        "elementType": "labels.text.stroke",
-        "stylers": [{
-          "color": "#ffffff"
-        }]
-      }, {
-        "featureType": "poi",
-        "stylers": [{
-          "visibility": "off"
-        }]
-      }, {
-        "featureType": "landscape.natural",
-        "elementType": "geometry.fill",
-        "stylers": [{
-          "visibility": "on"
-        }, {
-          "color": "#b8cb93"
-        }]
-      }, {
-        "featureType": "poi.park",
-        "stylers": [{
-          "visibility": "on"
-        }]
-      }, {
-        "featureType": "poi.sports_complex",
-        "stylers": [{
-          "visibility": "on"
-        }]
-      }, {
-        "featureType": "poi.medical",
-        "stylers": [{
-          "visibility": "on"
-        }]
-      }, {
-        "featureType": "poi.business",
-        "stylers": [{
-          "visibility": "simplified"
-        }]
-      }]
+  // MVC =========================
+  return $.ajax({
+    type: "POST",
+    url: '_wis_app/loader.php',
+    data: 'controller=' + controller + '&action=' + action + '&' + vars,
+    global: false,
+    async: false,
+    beforeSend: function () {
+      if (hide_loading) {
+        show_loader();
+      }
+    },
+    complete: function () {
+      if (hide_loading) {
+        hide_loader();
+      }
 
-    };
-    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-    var marker = new google.maps.Marker({
-      position: myLatlng,
-      title: "Hello World!"
-    });
-
-    // To add the marker to the map, call setMap();
-    marker.setMap(map);
-  }
-
+      setTimeout("obj_jquerys();", 250);
+    },
+    success: function (data) {
+      return data;
+    }
+  }).responseText;
+  // =============================
+  */
 }
-*/
+
+/* usuario cfg */
+function jsonAddUsuCfg(url_request_base, usuario, configuracao, valor)
+{
+  var vars = 'usuId=' + usuario + '&cfgId=' + configuracao + '&valor=' + valor;
+  mvc_post_ajax_var(url_request_base, 'UsuarioCfg', 'jsonAdd', vars);
+}
+/* =========== */

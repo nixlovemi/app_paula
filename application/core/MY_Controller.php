@@ -11,9 +11,10 @@ class MY_Controller extends CI_Controller
     $UsuarioJson = $this->session->userdata('usuario_info') ?? false;
     
     $credenciaisOk = (!isset($credenciais) or $credenciais < $this->_min_credentials);
-    $idUsuarioOk   = ($UsuarioJson === false) ? false: $UsuarioJson->id > 0;
+    $idUsuarioOk   = ($UsuarioJson === false) ? false: ($UsuarioJson->id > 0 && $UsuarioJson->admin == 1);
 
     if($credenciaisOk === false || $idUsuarioOk === false){
+      $this->session->set_flashdata('LoginMessage', 'Sua sessão expirou. Faça o login novamente.');
       redirect(BASE_URL);
       return;
     }

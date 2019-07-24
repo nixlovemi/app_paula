@@ -42,6 +42,43 @@ function pegaUsuCfgTipo($uctId)
   return $arrRetorno;
 }
 
+function pegaTodasUsuCfgTipo($filtro)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]              = false;
+  $arrRetorno["msg"]               = "";
+  $arrRetorno["arrUsuarioCfgTipo"] = [];
+
+  $uctAtivo = $filtro["uct_ativo"] ?? "";
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('uct_id, uct_descricao, uct_ativo');
+  $CI->db->from('tb_usuario_cfg_tipo');
+  if($uctAtivo != ""){
+    $CI->db->where('uct_ativo =', $uctAtivo);
+  }
+  $CI->db->order_by('uct_descricao', 'ASC');
+
+  $query = $CI->db->get();
+  if(!$query){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao retornar todos os Tipos de Configuração!";
+  } else {
+    foreach ($query->result() as $row){
+      $UsuarioCfgTipo = [];
+      $UsuarioCfgTipo["uct_id"]        = $row->uct_id;
+      $UsuarioCfgTipo["uct_descricao"] = $row->uct_descricao;
+      $UsuarioCfgTipo["uct_ativo"]     = $row->uct_ativo;
+
+      $arrRetorno["arrUsuarioCfgTipo"][] = $UsuarioCfgTipo;
+    }
+  }
+
+  return $arrRetorno;
+}
+
 function pegaListaUsuCfgTipo($detalhes=false, $edicao=false, $exclusao=false)
 {
   $CI = pega_instancia();
@@ -81,12 +118,12 @@ function validaInsereUsuCfgTipo($UsuarioCfgTipo)
 
   $vDescricao = $UsuarioCfgTipo["uct_descricao"] ?? "";
   if(strlen($vDescricao) <= 2){
-    $strValida .= "&nbsp;&nbsp;* Informe uma descrição válida (entre 3 e 80 caracteres).";
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma descrição válida (entre 3 e 80 caracteres).";
   }
   
   $vAtivo = $UsuarioCfgTipo["uct_ativo"] ?? "";
   if(!($vAtivo == 0 || $vAtivo == 1)){
-    $strValida .= "&nbsp;&nbsp;* Informação 'ativo' é inválida.";
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'ativo' é inválida.";
   }
   
   if($strValida != ""){
@@ -102,17 +139,17 @@ function validaEditaUsuCfgTipo($UsuarioCfgTipo)
 
   $vId = $UsuarioCfgTipo["uct_id"] ?? "";
   if(!is_numeric($vId)){
-    $strValida .= "&nbsp;&nbsp;* Informe um ID válido.";
+    $strValida .= "<br />&nbsp;&nbsp;* Informe um ID válido.";
   }
 
   $vDescricao = $UsuarioCfgTipo["uct_descricao"] ?? "";
   if(strlen($vDescricao) <= 2){
-    $strValida .= "&nbsp;&nbsp;* Informe uma descrição válida (entre 3 e 80 caracteres).";
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma descrição válida (entre 3 e 80 caracteres).";
   }
 
   $vAtivo = $UsuarioCfgTipo["uct_ativo"] ?? "";
   if(!($vAtivo == 0 || $vAtivo == 1)){
-    $strValida .= "&nbsp;&nbsp;* Informação 'ativo' é inválida.";
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'ativo' é inválida.";
   }
 
   if($strValida != ""){

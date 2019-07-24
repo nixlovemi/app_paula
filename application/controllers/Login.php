@@ -13,13 +13,13 @@ class Login extends CI_Controller
   public function index()
   {
     require_once(APPPATH."/models/Session.php");
+    $LoginMessage = $this->session->flashdata('LoginMessage') ?? "";
     fecha_session();
 
     $vUsuario = $this->session->flashdata('login_usuario') ?? "";
-    $vRetMsg  = $this->session->flashdata('login_ret_msg') ?? "";
     $this->load->view('Login/LoginAdmin', array(
-      "vUsuario"=>$vUsuario,
-      "vRetMsg" =>$vRetMsg,
+      "vUsuario"  => $vUsuario,
+      "vLoginMsg" => $LoginMessage,
     ));
   }
 
@@ -33,10 +33,9 @@ class Login extends CI_Controller
 
     $retLogin = executaLogin($vUsuario, $vSenha, true);
     if($retLogin->erro){
-      $this->session->set_flashdata('login_ret_msg', $retLogin->msg);
+      $this->session->set_flashdata('LoginMessage', $retLogin->msg);
       $this->session->set_flashdata('login_usuario', $vUsuario);
       
-      fecha_session();
       redirect(BASE_URL);
     } else {
       $Usuario = json_decode($retLogin->infoUsr);
