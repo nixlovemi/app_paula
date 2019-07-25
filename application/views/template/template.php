@@ -35,6 +35,11 @@ $ARR_MENU         = $this->session->template_menu ?? array();
 $TITULO           = $titulo ?? "";
 $ARR_NOTIFICACAO  = $this->session->flashdata('geraNotificacao') ?? array();
 $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
+$USUARIO_LOGADO   = $this->session->usuario_info ?? array();
+
+$URL_LOGOUT       = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL: $BASE_URL . "Login/sistema";
+$IMG_SIDEBAR      = ($USUARIO_LOGADO->admin == 1) ? "sidebar-1.jpg": "sidebar-3.jpg";
+$URL_HOME         = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL . "Dashboard": $BASE_URL . "Sistema";
 ?>
 
 <!DOCTYPE html>
@@ -58,7 +63,7 @@ $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
   <link href="<?php echo $BASE_URL; ?>template/assets/demo/demo.css" rel="stylesheet" />
 </head>
 
-<body class="">
+<body class="" data-base-url="<?php echo $BASE_URL; ?>">
   <?php
   if(isset($ARR_NOTIFICACAO["titulo"]) && isset($ARR_NOTIFICACAO["mensagem"]) && isset($ARR_NOTIFICACAO["tipo"])){
     if($ARR_NOTIFICACAO["titulo"] != "" && $ARR_NOTIFICACAO["mensagem"] != "" && $ARR_NOTIFICACAO["tipo"] != ""){
@@ -74,7 +79,7 @@ $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
   ?>
 
   <div class="wrapper">
-    <div class="sidebar" data-color="green" data-background-color="white" data-image="<?php echo $BASE_URL; ?>template/assets/img/sidebar-1.jpg">
+    <div class="sidebar" data-color="green" data-background-color="white" data-image="<?php echo $BASE_URL; ?>template/assets/img/<?php echo $IMG_SIDEBAR; ?>">
       <!--
         Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
@@ -92,7 +97,7 @@ $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
           list($strSelecionado, $MENU_SELEC) = checaMenuSelecionado("Dashboard", false, $this);
           ?>
           <li class="nav-item <?php echo $strSelecionado; ?>">
-            <a class="nav-link" href="<?php echo $BASE_URL . "Dashboard"; ?>">
+            <a class="nav-link" href="<?php echo $URL_HOME ?>">
               <i class="material-icons">dashboard</i>
               <p>Área Inicial</p>
             </a>
@@ -234,11 +239,11 @@ $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Mike John responded to your email</a>
-                  <a class="dropdown-item" href="#">You have 5 new tasks</a>
-                  <a class="dropdown-item" href="#">You're now friend with Andrew</a>
-                  <a class="dropdown-item" href="#">Another Notification</a>
-                  <a class="dropdown-item" href="#">Another One</a>
+                  <a class="dropdown-item dropdown-item-success" href="#">Mike John responded to your email</a>
+                  <a class="dropdown-item dropdown-item-success" href="#">You have 5 new tasks</a>
+                  <a class="dropdown-item dropdown-item-success" href="#">You're now friend with Andrew</a>
+                  <a class="dropdown-item dropdown-item-success" href="#">Another Notification</a>
+                  <a class="dropdown-item dropdown-item-success" href="#">Another One</a>
                 </div>
               </li>
               <li class="nav-item dropdown">
@@ -249,10 +254,10 @@ $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                  <a class="dropdown-item" href="#">Profile</a>
-                  <a class="dropdown-item" href="#">Settings</a>
+                  <a class="dropdown-item dropdown-item-success" href="#">Profile</a>
+                  <a class="dropdown-item dropdown-item-success" href="#">Settings</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="<?php echo $BASE_URL; ?>">Log out</a>
+                  <a class="dropdown-item dropdown-item-success" href="<?php echo $URL_LOGOUT; ?>">Log out</a>
                 </div>
               </li>
             </ul>

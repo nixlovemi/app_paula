@@ -49,12 +49,23 @@ function executaLogin($email, $senha, $adminLogin = false)
 
     return array_ret_para_retorno($arrRet);
   }
-
   if ($row->ativo <> 1) {
     $arrRet["erro"] = true;
     $arrRet["msg"]  = "Usuário está inativo!";
 
     return array_ret_para_retorno($arrRet);
+  }
+  if(!$adminLogin){
+    require_once(APPPATH."/models/TbUsuarioCfg.php");
+    $retVal   = pegaCfgValidade($row->id);
+    $validade = ($retVal["erro"]) ? "2000-01-01": $retVal["valor"];
+
+    if($validade < date("Y-m-d")){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "A validade do seu usuário está expirada! Entre em contato com o suporte.";
+
+      return array_ret_para_retorno($arrRet);
+    }
   }
 
   $arrRet["erro"]    = false;

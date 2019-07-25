@@ -15,7 +15,7 @@ $arrAtivo       = array(
 );
 ?>
 
-<form id="frmEditaUsuario">
+<form id="frmEditaUsuario" method="post" action="<?php echo BASE_URL?>Usuario/postEditar">
   <div class="row">
     <div class="col-md-12">
       <div class="card">
@@ -98,7 +98,7 @@ $arrAtivo       = array(
               </div>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-success btn-sm" onclick="jsonAddUsuCfg( '<?php echo base_url(); ?>', $('form#frmEditaUsuario #id').val(), $('form#frmEditaUsuario #configuracao').val(), $('form#frmEditaUsuario #valor').val() );">
+              <button type="button" class="btn btn-success btn-sm" onclick="jsonAddUsuCfg( $('form#frmEditaUsuario #id').val(), $('form#frmEditaUsuario #configuracao').val(), $('form#frmEditaUsuario #valor').val() );">
                 Inserir
                 <div class="ripple-container"></div>
               </button>
@@ -121,8 +121,8 @@ $arrAtivo       = array(
     </div>
   </div>
   
-  <a href="<?php echo base_url() ?>Usuario" class="btn btn-danger pull-right">
-    Cancelar
+  <a href="<?php echo base_url() ?>Usuario" class="btn btn-info pull-right">
+    Voltar
     <div class="ripple-container"></div>
   </a>
   <button type="submit" class="btn btn-success pull-right">Salvar</button>

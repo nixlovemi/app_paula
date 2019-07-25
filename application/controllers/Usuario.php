@@ -101,4 +101,66 @@ class Usuario extends MY_Controller
     }
   }
 
+  public function postEditar()
+  {
+    $variaveisPost = processaPost();
+    $vId           = $variaveisPost->id ?? "";
+    $vNome         = $variaveisPost->nome ?? "";
+    $vEmail        = $variaveisPost->email ?? "";
+    $vAtivo        = $variaveisPost->ativo ?? "";
+    $vCadPor       = $variaveisPost->cadastrado_por ?? "";
+
+    $Usuario = [];
+    $Usuario["usu_id"]      = $vId;
+    $Usuario["usu_nome"]    = $vNome;
+    $Usuario["usu_email"]   = $vEmail;
+    $Usuario["usu_ativo"]   = $vAtivo;
+    $Usuario["usa_usuario"] = $vCadPor;
+    
+    $this->session->set_flashdata('Usuario', $Usuario);
+
+    require_once(APPPATH."/models/TbUsuario.php");
+    $retEditar = editaUsuario($Usuario);
+
+    if($retEditar["erro"]){
+      geraNotificacao("Aviso!", $retEditar["msg"], "warning");
+      redirect(BASE_URL . 'Usuario/editar/' . $vId);
+    } else {
+      geraNotificacao("Sucesso!", $retEditar["msg"], "success");
+      redirect(BASE_URL . 'Usuario/editar/' . $vId);
+    }
+  }
+
+  public function jsonUsuarioAlteraSenha()
+  {
+    $variaveisPost  = processaPost();
+    $vUsuId         = $variaveisPost->usu_id ?? "";
+    $vNovaSenha     = $variaveisPost->nova_senha ?? "";
+
+    $arrRet = [];
+
+    require_once(APPPATH."/models/TbUsuario.php");
+    $retUsu = pegaUsuario($vUsuId);
+
+    if($retUsu["erro"]){
+      $arrRet["msg"]        = $retUsu["msg"];
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"]   = "warning";
+      $arrRet["callback"]   = "jsonUsuarioAlteraSenha($vUsuId);";
+    } else {
+      $retSenha = alteraSenhaUsuario($vUsuId, $vNovaSenha);
+      if($retSenha["erro"]){
+        $arrRet["msg"]        = $retSenha["msg"];
+        $arrRet["msg_titulo"] = "Aviso!";
+        $arrRet["msg_tipo"]   = "warning";
+        $arrRet["callback"]   = "jsonUsuarioAlteraSenha($vUsuId);";
+      } else {
+        $arrRet["msg"]        = $retSenha["msg"];
+        $arrRet["msg_titulo"] = "Sucesso!";
+        $arrRet["msg_tipo"]   = "success";
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }

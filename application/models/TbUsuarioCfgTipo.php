@@ -116,6 +116,7 @@ function validaInsereUsuCfgTipo($UsuarioCfgTipo)
 {
   $strValida = "";
 
+  // validacao basica dos campos
   $vDescricao = $UsuarioCfgTipo["uct_descricao"] ?? "";
   if(strlen($vDescricao) <= 2){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma descrição válida (entre 3 e 80 caracteres).";
@@ -125,6 +126,22 @@ function validaInsereUsuCfgTipo($UsuarioCfgTipo)
   if(!($vAtivo == 0 || $vAtivo == 1)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'ativo' é inválida.";
   }
+  // ===========================
+
+  // descricao duplicada
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_usuario_cfg_tipo');
+  $CI->db->where('uct_descricao =', $vDescricao);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  if (!isset($row) || $row->cnt > 0) {
+    $strValida .= "<br />&nbsp;&nbsp;* Você já tem um tipo de configuração com essa descrição.";
+  }
+  // ===================
   
   if($strValida != ""){
     $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";
@@ -137,6 +154,7 @@ function validaEditaUsuCfgTipo($UsuarioCfgTipo)
 {
   $strValida = "";
 
+  // validacao basica dos campos
   $vId = $UsuarioCfgTipo["uct_id"] ?? "";
   if(!is_numeric($vId)){
     $strValida .= "<br />&nbsp;&nbsp;* Informe um ID válido.";
@@ -151,6 +169,23 @@ function validaEditaUsuCfgTipo($UsuarioCfgTipo)
   if(!($vAtivo == 0 || $vAtivo == 1)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'ativo' é inválida.";
   }
+  // ===========================
+
+  // descricao duplicada
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_usuario_cfg_tipo');
+  $CI->db->where('uct_descricao =', $vDescricao);
+  $CI->db->where('uct_id <>', $vId);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  if (!isset($row) || $row->cnt > 0) {
+    $strValida .= "<br />&nbsp;&nbsp;* Você já tem um tipo de configuração com essa descrição.";
+  }
+  // ===================
 
   if($strValida != ""){
     $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";

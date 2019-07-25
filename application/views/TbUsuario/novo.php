@@ -38,8 +38,8 @@ $usuEmail = $Usuario["usu_email"] ?? "";
     </div>
   </div>
 
-  <a href="<?php echo base_url() ?>Usuario" class="btn btn-danger pull-right">
-    Cancelar
+  <a href="<?php echo base_url() ?>Usuario" class="btn btn-info pull-right">
+    Voltar
     <div class="ripple-container"></div>
   </a>
   <button type="submit" class="btn btn-success pull-right">Salvar</button>

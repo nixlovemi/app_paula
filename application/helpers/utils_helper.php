@@ -76,3 +76,46 @@ function pegaUsuarioLogadoId()
 
   return $id;
 }
+
+function acerta_data($dt)
+{
+  if (!preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $dt)){
+    return null;
+  }
+  $temp = explode('/', $dt);
+  return $temp [2].'-'.$temp [1].'-'.$temp [0];
+}
+
+/**
+ * Pega data hora no formato DD/MM/YYYY HH:MI:SS e retorna YYYY-MM-DD HH:MI:SS
+ * @param text $dt
+ * @return string
+ */
+function acerta_data_hora($dt)
+{
+  //if (!preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})\s([0-9]{2}):([0-9]{2})$/', $dt))
+  //  return null;
+  $hora = substr($dt, 11, 8);
+  $data = explode('/', substr($dt, 0, 10));
+  $data = $data [2].'-'.$data [1].'-'.$data [0].' '.$hora;
+  return $data;
+}
+
+function valida_data($str)
+{
+  if (strpos($str, "/") !== false) {
+    $str = Util::acerta_data($str);
+  }
+
+
+  $stamp = strtotime($str);
+  if (!$stamp != "") {
+    $str   = substr($str, 1, 2)."/".substr($str, 4, 2)."/".substr($str, 7, 4);
+    $stamp = strtotime($str);
+  }
+  if (!$stamp != "") {
+    return false;
+  } else {
+    return true;
+  }
+}

@@ -1,3 +1,5 @@
+V_GLOB_URL_BASE = $('body').data('base-url');
+
 function mostraNotificacao(titulo, mensagem, tipo)
 {
   //type = ['', 'info', 'danger', 'success', 'warning', 'rose', 'primary'];
@@ -37,10 +39,10 @@ $( document ).ready(function()
   }
 });
 
-function mvc_post_ajax_var(url_request_base, controller, action, vars)
+function mvc_post_ajax_var(controller, action, vars)
 {
   $.ajax({
-    url: url_request_base + controller + '/' + action,
+    url: V_GLOB_URL_BASE + controller + '/' + action,
     data:vars,
     type: 'POST',
     dataType: 'json',
@@ -104,9 +106,29 @@ function mvc_post_ajax_var(url_request_base, controller, action, vars)
 }
 
 /* usuario cfg */
-function jsonAddUsuCfg(url_request_base, usuario, configuracao, valor)
+function jsonAddUsuCfg(usuario, configuracao, valor)
 {
   var vars = 'usuId=' + usuario + '&cfgId=' + configuracao + '&valor=' + valor;
-  mvc_post_ajax_var(url_request_base, 'UsuarioCfg', 'jsonAdd', vars);
+  mvc_post_ajax_var('UsuarioCfg', 'jsonAdd', vars);
 }
 /* =========== */
+
+/* usuario */
+async function jsonUsuarioAlteraSenha(usu_id)
+{
+  const {value: password} = await Swal.fire({
+    title: 'Informe a nova senha',
+    input: 'password',
+    inputPlaceholder: 'Nova senha ...',
+    inputAttributes: {
+      maxlength: 25,
+      autocapitalize: 'off',
+      autocorrect: 'off'
+    }
+  });
+
+  if (password) {
+    mvc_post_ajax_var('Usuario', 'jsonUsuarioAlteraSenha', 'usu_id=' + usu_id + '&nova_senha=' + password);
+  }
+}
+/* ======= */

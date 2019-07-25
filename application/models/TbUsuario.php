@@ -1,5 +1,5 @@
 <?php
-function pegaUsuario($usuId)
+function pegaUsuario($usuId, $apenasCamposTabela=false)
 {
   $arrRetorno = [];
   $arrRetorno["erro"]    = false;
@@ -16,7 +16,11 @@ function pegaUsuario($usuId)
   $CI = pega_instancia();
   $CI->load->database();
 
-  $CI->db->select('usu_id, usu_email, usu_senha, usu_nome, usu_ativo, usu_usa_id, usa_usuario');
+  $campos = "usu_id, usu_email, usu_senha, usu_nome, usu_ativo, usu_usa_id";
+  if(!$apenasCamposTabela){
+    $campos .= ", usa_usuario";
+  }
+  $CI->db->select($campos);
   $CI->db->from('tb_usuario');
   $CI->db->join('tb_usuario_admin', 'usa_id = usu_usa_id', 'left');
   $CI->db->where('usu_id =', $usuId);
@@ -38,7 +42,9 @@ function pegaUsuario($usuId)
   $Usuario["usu_nome"]    = $row->usu_nome;
   $Usuario["usu_ativo"]   = $row->usu_ativo;
   $Usuario["usu_usa_id"]  = $row->usu_usa_id;
-  $Usuario["usa_usuario"] = $row->usa_usuario;
+  if(!$apenasCamposTabela){
+    $Usuario["usa_usuario"] = $row->usa_usuario;
+  }
 
   $arrRetorno["msg"]      = "Usuário encontrado com sucesso!";
   $arrRetorno["Usuario"]  = $Usuario;
@@ -57,6 +63,7 @@ function pegaListaUsuario($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("usu_nome AS \"Nome\"", "L");
   $Lista_CI->addField("usu_email AS \"Email\"", "L");
   $Lista_CI->addField("ativo AS \"Ativo\"");
+  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=''jsonUsuarioAlteraSenha({usu_id})''><i class=\"material-icons text-success\">vpn_key</i></a>', '{usu_id}', usu_id) AS \"Alterar Senha\" ", "C", "8%");
   if($detalhes){
     $url = base_url() . "Usuario/visualizar";
     $Lista_CI->addField(" CONCAT('<a href=\"$url/', usu_id, '\"><i class=\"material-icons text-success\">visibility</i></a>') AS \"Visualizar\" ", "C", "3%");
@@ -85,6 +92,7 @@ function validaInsereUsuario($Usuario)
   require_once(APPPATH."/helpers/utils_helper.php");
   $strValida = "";
 
+  // validacao basica dos campos
   $vNome = $Usuario["usu_nome"] ?? "";
   if(strlen($vNome) <= 2){
     $strValida .= "<br />&nbsp;&nbsp;* Informe um nome válido (entre 3 e 100 caracteres).";
@@ -110,6 +118,22 @@ function validaInsereUsuario($Usuario)
   if(!is_numeric($vUsaId)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'usuário de cadastro' é inválida.";
   }
+  // ===========================
+
+  // email cadastrado
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_usuario');
+  $CI->db->where('usu_email =', $vEmail);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  if (!isset($row) || $row->cnt > 0) {
+    $strValida .= "<br />&nbsp;&nbsp;* Você já tem um usuário cadastrada com o email " . $vEmail;
+  }
+  // ================
 
   if($strValida != ""){
     $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";
@@ -162,5 +186,183 @@ function insereUsuario($Usuario)
     $arrRetorno["usuId"] = $CI->db->insert_id();
   }
 
+  return $arrRetorno;
+}
+
+function validaEditaUsuario($Usuario)
+{
+  require_once(APPPATH."/helpers/utils_helper.php");
+  $strValida = "";
+
+  // validacao basica dos campos
+  $vId = $Usuario["usu_id"] ?? "";
+  if(!is_numeric($vId)){
+    $strValida .= "<br />&nbsp;&nbsp;* ID inválido para editar Usuário.";
+  }
+
+  $vNome = $Usuario["usu_nome"] ?? "";
+  if(strlen($vNome) <= 2){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe um nome válido (entre 3 e 100 caracteres).";
+  }
+
+  $vEmail = $Usuario["usu_email"] ?? "";
+  if(!valida_email($vEmail)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação um email válido.";
+  }
+
+  $vAtivo = $Usuario["usu_ativo"] ?? "";
+  if(!($vAtivo == 0 || $vAtivo == 1)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'ativo' é inválida.";
+  }
+
+  $vUsaId = $Usuario["usu_usa_id"] ?? "";
+  if(!is_numeric($vUsaId)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'usuário de cadastro' é inválida.";
+  }
+  // ===========================
+
+  // email cadastrado
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_usuario');
+  $CI->db->where('usu_email =', $vEmail);
+  $CI->db->where('usu_id <>', $vId);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  if (!isset($row) || $row->cnt > 0) {
+    $strValida .= "<br />&nbsp;&nbsp;* Você já tem um usuário cadastrada com o email " . $vEmail;
+  }
+  // ================
+
+  if($strValida != ""){
+    $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";
+  }
+
+  return $strValida;
+}
+
+function editaUsuario($Usuario)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+
+  // carrega info do BD
+  $vId = $Usuario["usu_id"] ?? "";
+  $retP = pegaUsuario($vId, true);
+  if($retP["erro"]){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $retP["msg"];
+    return $arrRetorno;
+  }
+  $data = $retP["Usuario"];
+  foreach($Usuario as $field_name => $field_value){
+    if(array_key_exists($field_name, $data)){
+      $data[$field_name] = $field_value;
+    }
+  }
+  // ==================
+
+  $strValida = validaEditaUsuario($data);
+  if($strValida != ""){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $strValida;
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->where('usu_id', $vId);
+  $ret = $CI->db->update('tb_usuario', $data);
+
+  if(!$ret){
+    $error = $CI->db->error();
+
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao editar Usuário. Mensagem: " . $error["message"];
+  } else {
+    $arrRetorno["erro"]  = false;
+    $arrRetorno["msg"]   = "Usuário editado com sucesso.";
+  }
+
+  return $arrRetorno;
+}
+
+function alteraSenhaUsuario($usuId, $novaSenha)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+
+  // validacao basica dos campos
+  if(!is_numeric($usuId)){
+    $arrRetorno["erro"]  = true;
+    $arrRetorno["msg"]   = "ID inválido para alterar senha do usuário!";
+
+    return $arrRetorno;
+  }
+
+  require_once(APPPATH."/helpers/utils_helper.php");
+  $ret = valida_senha($novaSenha);
+  if($ret["erro"]){
+    $arrRetorno["erro"]  = true;
+    $arrRetorno["msg"]   = $ret["msg"];
+
+    return $arrRetorno;
+  }
+  // ===========================
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $data = array(
+    "usu_senha" => encripta_string($novaSenha)
+  );
+  $CI->db->where('usu_id', $usuId);
+  $retSenha = $CI->db->update('tb_usuario', $data);
+
+  if(!$retSenha){
+    $error = $CI->db->error();
+
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao alterar senha do usuário. Mensagem: " . $error["message"];
+  } else {
+    $arrRetorno["erro"] = false;
+    $arrRetorno["msg"]  = "Senha do usuário alterada com sucesso.";
+  }
+
+  return $arrRetorno;
+}
+
+function pegaTotalPessoasAtivas($usuId)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+  $arrRetorno["total"] = "";
+
+  if(!is_numeric($usuId)){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "ID inválido para buscar total de pessoas ativas!";
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_pessoa');
+  $CI->db->where('pes_usu_id =', $usuId);
+  $CI->db->where('pes_ativo =', 1);
+
+  $query    = $CI->db->get();
+  $row      = $query->row();
+  $totAtivo = $row->cnt;
+
+  $arrRetorno["total"] = $totAtivo;
   return $arrRetorno;
 }

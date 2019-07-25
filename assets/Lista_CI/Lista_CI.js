@@ -38,7 +38,7 @@ function reload_list(lista_ci_id)
   input_filter_click(13, lista_ci_id);
 }
 
-function confirm_delete(lista_ci_id, controller, action, vars, url_base)
+function confirm_delete(lista_ci_id, controller, action, vars)
 {
   Swal.fire({
     title: 'Confirmar exclusão',
@@ -53,7 +53,7 @@ function confirm_delete(lista_ci_id, controller, action, vars, url_base)
   }).then((result) => {
     if (result.value) {
       vars = vars + '&lista_ci_id=' + lista_ci_id;
-      mvc_post_ajax_var(url_base, controller, action, vars);
+      mvc_post_ajax_var(controller, action, vars);
     }
   });
 }

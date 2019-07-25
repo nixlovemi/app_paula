@@ -24,8 +24,8 @@ $uctDescricao   = $UsuarioCfgTipo["uct_descricao"] ?? "";
     </div>
   </div>
 
-  <a href="<?php echo base_url() ?>UsuarioCfgTipo" class="btn btn-danger pull-right">
-    Cancelar
+  <a href="<?php echo base_url() ?>UsuarioCfgTipo" class="btn btn-info pull-right">
+    Voltar
     <div class="ripple-container"></div>
   </a>
   <button type="submit" class="btn btn-success pull-right">Salvar</button>

@@ -3,6 +3,7 @@ function validaInsereUsuarioCfg($UsuarioCfg)
 {
   $strValida = "";
 
+  // validacao basica dos campos
   $vUsuId = $UsuarioCfg["usc_usu_id"] ?? "";
   if(!is_numeric($vUsuId)){
     $strValida .= "<br />&nbsp;&nbsp;* Informe um usuário válido.";
@@ -17,6 +18,23 @@ function validaInsereUsuarioCfg($UsuarioCfg)
   if(strlen(trim($vValor)) <= 0){
     $strValida .= "<br />&nbsp;&nbsp;* Informe um valor válido.";
   }
+  // ===========================
+
+  // configuracao duplicada
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_usuario_cfg');
+  $CI->db->where('usc_usu_id =', $vUsuId);
+  $CI->db->where('usc_uct_id =', $vUctId);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  if (!isset($row) || $row->cnt > 0) {
+    $strValida .= "<br />&nbsp;&nbsp;* Você já tem essa configuração para esse usuário.";
+  }
+  // ======================
 
   if($strValida != ""){
     $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";
@@ -112,7 +130,7 @@ function pegaListaUsuarioCfg($usuario="", $detalhes=false, $edicao=false, $exclu
   if($edicao){
   }
   if($exclusao){
-    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''ListaUsuarioCfg'', ''UsuarioCfg'', ''jsonDelete'', ''id={usc_id}'', ''".base_url()."'')\"><i class=\"material-icons text-success\">delete</i></a>', '{usc_id}', usc_id) AS \"Excluir\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''ListaUsuarioCfg'', ''UsuarioCfg'', ''jsonDelete'', ''id={usc_id}'')\"><i class=\"material-icons text-success\">delete</i></a>', '{usc_id}', usc_id) AS \"Excluir\" ", "C", "3%");
   }
   $Lista_CI->addFrom("v_tb_usuario_cfg");
   if(is_numeric($usuario) && $usuario > 0){
@@ -124,4 +142,78 @@ function pegaListaUsuarioCfg($usuario="", $detalhes=false, $edicao=false, $exclu
   $Lista_CI->addFilter("uct_descricao", "Configuração");
 
   return $Lista_CI->getHtml();
+}
+
+function pegaMaximoUsuarios($usuId)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+  $arrRetorno["valor"] = "";
+
+  if(!is_numeric($usuId)){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "ID inválido para buscar informação 'Máximo Usuários'!";
+
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('usc_valor');
+  $CI->db->from('tb_usuario_cfg');
+  $CI->db->where('usc_usu_id =', $usuId);
+  $CI->db->where('usc_uct_id =', 2);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+
+  if (!isset($row)) {
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao encontrar informação 'Máximo Usuários'!";
+
+    return $arrRetorno;
+  }
+
+  $arrRetorno["msg"]   = "'Máximo Usuários' encontrado com sucesso!";
+  $arrRetorno["valor"] = (int) $row->usc_valor;
+  return $arrRetorno;
+}
+
+function pegaCfgValidade($usuId)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+  $arrRetorno["valor"] = "";
+
+  if(!is_numeric($usuId)){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "ID inválido para buscar informação 'Validade'!";
+
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('usc_valor');
+  $CI->db->from('tb_usuario_cfg');
+  $CI->db->where('usc_usu_id =', $usuId);
+  $CI->db->where('usc_uct_id =', 1);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+
+  if (!isset($row)) {
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao encontrar informação 'Validade'!";
+
+    return $arrRetorno;
+  }
+
+  $arrRetorno["msg"]   = "'Validade' encontrada com sucesso!";
+  $arrRetorno["valor"] = acerta_data($row->usc_valor);
+  return $arrRetorno;
 }

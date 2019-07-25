@@ -14,6 +14,14 @@
   height: auto;
   display: inherit;
 }
+.bg-login-sistema{
+  background-image: url('../../assets/img/bg-sistema-login.jpg');
+  background-size: cover;
+  background-position: top center;
+  min-height: 100vh;
+  height: auto;
+  display: inherit;
+}
 .card-signup{
   margin-top: 40%;
 }
@@ -46,6 +54,9 @@ ul.pagination .item-success {
   width:100%;
   border-top: 4px solid #DDD;
   margin: 20px 0;
+}
+.dropdown-item-success:hover{
+  background-color: #4caf50 !important;
 }
 /*=======================================================*/
 
