@@ -22,6 +22,7 @@ class Lista_CII
   private $_arrSql;
   private $_arrAlign;
   private $_arrSize;
+  private $_arrFormat;
   private $_arrFilter;
 
   function __construct($database)
@@ -48,6 +49,7 @@ class Lista_CII
     $this->_arrSql["order"]  = "";
     $this->_arrAlign         = [];
     $this->_arrSize          = [];
+    $this->_arrFormat        = [];
     $this->_arrFilter        = [];
   }
 
@@ -106,12 +108,14 @@ class Lista_CII
 
   /**
    * $align: L->Left, C->Center, R->Right
+   * $format: D->date
    */
-  public function addField($fieldName, $align="C", $size="")
+  public function addField($fieldName, $align="C", $size="", $format="")
   {
     $this->_arrSql["fields"][] = $fieldName;
     $this->_arrAlign[]         = $align;
     $this->_arrSize[]          = $size;
+    $this->_arrFormat[]        = $format;
   }
 
   public function addFrom($table)
@@ -252,6 +256,16 @@ class Lista_CII
     return $alignStr;
   }
 
+  private function formatColumn($format, $column)
+  {
+    # date
+    if($format == "D" && $column != ""){
+      return date("d/m/Y", strtotime($column));
+    } else {
+      return $column;
+    }
+  }
+
   private function getJsFunction($filter="", $filter_val="", $changePage=0, $orderBy="")
   {
     #filter_lista_ci(url_request_base, lista_ci_id, filter, filter_val, changePage, orderBy)
@@ -349,10 +363,12 @@ class Lista_CII
         $V_HTML .= "  <tr>";
         $i       = 0;
         foreach ($row as $column) {
-          $strAlign = $this->getAlignStrByIdx($i);
-          $strSize  = $this->_arrSize[$i] ?? "";
+          $strAlign  = $this->getAlignStrByIdx($i);
+          $strSize   = $this->_arrSize[$i] ?? "";
+          $strFormat = $this->_arrFormat[$i] ?? "";
+          $strColumn = $this->formatColumn($strFormat, $column);
 
-          $V_HTML .= "  <td width='$strSize' align='$strAlign'>$column</td>";
+          $V_HTML .= "  <td width='$strSize' align='$strAlign'>$strColumn</td>";
           $i++;
         }
         $V_HTML .= "  </tr>";

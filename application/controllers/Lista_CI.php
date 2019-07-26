@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Lista_CI extends MY_Controller
+class Lista_CI extends CI_Controller
 {
   public function __construct()
   {

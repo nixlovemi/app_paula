@@ -66,6 +66,56 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
   return $arrRetorno;
 }
 
+function pegaTodasPessoas($filtro)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]     = false;
+  $arrRetorno["msg"]      = "";
+  $arrRetorno["arrGrupo"] = [];
+
+  $usuId = $filtro["pes_usu_id"] ?? "";
+  $ativo = $filtro["pes_ativo"] ?? 1;
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('pes_id, pes_usu_id, pes_pet_id, pes_nome, pes_email, pes_senha, pes_foto, pes_ativo, usu_nome, pet_descricao');
+  $CI->db->from('tb_pessoa');
+  $CI->db->join('tb_usuario', 'usu_id = pes_usu_id', 'left');
+  $CI->db->join('tb_pessoa_tipo', 'pet_id = pes_pet_id', 'left');
+  if($usuId != ""){
+    $CI->db->where('pes_usu_id =', $usuId);
+  }
+  if($ativo != ""){
+    $CI->db->where('pes_ativo =', $ativo);
+  }
+  $CI->db->order_by('pes_nome', 'ASC');
+
+  $query = $CI->db->get();
+  if(!$query){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao retornar todos as Pessoas!";
+  } else {
+    foreach ($query->result() as $row){
+      $Pessoa = [];
+      $Pessoa["pes_id"]        = $row->pes_id;
+      $Pessoa["pes_usu_id"]    = $row->pes_usu_id;
+      $Pessoa["pes_pet_id"]    = $row->pes_pet_id;
+      $Pessoa["pes_nome"]      = $row->pes_nome;
+      $Pessoa["pes_email"]     = $row->pes_email;
+      $Pessoa["pes_email"]     = $row->pes_email;
+      $Pessoa["pes_foto"]      = $row->pes_foto;
+      $Pessoa["pes_ativo"]     = $row->pes_ativo;
+      $Pessoa["usu_nome"]      = $row->usu_nome;
+      $Pessoa["pet_descricao"] = $row->pet_descricao;
+
+      $arrRetorno["arrGrupo"][] = $Pessoa;
+    }
+  }
+
+  return $arrRetorno;
+}
+
 function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false)
 {
   $CI = pega_instancia();
