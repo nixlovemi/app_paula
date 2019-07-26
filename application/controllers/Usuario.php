@@ -134,7 +134,7 @@ class Usuario extends MY_Controller
   public function jsonUsuarioAlteraSenha()
   {
     $variaveisPost  = processaPost();
-    $vUsuId         = $variaveisPost->usu_id ?? "";
+    $vUsuId         = $variaveisPost->id ?? "";
     $vNovaSenha     = $variaveisPost->nova_senha ?? "";
 
     $arrRet = [];
@@ -146,14 +146,14 @@ class Usuario extends MY_Controller
       $arrRet["msg"]        = $retUsu["msg"];
       $arrRet["msg_titulo"] = "Aviso!";
       $arrRet["msg_tipo"]   = "warning";
-      $arrRet["callback"]   = "jsonUsuarioAlteraSenha($vUsuId);";
+      $arrRet["callback"]   = "jsonAlteraSenha('Usuario', 'jsonUsuarioAlteraSenha', $vUsuId);";
     } else {
       $retSenha = alteraSenhaUsuario($vUsuId, $vNovaSenha);
       if($retSenha["erro"]){
         $arrRet["msg"]        = $retSenha["msg"];
         $arrRet["msg_titulo"] = "Aviso!";
         $arrRet["msg_tipo"]   = "warning";
-        $arrRet["callback"]   = "jsonUsuarioAlteraSenha($vUsuId);";
+        $arrRet["callback"]   = "jsonAlteraSenha('Usuario', 'jsonUsuarioAlteraSenha', $vUsuId);";
       } else {
         $arrRet["msg"]        = $retSenha["msg"];
         $arrRet["msg_titulo"] = "Sucesso!";

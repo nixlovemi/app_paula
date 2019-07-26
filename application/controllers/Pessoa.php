@@ -134,4 +134,37 @@ class Pessoa extends MY_Controller
       ));
     }
   }
+
+  public function jsonPessoaAlteraSenha()
+  {
+    $variaveisPost  = processaPost();
+    $vPesId         = $variaveisPost->id ?? "";
+    $vNovaSenha     = $variaveisPost->nova_senha ?? "";
+
+    $arrRet = [];
+
+    require_once(APPPATH."/models/TbPessoa.php");
+    $retUsu = pegaPessoa($vPesId);
+
+    if($retUsu["erro"]){
+      $arrRet["msg"]        = $retUsu["msg"];
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"]   = "warning";
+      $arrRet["callback"]   = "jsonAlteraSenha('Pessoa', 'jsonPessoaAlteraSenha', $vPesId);";
+    } else {
+      $retSenha = alteraSenhaPessoa($vPesId, $vNovaSenha);
+      if($retSenha["erro"]){
+        $arrRet["msg"]        = $retSenha["msg"];
+        $arrRet["msg_titulo"] = "Aviso!";
+        $arrRet["msg_tipo"]   = "warning";
+        $arrRet["callback"]   = "jsonAlteraSenha('Pessoa', 'jsonPessoaAlteraSenha', $vPesId);";
+      } else {
+        $arrRet["msg"]        = $retSenha["msg"];
+        $arrRet["msg_titulo"] = "Sucesso!";
+        $arrRet["msg_tipo"]   = "success";
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }

@@ -63,7 +63,7 @@ function pegaListaUsuario($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("usu_nome AS \"Nome\"", "L");
   $Lista_CI->addField("usu_email AS \"Email\"", "L");
   $Lista_CI->addField("ativo AS \"Ativo\"");
-  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=''jsonUsuarioAlteraSenha({usu_id})''><i class=\"material-icons text-success\">vpn_key</i></a>', '{usu_id}', usu_id) AS \"Alterar Senha\" ", "C", "8%");
+  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonAlteraSenha(''Usuario'', ''jsonUsuarioAlteraSenha'', {usu_id})\"><i class=\"material-icons text-success\">vpn_key</i></a>', '{usu_id}', usu_id) AS \"Alterar Senha\" ", "C", "8%");
   if($detalhes){
     $url = base_url() . "Usuario/visualizar";
     $Lista_CI->addField(" CONCAT('<a href=\"$url/', usu_id, '\"><i class=\"material-icons text-success\">visibility</i></a>') AS \"Visualizar\" ", "C", "3%");

@@ -114,7 +114,7 @@ function jsonAddUsuCfg(usuario, configuracao, valor)
 /* =========== */
 
 /* usuario */
-async function jsonUsuarioAlteraSenha(usu_id)
+async function jsonAlteraSenha(controller, action, id)
 {
   const {value: password} = await Swal.fire({
     title: 'Informe a nova senha',
@@ -128,7 +128,9 @@ async function jsonUsuarioAlteraSenha(usu_id)
   });
 
   if (password) {
-    mvc_post_ajax_var('Usuario', 'jsonUsuarioAlteraSenha', 'usu_id=' + usu_id + '&nova_senha=' + password);
+    mvc_post_ajax_var(controller, action, 'id=' + id + '&nova_senha=' + password);
+  } else {
+    mostraNotificacao('Aviso!', 'Informe a nova senha para prosseguir com a alteração!', 'danger');
   }
 }
 /* ======= */

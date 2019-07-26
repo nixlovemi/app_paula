@@ -83,6 +83,7 @@ function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("pes_email AS \"Email\"", "L");
   $Lista_CI->addField("pet_descricao AS \"Tipo\"", "L");
   $Lista_CI->addField("ativo AS \"Ativo\"");
+  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonAlteraSenha(''Pessoa'', ''jsonPessoaAlteraSenha'', {pes_id})\"><i class=\"material-icons text-success\">vpn_key</i></a>', '{pes_id}', pes_id) AS \"Alterar Senha\" ", "C", "8%");
   if($detalhes){
     $url = base_url() . "Pessoa/visualizar/{pes_id}";
     $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">visibility</i></a>', '{pes_id}', pes_id) AS \"Visualizar\" ", "C", "3%");
@@ -371,6 +372,52 @@ function editaPessoa($Pessoa)
   } else {
     $arrRetorno["erro"]  = false;
     $arrRetorno["msg"]   = "Pessoa editada com sucesso.";
+  }
+
+  return $arrRetorno;
+}
+
+function alteraSenhaPessoa($pesId, $novaSenha)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+
+  // validacao basica dos campos
+  if(!is_numeric($pesId)){
+    $arrRetorno["erro"]  = true;
+    $arrRetorno["msg"]   = "ID inválido para alterar senha da pessoa!";
+
+    return $arrRetorno;
+  }
+
+  require_once(APPPATH."/helpers/utils_helper.php");
+  $ret = valida_senha($novaSenha);
+  if($ret["erro"]){
+    $arrRetorno["erro"]  = true;
+    $arrRetorno["msg"]   = $ret["msg"];
+
+    return $arrRetorno;
+  }
+  // ===========================
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $data = array(
+    "pes_senha" => encripta_string($novaSenha)
+  );
+  $CI->db->where('pes_id', $pesId);
+  $retSenha = $CI->db->update('tb_pessoa', $data);
+
+  if(!$retSenha){
+    $error = $CI->db->error();
+
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao alterar senha da pessoa. Mensagem: " . $error["message"];
+  } else {
+    $arrRetorno["erro"] = false;
+    $arrRetorno["msg"]  = "Senha da pessoa alterada com sucesso.";
   }
 
   return $arrRetorno;
