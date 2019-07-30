@@ -95,7 +95,7 @@ class UsuarioCfgTipo extends MY_Controller
     $UsuarioCfgTipo = [];
     $UsuarioCfgTipo["uct_id"]        = $vId;
     $UsuarioCfgTipo["uct_descricao"] = $vDescricao;
-    $UsuarioCfgTipo["uct_ativo"]     = $vAtivo;
+    $UsuarioCfgTipo["uct_ativo"]     = (int)$vAtivo;
     $this->session->set_flashdata('UsuarioCfgTipo', $UsuarioCfgTipo);
 
     require_once(APPPATH."/models/TbUsuarioCfgTipo.php");

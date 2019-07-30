@@ -20,6 +20,8 @@ function pegaListaGrupo($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("gru_dt_termino AS \"Término\"", "C", "", "D");
   $Lista_CI->addField("ativo AS \"Ativo\"");
   if($detalhes){
+    $url = base_url() . "Grupo/visualizar/{gru_id}";
+    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">visibility</i></a>', '{gru_id}', gru_id) AS \"Visualizar\" ", "C", "3%");
   }
   if($edicao){
     $url = base_url() . "Grupo/editar/{gru_id}";
@@ -100,6 +102,37 @@ function pegaGrupo($gruId, $apenasCamposTabela=false)
 
   $arrRetorno["msg"]   = "Grupo encontrado com sucesso!";
   $arrRetorno["Grupo"] = $Grupo;
+  return $arrRetorno;
+}
+
+function validaGrupo($id, $idUsuLogado)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+
+  require_once(APPPATH."/models/TbGrupo.php");
+  $retG = pegaGrupo($id, true);
+
+  if($retG["erro"]){
+    $arrRetorno["erro"]  = true;
+    $arrRetorno["msg"]   = $retG["msg"];
+  } else {
+    $Grupo = $retG["Grupo"];
+    if($Grupo["gru_ativo"] == 0){
+      $arrRetorno["erro"]  = true;
+      $arrRetorno["msg"]   = "Este grupo não está ativo.";
+    }
+    if($Grupo["gru_dt_termino"] < date("Y-m-d")){
+      $arrRetorno["erro"]  = true;
+      $arrRetorno["msg"]   = "Este grupo já está terminado.";
+    }
+    if($Grupo["gru_usu_id"] != $idUsuLogado){
+      $arrRetorno["erro"]  = true;
+      $arrRetorno["msg"]   = "Este grupo não faz parte do seu cadastro.";
+    }
+  }
+
   return $arrRetorno;
 }
 
@@ -208,6 +241,123 @@ function insereGrupo($Grupo)
     $arrRetorno["erro"]  = false;
     $arrRetorno["msg"]   = "Grupo inserido com sucesso.";
     $arrRetorno["gruId"] = $CI->db->insert_id();
+  }
+
+  return $arrRetorno;
+}
+
+function validaEditaGrupo($Grupo)
+{
+  require_once(APPPATH."/helpers/utils_helper.php");
+  $strValida = "";
+
+  // validacao basica dos campos
+  $vId = $Grupo["gru_id"] ?? "";
+  if(!is_numeric($vId)){
+    $strValida .= "<br />&nbsp;&nbsp;* ID inválido para editar grupo.";
+  }
+
+  $vUsuId = $Grupo["gru_usu_id"] ?? "";
+  if(!is_numeric($vUsuId)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'usuário de cadastro' é inválida.";
+  }
+
+  $vDesc = $Grupo["gru_descricao"] ?? "";
+  if(strlen($vDesc) <= 2){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma descrição válida (entre 3 e 80 caracteres).";
+  }
+
+  $vDtIni = $Grupo["gru_dt_inicio"] ?? "";
+  if(!valida_data($vDtIni)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma data de início válida.";
+  }
+
+  $vDtFim = $Grupo["gru_dt_termino"] ?? "";
+  if(!valida_data($vDtFim)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma data de término válida.";
+  }
+
+  if($vDtIni >= $vDtFim){
+    $strValida .= "<br />&nbsp;&nbsp;* Data de início tem que ser inferior a data de término.";
+  }
+
+  if($vDtFim <= date("Y-m-d")){
+    $strValida .= "<br />&nbsp;&nbsp;* Data de término tem que ser superior a data de hoje.";
+  }
+
+  $vAtivo = $Grupo["gru_ativo"] ?? "";
+  if(!($vAtivo == 0 || $vAtivo == 1)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'ativo' é inválida.";
+  }
+  // ===========================
+
+  // valida descricao duplicada
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_grupo');
+  $CI->db->where('gru_usu_id =', $vUsuId);
+  $CI->db->where('gru_descricao =', $vDesc);
+  $CI->db->where('gru_id <>', $vId);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  if (!isset($row) || $row->cnt > 0) {
+    $strValida .= "<br />&nbsp;&nbsp;* Você já tem um grupo cadastrado com a descrição '" . $vDesc . "'";
+  }
+  // ==========================
+
+  if($strValida != ""){
+    $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";
+  }
+
+  return $strValida;
+}
+
+function editaGrupo($Grupo)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+
+  // carrega info do BD
+  $vId = $Grupo["gru_id"] ?? "";
+  $retP = pegaGrupo($vId, true);
+  if($retP["erro"]){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $retP["msg"];
+    return $arrRetorno;
+  }
+  $data = $retP["Grupo"];
+  foreach($Grupo as $field_name => $field_value){
+    if(array_key_exists($field_name, $data)){
+      $data[$field_name] = $field_value;
+    }
+  }
+  // ==================
+
+  $strValida = validaEditaGrupo($data);
+  if($strValida != ""){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $strValida;
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->where('gru_id', $vId);
+  $ret = $CI->db->update('tb_grupo', $data);
+
+  if(!$ret){
+    $error = $CI->db->error();
+
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao editar Grupo. Mensagem: " . $error["message"];
+  } else {
+    $arrRetorno["erro"]  = false;
+    $arrRetorno["msg"]   = "Grupo editado com sucesso.";
   }
 
   return $arrRetorno;

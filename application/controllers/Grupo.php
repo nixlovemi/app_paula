@@ -86,7 +86,7 @@ class Grupo extends MY_Controller
     $Grupo = $this->session->flashdata('Grupo') ?? $ret["Grupo"];
     
     require_once(APPPATH."/models/TbGrupoPessoa.php");
-    $htmlGP = pegaListaGrupoPessoa($id, false, false, false);
+    $htmlGP = pegaListaGrupoPessoa($id, false, true, false);
 
     if($ret["erro"]){
       geraNotificacao("Aviso!", $ret["msg"], "warning");
@@ -100,4 +100,82 @@ class Grupo extends MY_Controller
     }
   }
 
+  public function postEditar()
+  {
+    require_once(APPPATH."/helpers/utils_helper.php");
+    $variaveisPost = processaPost();
+
+    $vId      = $variaveisPost->id ?? "";
+    $vInicio  = $variaveisPost->inicio ?? "";
+    $vTermino = $variaveisPost->termino ?? "";
+    $vAtivo   = $variaveisPost->ativo ?? 1;
+
+    $Grupo = [];
+    $Grupo["gru_id"]         = $vId;
+    $Grupo["gru_dt_inicio"]  = acerta_data($vInicio);
+    $Grupo["gru_dt_termino"] = acerta_data($vTermino);
+    $Grupo["gru_ativo"]      = (int)$vAtivo;
+    $this->session->set_flashdata('Grupo', $Grupo);
+
+    require_once(APPPATH."/models/TbGrupo.php");
+    $retEditar = editaGrupo($Grupo);
+
+    if($retEditar["erro"]){
+      geraNotificacao("Aviso!", $retEditar["msg"], "warning");
+      redirect(BASE_URL . 'Grupo/editar/' . $vId);
+    } else {
+      geraNotificacao("Sucesso!", $retEditar["msg"], "success");
+      redirect(BASE_URL . 'Grupo/editar/' . $vId);
+    }
+  }
+
+  public function visualizar($id)
+  {
+    require_once(APPPATH."/models/TbGrupo.php");
+    $ret = pegaGrupo($id);
+
+    if($ret["erro"]){
+      geraNotificacao("Aviso!", $ret["msg"], "warning");
+      redirect(BASE_URL . 'Grupo');
+    } else {
+      require_once(APPPATH."/models/TbGrupoPessoa.php");
+      $htmlGP = pegaListaGrupoPessoa($id, true, false, false);
+
+      $this->template->load(TEMPLATE_STR, 'TbGrupo/visualizar', array(
+        "titulo" => gera_titulo_template("Grupo - Visualizar"),
+        "Grupo"  => $ret["Grupo"],
+        "htmlGP" => $htmlGP,
+      ));
+    }
+  }
+
+  public function infoPessoa($gru_id, $pes_id, $editar)
+  {
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $ret = pegaGrupoPessoaPesGru($pes_id, $gru_id, false);
+
+    if($ret["erro"]){
+      geraNotificacao("Aviso!", $ret["msg"], "warning");
+      redirect(BASE_URL . 'Grupo/editar/' . $gru_id);
+    } else {
+      // info do grupo
+      require_once(APPPATH."/models/TbGrupo.php");
+      $retG = pegaGrupo($gru_id, false);
+
+      // info dos lancamentos
+      require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
+      $retI               = pegaGrupoPessoaInfoPesGru($pes_id, $gru_id);
+      $GrupoPessoaInfo    = $retI["GrupoPessoaInfo"] ?? array();
+      $retGrp             = agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo);
+      $GrupoPessoaInfoGrp = $retGrp["GrupoPessoaInfoGrp"] ?? array();
+
+      $this->template->load(TEMPLATE_STR, 'TbGrupo/infoPessoa', array(
+        "titulo"             => gera_titulo_template("Grupo - Informação do Participante"),
+        "editar"             => $editar,
+        "GrupoPessoa"        => $ret["GrupoPessoa"],
+        "Grupo"              => $retG["Grupo"] ?? array(),
+        "GrupoPessoaInfoGrp" => $GrupoPessoaInfoGrp,
+      ));
+    }
+  }
 }

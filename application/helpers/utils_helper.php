@@ -55,6 +55,14 @@ function processaPost()
   return (object) $jsonVars;
 }
 
+function processaJsonHtml($html)
+{
+  $htmlAjustado  = str_replace("'", "\'", $html);
+  $htmlAjustado2 = str_replace(array("\r","\n"),"", $htmlAjustado);
+
+  return $htmlAjustado2;
+}
+
 function gera_titulo_template($titulo, $href="javascript:;")
 {
   return "<a class='navbar-brand' href='$href'>$titulo<div class='ripple-container'></div></a>";
@@ -76,6 +84,24 @@ function pegaUsuarioLogadoId()
 
   return $id;
 }
+function acerta_moeda($str)
+{
+    $str = trim($str);
+
+    if (strlen($str) <= 0) {
+        return null;
+    }
+
+    $str = str_replace(".", "", $str);
+    $str = str_replace(",", ".", $str);
+    $str = str_replace("R$", "", $str);
+    $str = str_replace("US$", "", $str);
+    $str = str_replace("U$", "", $str);
+    $str = str_replace("$", "", $str);
+    $str = str_replace(" ", "", $str);
+    return $str;
+}
+
 
 function acerta_data($dt)
 {

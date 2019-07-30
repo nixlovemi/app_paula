@@ -114,7 +114,7 @@ class Usuario extends MY_Controller
     $Usuario["usu_id"]      = $vId;
     $Usuario["usu_nome"]    = $vNome;
     $Usuario["usu_email"]   = $vEmail;
-    $Usuario["usu_ativo"]   = $vAtivo;
+    $Usuario["usu_ativo"]   = (int)$vAtivo;
     $Usuario["usa_usuario"] = $vCadPor;
     
     $this->session->set_flashdata('Usuario', $Usuario);

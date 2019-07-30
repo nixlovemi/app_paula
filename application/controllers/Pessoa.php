@@ -104,7 +104,7 @@ class Pessoa extends MY_Controller
     $Pessoa["pes_pet_id"] = $vTipo;
     $Pessoa["pes_nome"]   = $vNome;
     $Pessoa["pes_email"]  = $vEmail;
-    $Pessoa["pes_ativo"]  = $vAtivo;
+    $Pessoa["pes_ativo"]  = (int)$vAtivo;
     $this->session->set_flashdata('Pessoa', $Pessoa);
 
     require_once(APPPATH."/models/TbPessoa.php");

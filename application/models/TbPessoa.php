@@ -160,6 +160,33 @@ function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false)
   return $Lista_CI->getHtml();
 }
 
+function validaPessoa($id, $idUsuLogado)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+
+  require_once(APPPATH."/models/TbPessoa.php");
+  $retP = pegaPessoa($id, true);
+
+  if($retP["erro"]){
+    $arrRetorno["erro"]  = true;
+    $arrRetorno["msg"]   = $retP["msg"];
+  } else {
+    $Pessoa = $retP["Pessoa"];
+    if($Pessoa["pes_ativo"] == 0){
+      $arrRetorno["erro"]  = true;
+      $arrRetorno["msg"]   = "Esta pessoa não está ativa.";
+    }
+    if($Pessoa["pes_usu_id"] != $idUsuLogado){
+      $arrRetorno["erro"]  = true;
+      $arrRetorno["msg"]   = "Esta pessoa não faz parte do seu cadastro.";
+    }
+  }
+
+  return $arrRetorno;
+}
+
 function validaInserePessoa($Pessoa)
 {
   require_once(APPPATH."/helpers/utils_helper.php");

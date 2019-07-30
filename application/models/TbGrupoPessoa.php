@@ -2,6 +2,86 @@
 //!! lembrar de exibir apenas pra pessoa logada
 //=============================================
 
+function pegaGrupoPessoa($id, $apenasCamposTabela=false)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]        = false;
+  $arrRetorno["msg"]         = "";
+  $arrRetorno["GrupoPessoa"] = [];
+
+  if(!is_numeric($id)){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "ID inválido para buscar participante do grupo!";
+
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  // so exibe de quem cadastrou
+  $UsuarioLog = $CI->session->usuario_info ?? array();
+  // ==========================
+
+  $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_ativo";
+  if(!$apenasCamposTabela){
+    $camposTabela .= ", ativo, gru_usu_id, gru_descricao, pes_nome, pes_email, pet_descricao, pet_cliente";
+  }
+
+  $CI->db->select($camposTabela);
+  $CI->db->from('v_tb_grupo_pessoa');
+  $CI->db->where('grp_id =', $id);
+  if($UsuarioLog->admin == 0){
+    $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+  }
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+
+  if (!isset($row)) {
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao encontrar participante do grupo!";
+
+    return $arrRetorno;
+  }
+
+  $Grupo = [];
+  $Grupo["grp_id"]          = $row->grp_id;
+  $Grupo["grp_gru_id"]      = $row->grp_gru_id;
+  $Grupo["grp_pes_id"]      = $row->grp_pes_id;
+  $Grupo["grp_ativo"]       = $row->grp_ativo;
+  if(!$apenasCamposTabela){
+    $Grupo["ativo"]         = $row->ativo;
+    $Grupo["gru_usu_id"]    = $row->gru_usu_id;
+    $Grupo["gru_descricao"] = $row->gru_descricao;
+    $Grupo["pes_nome"]      = $row->pes_nome;
+    $Grupo["pes_email"]     = $row->pes_email;
+    $Grupo["pet_descricao"] = $row->pet_descricao;
+    $Grupo["pet_cliente"]   = $row->pet_cliente;
+  }
+
+  $arrRetorno["msg"]         = "Participante do grupo encontrado com sucesso!";
+  $arrRetorno["GrupoPessoa"] = $Grupo;
+  return $arrRetorno;
+}
+
+function pegaGrupoPessoaPesGru($pes_id, $gru_id, $apenasCamposTabela=false)
+{
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select("grp_id");
+  $CI->db->from('tb_grupo_pessoa');
+  $CI->db->where('grp_pes_id =', $pes_id);
+  $CI->db->where('grp_gru_id =', $gru_id);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  $id    = $row->grp_id ?? "";
+
+  return pegaGrupoPessoa($id, $apenasCamposTabela);
+}
+
 function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao=false)
 {
   $CI = pega_instancia();
@@ -11,6 +91,11 @@ function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao
   $UsuarioLog = $CI->session->usuario_info ?? array();
   // ==========================
 
+  // exibe editar ou detalhar
+  if($detalhes && $edicao){
+    $detalhes = false;
+  }
+
   require_once(FCPATH."/assets/Lista_CI/Lista_CI.php");
   $Lista_CI = new Lista_CII($CI->db);
   $Lista_CI->setId("ListaGrupoPessoa");
@@ -19,8 +104,12 @@ function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao
   $Lista_CI->addField("pet_descricao AS \"Tipo\"", "L");
   $Lista_CI->addField("ativo AS \"Ativo\"");
   if($detalhes){
+    $url = base_url() . "Grupo/infoPessoa/{gru_id}/{pes_id}/0";
+    $Lista_CI->addField("REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) AS \"Info\" ", "C", "3%");
   }
   if($edicao){
+    $url = base_url() . "Grupo/infoPessoa/{gru_id}/{pes_id}/1";
+    $Lista_CI->addField("REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) AS \"Info\" ", "C", "3%");
   }
   if($exclusao){
   }
@@ -65,38 +154,17 @@ function validaInsereGrupoPessoa($GrupoPessoa)
 
   // valida grupo válido
   require_once(APPPATH."/models/TbGrupo.php");
-  $retG = pegaGrupo($vGruId, true);
-
-  if($retG["erro"]){
-    $strValida .= "<br />&nbsp;&nbsp;* " . $retG["msg"];
-  } else {
-    $Grupo = $retG["Grupo"];
-    if($Grupo["gru_ativo"] == 0){
-      $strValida .= "<br />&nbsp;&nbsp;* Este grupo não está ativo.";
-    }
-    if($Grupo["gru_dt_termino"] < date("Y-m-d")){
-      $strValida .= "<br />&nbsp;&nbsp;* Este grupo já está terminado.";
-    }
-    if($Grupo["gru_usu_id"] != $idUsuLogado){
-      $strValida .= "<br />&nbsp;&nbsp;* Este grupo não faz parte do seu cadastro.";
-    }
+  $retGrp = validaGrupo($vGruId, $idUsuLogado);
+  if($retGrp["erro"]){
+    $strValida .= "<br />&nbsp;&nbsp;* " . $retGrp["msg"];
   }
   // ===================
 
   // valida pessoa válida
   require_once(APPPATH."/models/TbPessoa.php");
-  $retP = pegaPessoa($vPesId, true);
-
-  if($retP["erro"]){
-    $strValida .= "<br />&nbsp;&nbsp;* " . $retG["msg"];
-  } else {
-    $Pessoa = $retP["Pessoa"];
-    if($Pessoa["pes_ativo"] == 0){
-      $strValida .= "<br />&nbsp;&nbsp;* Esta pessoa não está ativa.";
-    }
-    if($Pessoa["pes_usu_id"] != $idUsuLogado){
-      $strValida .= "<br />&nbsp;&nbsp;* Esta pessoa não faz parte do seu cadastro.";
-    }
+  $retPes = validaPessoa($vPesId, $idUsuLogado);
+  if($retPes["erro"]){
+    $strValida .= "<br />&nbsp;&nbsp;* " . $retPes["msg"];
   }
   // ====================
 
