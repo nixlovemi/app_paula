@@ -258,9 +258,12 @@ class Lista_CII
 
   private function formatColumn($format, $column)
   {
-    # date
     if($format == "D" && $column != ""){
+      # date
       return date("d/m/Y", strtotime($column));
+    } else if ($format == "NB3" && $column != ""){
+      # number 3 decimals
+      return number_format($column, 3, ",", ".");
     } else {
       return $column;
     }

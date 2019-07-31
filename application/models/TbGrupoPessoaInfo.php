@@ -1,12 +1,43 @@
 <?php
-function pegaGrupoPessoaInfo($id, $apenasCamposTabela=false)
+function pegaListaGrupoPessoaInfo($grpId, $detalhes=false, $edicao=false, $exclusao=false)
+{
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  // so exibe de quem cadastrou
+  $UsuarioLog = $CI->session->usuario_info ?? array();
+  // ==========================
+
+  require_once(FCPATH."/assets/Lista_CI/Lista_CI.php");
+  $Lista_CI = new Lista_CII($CI->db);
+  $Lista_CI->setId("ListaGrupoPessoaInfo_$grpId");
+  $Lista_CI->addField("gpi_data AS \"Data\"", "L", "", "D");
+  $Lista_CI->addField("gpi_peso AS \"Peso (KG)\"", "L", "", "NB3");
+  if($detalhes){
+  }
+  if($edicao){
+  }
+  if($exclusao){
+  }
+  $Lista_CI->addFrom("v_tb_grupo_pessoa_info");
+  $Lista_CI->addWhere("gpi_inicial = 0");
+
+  if($UsuarioLog->admin == 0){
+    $Lista_CI->addWhere("gru_usu_id = " . $UsuarioLog->id);
+  }
+  $Lista_CI->changeOrderCol(1);
+
+  return $Lista_CI->getHtml();
+}
+
+function pegaGrupoPessoaInfo($grpId, $apenasCamposTabela=false)
 {
   $arrRetorno = [];
   $arrRetorno["erro"]            = false;
   $arrRetorno["msg"]             = "";
   $arrRetorno["GrupoPessoaInfo"] = [];
 
-  if(!is_numeric($id)){
+  if(!is_numeric($grpId)){
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = "ID inválido para buscar medidas do participante do grupo!";
 
@@ -27,10 +58,11 @@ function pegaGrupoPessoaInfo($id, $apenasCamposTabela=false)
 
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa_info');
-  $CI->db->where('gpi_id =', $id);
+  $CI->db->where('gpi_grp_id =', $grpId);
   if($UsuarioLog->admin == 0){
     $CI->db->where('gru_usu_id =', $UsuarioLog->id);
   }
+  $CI->db->order_by('gpi_data', 'ASC');
 
   $query = $CI->db->get();
   if(!$query){
@@ -160,8 +192,9 @@ function validaInsereGrupoPessoaInfo($GrupoPessoaInfo)
   $CI = pega_instancia();
   $CI->load->database();
 
-  $CI->db->select('grp_gru_id, grp_pes_id');
+  $CI->db->select('grp_gru_id, grp_pes_id, g.gru_dt_inicio, g.gru_dt_termino');
   $CI->db->from('tb_grupo_pessoa');
+  $CI->db->join('tb_grupo g', 'g.gru_id = grp_gru_id', 'left');
   $CI->db->where('grp_id =', $vGrpId);
   
   $query = $CI->db->get();
@@ -174,8 +207,10 @@ function validaInsereGrupoPessoaInfo($GrupoPessoaInfo)
     return $arrRetorno;
   }
 
-  $vGruId = $row->grp_gru_id ?? "";
-  $vPesId = $row->grp_pes_id ?? "";
+  $vGruId    = $row->grp_gru_id ?? "";
+  $vPesId    = $row->grp_pes_id ?? "";
+  $vGruDtIni = $row->gru_dt_inicio ?? NULL;
+  $vGruDtFim = $row->gru_dt_termino ?? NULL;
   // ===========================
 
   // valida grupo válido
@@ -208,6 +243,25 @@ function validaInsereGrupoPessoaInfo($GrupoPessoaInfo)
     }
   }
   // ===================
+
+  // lancamento no periodo do grupo
+  if(!($vData >= $vGruDtIni) && $vData <= $vGruDtFim){
+    $strValida .= "<br />&nbsp;&nbsp;* Data de lançamento fora do período do grupo!";
+  }
+  // ==============================
+
+  // lancamento na msm data
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_grupo_pessoa_info');
+  $CI->db->where('gpi_grp_id =', $vGrpId);
+  $CI->db->where('gpi_data =', $vData);
+
+  $query2 = $CI->db->get();
+  $row2   = $query2->row();
+  if (!isset($row2) || $row2->cnt > 0) {
+    $strValida .= "<br />&nbsp;&nbsp;* Já existe um lançamento para essa data.";
+  }
+  // ======================
 
   if($strValida != ""){
     $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";

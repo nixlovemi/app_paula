@@ -4,6 +4,7 @@ $gruId       = $gruId ?? "";
 $ehPrimeira  = $ehPrimeira ?? true;
 
 $strPrimeira = ($ehPrimeira) ? "Lançar Medidas Iniciais": "Lançar Medida Atual";
+$nrCol       = ($ehPrimeira) ? "3": "6";
 ?>
 
 <form id="frmGrupoPessoaInfoNovo">
@@ -15,30 +16,42 @@ $strPrimeira = ($ehPrimeira) ? "Lançar Medidas Iniciais": "Lançar Medida Atual
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-<?php echo $nrCol; ?>">
               <div class="form-group bmd-form-group has-success">
                 <label class="label-control bmd-label-static">Data</label>
                 <input name="data" type="text" class="form-control datepicker" value="<?php echo date("d/m/Y"); ?>" />
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="form-group bmd-form-group has-success">
-                <label class="label-control bmd-label-static">Altura (cm)</label>
-                <input maxlength="3" name="altura_cm" type="text" class="form-control txt_inteiro" />
+            <?php
+            if($ehPrimeira){
+              ?>
+              <div class="col-md-3">
+                <div class="form-group bmd-form-group has-success">
+                  <label class="label-control bmd-label-static">Altura (cm)</label>
+                  <input maxlength="3" name="altura_cm" type="text" class="form-control txt_inteiro" />
+                </div>
               </div>
-            </div>
-            <div class="col-md-3">
+              <?php
+            }
+            ?>
+            <div class="col-md-<?php echo $nrCol; ?>">
               <div class="form-group bmd-form-group has-success">
                 <label class="label-control bmd-label-static">Peso (kg)</label>
                 <input data-decimais="3" name="peso_kg" type="text" class="form-control txt_moeda" />
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="form-group bmd-form-group has-success">
-                <label class="label-control bmd-label-static">Peso (Objetivo)</label>
-                <input data-decimais="3" name="peso_kg_obj" type="text" class="form-control txt_moeda" />
+            <?php
+            if($ehPrimeira){
+              ?>
+              <div class="col-md-3">
+                <div class="form-group bmd-form-group has-success">
+                  <label class="label-control bmd-label-static">Peso (Objetivo)</label>
+                  <input data-decimais="3" name="peso_kg_obj" type="text" class="form-control txt_moeda" />
+                </div>
               </div>
-            </div>
+              <?php
+            }
+            ?>
           </div>
         </div>
       </div>

@@ -61,6 +61,8 @@ $URL_HOME         = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL . "Dashboard": $BA
   <link href="<?php echo $BASE_URL; ?>template/assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="<?php echo $BASE_URL; ?>template/assets/demo/demo.css" rel="stylesheet" />
+
+  <script src="<?php echo $BASE_URL; ?>template/assets/js/core/jquery.min.js"></script>
 </head>
 
 <body class="" data-base-url="<?php echo $BASE_URL; ?>">
@@ -802,7 +804,6 @@ $URL_HOME         = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL . "Dashboard": $BA
   */
   ?>
   <!--   Core JS Files   -->
-  <script src="<?php echo $BASE_URL; ?>template/assets/js/core/jquery.min.js"></script>
   <script src="<?php echo $BASE_URL; ?>template/assets/js/core/popper.min.js"></script>
   <script src="<?php echo $BASE_URL; ?>template/assets/js/core/bootstrap-material-design.min.js"></script>
   <script src="<?php echo $BASE_URL; ?>template/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>

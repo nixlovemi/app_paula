@@ -168,6 +168,11 @@ class Grupo extends MY_Controller
       $GrupoPessoaInfo    = $retI["GrupoPessoaInfo"] ?? array();
       $retGrp             = agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo);
       $GrupoPessoaInfoGrp = $retGrp["GrupoPessoaInfoGrp"] ?? array();
+      
+      // lista das pesagens
+      require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
+      $vGrpId   = $GrupoPessoaInfo[0]["gpi_grp_id"] ?? "";
+      $htmlPeso = pegaListaGrupoPessoaInfo($vGrpId);
 
       $this->template->load(TEMPLATE_STR, 'TbGrupo/infoPessoa', array(
         "titulo"             => gera_titulo_template("Grupo - Informação do Participante"),
@@ -175,6 +180,7 @@ class Grupo extends MY_Controller
         "GrupoPessoa"        => $ret["GrupoPessoa"],
         "Grupo"              => $retG["Grupo"] ?? array(),
         "GrupoPessoaInfoGrp" => $GrupoPessoaInfoGrp,
+        "htmlPeso"           => $htmlPeso
       ));
     }
   }
