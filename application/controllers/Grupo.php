@@ -158,6 +158,8 @@ class Grupo extends MY_Controller
       geraNotificacao("Aviso!", $ret["msg"], "warning");
       redirect(BASE_URL . 'Grupo/editar/' . $gru_id);
     } else {
+      $GrupoPessoa = $ret["GrupoPessoa"] ?? array();
+
       // info do grupo
       require_once(APPPATH."/models/TbGrupo.php");
       $retG = pegaGrupo($gru_id, false);
@@ -171,13 +173,13 @@ class Grupo extends MY_Controller
       
       // lista das pesagens
       require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
-      $vGrpId   = $GrupoPessoaInfo[0]["gpi_grp_id"] ?? "";
-      $htmlPeso = pegaListaGrupoPessoaInfo($vGrpId);
+      $vGrpId   = $GrupoPessoa["grp_id"] ?? "";
+      $htmlPeso = pegaListaGrupoPessoaInfo($vGrpId, false, $editar, $editar);
 
       $this->template->load(TEMPLATE_STR, 'TbGrupo/infoPessoa', array(
         "titulo"             => gera_titulo_template("Grupo - Informação do Participante"),
         "editar"             => $editar,
-        "GrupoPessoa"        => $ret["GrupoPessoa"],
+        "GrupoPessoa"        => $GrupoPessoa,
         "Grupo"              => $retG["Grupo"] ?? array(),
         "GrupoPessoaInfoGrp" => $GrupoPessoaInfoGrp,
         "htmlPeso"           => $htmlPeso

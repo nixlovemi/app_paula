@@ -256,4 +256,34 @@ function jsonSaveGrupoPessoaInfo(strVars)
 {
   mvc_post_ajax_var("GrupoPessoaInfo", "jsonPostAddGpi", strVars);
 }
+
+function jsonEditaGrupoPessoaInfo(id)
+{
+  mvc_post_ajax_var("GrupoPessoaInfo", "jsonPegaViewEditaGpi", "id=" + id);
+}
+
+function jsonShowEditarGrupoPessoaInfo(html)
+{
+  Swal.fire({
+    html: html,
+    showCloseButton: true,
+    focusConfirm: false,
+    confirmButtonColor: '#00bcd4',
+    confirmButtonText: 'Salvar',
+    width: '70%'
+  })
+  .then((result) => {
+    if (result.value) {
+      var formVars = $("form#frmGrupoPessoaInfoEditar").serialize();
+      jsonSaveEditarGrupoPessoaInfo(formVars);
+    }
+  });
+  
+  setTimeout("init_components()", 300);
+}
+
+function jsonSaveEditarGrupoPessoaInfo(strVars)
+{
+  mvc_post_ajax_var("GrupoPessoaInfo", "jsonPostEditarGpi", strVars);
+}
 /* ================= */

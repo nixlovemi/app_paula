@@ -25,7 +25,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
 
   $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_ativo";
   if(!$apenasCamposTabela){
-    $camposTabela .= ", ativo, gru_usu_id, gru_descricao, pes_nome, pes_email, pet_descricao, pet_cliente";
+    $camposTabela .= ", ativo, gru_usu_id, gru_descricao, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
   }
 
   $CI->db->select($camposTabela);
@@ -56,6 +56,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
     $Grupo["gru_descricao"] = $row->gru_descricao;
     $Grupo["pes_nome"]      = $row->pes_nome;
     $Grupo["pes_email"]     = $row->pes_email;
+    $Grupo["pes_foto"]      = $row->pes_foto;
     $Grupo["pet_descricao"] = $row->pet_descricao;
     $Grupo["pet_cliente"]   = $row->pet_cliente;
   }
@@ -105,11 +106,11 @@ function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao
   $Lista_CI->addField("ativo AS \"Ativo\"");
   if($detalhes){
     $url = base_url() . "Grupo/infoPessoa/{gru_id}/{pes_id}/0";
-    $Lista_CI->addField("REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) AS \"Info\" ", "C", "3%");
+    $Lista_CI->addField("CASE pet_cliente WHEN 0 THEN '' ELSE REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) END AS \"Info\" ", "C", "3%");
   }
   if($edicao){
     $url = base_url() . "Grupo/infoPessoa/{gru_id}/{pes_id}/1";
-    $Lista_CI->addField("REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) AS \"Info\" ", "C", "3%");
+    $Lista_CI->addField("CASE pet_cliente WHEN 0 THEN '' ELSE REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) END AS \"Info\" ", "C", "3%");
   }
   if($exclusao){
   }
