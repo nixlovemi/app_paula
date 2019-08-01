@@ -1,7 +1,7 @@
 <?php
 require_once(APPPATH."/helpers/utils_helper.php");
 
-function executaLogin($email, $senha, $adminLogin = false)
+function executaLogin($email, $senha, $adminLogin=false, $grupoLogin=false)
 {
   $arrRet            = [];
   $arrRet["erro"]    = true;
@@ -28,12 +28,21 @@ function executaLogin($email, $senha, $adminLogin = false)
   $CI = pega_instancia();
   $CI->load->database();
 
-  if ($adminLogin) {
+  if($grupoLogin){
+    #usuario de algum grupo
+    $CI->db->select('pes_id AS id, pes_nome AS usuario, pes_senha AS senha, pes_ativo AS ativo, 0 AS admin, pt.pet_cliente AS cliente, pes_foto AS foto, pes_usu_id AS usuario_cad');
+    $CI->db->from('tb_pessoa');
+    $CI->db->join('tb_pessoa_tipo pt', 'pt.pet_id = pes_pet_id', 'left');
+    $CI->db->where('pes_email =', $email);
+    $CI->db->where('pes_senha =', encripta_string($senha));
+  } else if ($adminLogin) {
+    #admin
     $CI->db->select('usa_id AS id, usa_usuario AS usuario, usa_senha AS senha, usa_ativo AS ativo, 1 AS admin');
     $CI->db->from('tb_usuario_admin');
     $CI->db->where('usa_usuario =', $email);
     $CI->db->where('usa_senha =', encripta_string($senha));
   } else {
+    #dono de algum grupo
     $CI->db->select('usu_id AS id, usu_email AS usuario, usu_senha AS senha, usu_nome AS nome, usu_ativo AS ativo, 0 AS admin');
     $CI->db->from('tb_usuario');
     $CI->db->where('usu_email =', $email);
@@ -55,7 +64,7 @@ function executaLogin($email, $senha, $adminLogin = false)
 
     return array_ret_para_retorno($arrRet);
   }
-  if(!$adminLogin){
+  if(!$adminLogin && !$grupoLogin){
     require_once(APPPATH."/models/TbUsuarioCfg.php");
     $retVal   = pegaCfgValidade($row->id);
     $validade = ($retVal["erro"]) ? "2000-01-01": $retVal["valor"];

@@ -1,14 +1,17 @@
 <?php
 require_once(APPPATH."/helpers/utils_helper.php");
 
-function getArrSession(){
+function getArrSession()
+{
   return $arrSession = array(
     "template_menu" => array(),
     "usuario_info"  => "",
+    "cliente_info"  => "",
   );
 }
 
-function salva_session($arrSession){
+function salva_session($arrSession)
+{
   $CI = pega_instancia();
 
   foreach($arrSession as $key => $value){
@@ -16,11 +19,16 @@ function salva_session($arrSession){
   }
 }
 
-function inicia_session($template_menu=array(), $usuario_info=""){
+function inicia_session($template_menu=array(), $usuario_info="", $cliente=false)
+{
   $arrSession = getArrSession();
 
   $arrSession["template_menu"] = $template_menu;
-  $arrSession["usuario_info"]  = $usuario_info;
+  if(!$cliente){
+    $arrSession["usuario_info"] = $usuario_info;
+  } else {
+    $arrSession["cliente_info"] = $usuario_info;
+  }
 
   // pra checar session
   $arrSession["credenciais"] = rand (51, 99);
@@ -28,7 +36,8 @@ function inicia_session($template_menu=array(), $usuario_info=""){
   salva_session($arrSession);
 }
 
-function fecha_session(){
+function fecha_session()
+{
   $arrSession = getArrSession();
   salva_session($arrSession);
   session_destroy();

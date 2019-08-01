@@ -37,9 +37,18 @@ $ARR_NOTIFICACAO  = $this->session->flashdata('geraNotificacao') ?? array();
 $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
 $USUARIO_LOGADO   = $this->session->usuario_info ?? array();
 
-$URL_LOGOUT       = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL: $BASE_URL . "Login/sistema";
-$IMG_SIDEBAR      = ($USUARIO_LOGADO->admin == 1) ? "sidebar-1.jpg": "sidebar-3.jpg";
-$URL_HOME         = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL . "Dashboard": $BASE_URL . "Sistema";
+// qdo tiver na tela do grupo
+// @todo melhorar essa lógica das variáveis
+if(empty($USUARIO_LOGADO)){
+  $USUARIO_LOGADO = $this->session->cliente_info ?? array();
+  $URL_HOME       = $BASE_URL . "SisGrupo";
+  $URL_LOGOUT     = $BASE_URL . "Login/grupo";
+  $IMG_SIDEBAR    = "sidebar-3.jpg";
+} else {
+  $URL_LOGOUT     = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL: $BASE_URL . "Login/sistema";
+  $IMG_SIDEBAR    = ($USUARIO_LOGADO->admin == 1) ? "sidebar-1.jpg": "sidebar-3.jpg";
+  $URL_HOME       = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL . "Dashboard": $BASE_URL . "Sistema";
+}
 ?>
 
 <!DOCTYPE html>

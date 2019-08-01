@@ -1,7 +1,7 @@
 <?php
 require_once(APPPATH."/helpers/utils_helper.php");
 
-function geraArrMenuUsuario($id, $admin=false)
+function geraArrMenuUsuario($id, $admin=false, $grupo=false)
 {
   //@todo deixei o ID sem usar pra se for fazer permissoes por user
   $CI = pega_instancia();
@@ -12,7 +12,11 @@ function geraArrMenuUsuario($id, $admin=false)
   $CI->db->select('men_id, men_descricao, men_icone, men_controller, men_action');
   $CI->db->from('tb_menu');
   $CI->db->where('men_ativo =', 1);
-  $CI->db->where('men_admin =', ($admin) ? 1: 0);
+  if($grupo){
+    $CI->db->where('men_grupo =', 1);
+  } else {
+    $CI->db->where('men_admin =', ($admin) ? 1: 0);
+  }
   $CI->db->order_by('men_descricao', 'ASC');
 
   $query = $CI->db->get();

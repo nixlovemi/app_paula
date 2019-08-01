@@ -22,6 +22,14 @@
   height: auto;
   display: inherit;
 }
+.bg-login-grupo{
+  background-image: url('../../assets/img/bg-grupo-login.jpg');
+  background-size: cover;
+  background-position: top center;
+  min-height: 100vh;
+  height: auto;
+  display: inherit;
+}
 .card-signup{
   margin-top: 40%;
 }
