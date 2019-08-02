@@ -146,7 +146,7 @@ function mvc_post_ajax_var(controller, action, vars)
     success: function (data) {
       if(typeof data.callback !== 'undefined'){
         if(data.callback !== ""){
-          setTimeout(data.callback, 100);
+          setTimeout(data.callback, 350);
         }
       }
       
@@ -157,8 +157,17 @@ function mvc_post_ajax_var(controller, action, vars)
       }
       
       if(typeof data.html !== 'undefined' && typeof data.html_selector !== 'undefined'){
+        var append = false;
+        if(data.html_append !== 'undefined'){
+          append = data.html_append;
+        }
+        
         if(data.html !== "" && data.html_selector !== ""){
-          $(data.html_selector).html(data.html);
+          if(append){
+            $(data.html_selector).append(data.html);
+          } else {
+            $(data.html_selector).html(data.html);
+          }
         }
       }
     }
@@ -287,3 +296,26 @@ function jsonSaveEditarGrupoPessoaInfo(strVars)
   mvc_post_ajax_var("GrupoPessoaInfo", "jsonPostEditarGpi", strVars);
 }
 /* ================= */
+
+/* Sis Grupo */
+$('form#frmNovaPostagem').on('change','.anexo' , function()
+{
+  var filename = $(this).val().replace(/C:\\fakepath\\/i, '');
+  if(filename.length > 28){
+    filename = filename.substr(0, 24) + '..';
+  }
+  
+  $(this).parent().find('span.lbl_anexo').html(filename);
+});
+
+function deletaAnexo(element)
+{
+  element.closest(".row").remove();
+}
+
+function fncAnexarArqPostagem()
+{
+  var idAnexo = $('#lista-anexos .anexo').length + 1;
+  mvc_post_ajax_var('SisGrupo', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo);
+}
+/* ========= */

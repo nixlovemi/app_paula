@@ -100,6 +100,8 @@ class Login extends CI_Controller
 
   public function grupoLogin()
   {
+    // @todo fazer tela quando pessoa for cadastrada por dois usuários diferentes
+    // provavelmente fazer uma tela antes pra ela escolher em qual grupo/usuário vai logar
     require_once(APPPATH."/models/Session.php");
     require_once(APPPATH."/models/Login.php");
     $variaveisPost = processaPost();
@@ -117,9 +119,23 @@ class Login extends CI_Controller
 
       require_once(APPPATH."/models/TbMenu.php");
       $arrMenu = geraArrMenuUsuario($Usuario->id, false, true);
-      inicia_session($arrMenu, $Usuario, true);
+      inicia_session($arrMenu, $Usuario, true, -1); #coloco -1 pra iniciar, depois altero pro certo
 
-      redirect(BASE_URL . 'SisGrupo');
+      // pega grupos dessa pessoa
+      require_once(APPPATH."/models/TbGrupoPessoa.php");
+      $retGrp = pegaGruposPessoaId($Usuario->id);
+      if($retGrp["erro"]){
+        $this->session->set_flashdata('LoginMessage', $retGrp["msg"]);
+        $this->session->set_flashdata('login_usuario', $vUsuario);
+
+        redirect(BASE_URL . 'Login/grupo');
+      } else {
+        $GruposPessoa          = $retGrp["GruposPessoa"] ?? array();
+        $vGrpId                = $GruposPessoa[0]["grp_id"] ?? NULL; #@todo aqui peguei o primeiro que veio / o certo é mostrar tds e a pessoa escolher
+        $this->session->grp_id = $vGrpId;
+
+        redirect(BASE_URL . 'SisGrupo');
+      }
     }
   }
 }

@@ -21,6 +21,7 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
 
   // so exibe de quem cadastrou
   $UsuarioLog = $CI->session->usuario_info ?? array();
+  $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
   $camposTabela = "pes_id, pes_usu_id, pes_pet_id, pes_nome, pes_email, pes_senha, pes_foto, pes_ativo";
@@ -33,7 +34,7 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
   $CI->db->join('tb_usuario', 'usu_id = pes_usu_id', 'left');
   $CI->db->join('tb_pessoa_tipo', 'pet_id = pes_pet_id', 'left');
   $CI->db->where('pes_id =', $pesId);
-  if($UsuarioLog->admin == 0){
+  if($UsuarioLog->admin == 0 && $vGrpId == NULL){
     $CI->db->where('pes_usu_id =', $UsuarioLog->id);
   }
 
@@ -61,7 +62,7 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
     $Pessoa["pet_descricao"] = $row->pet_descricao;
   }
 
-  $arrRetorno["msg"]    = "Pessoa encontrado com sucesso!";
+  $arrRetorno["msg"]    = "Pessoa encontrada com sucesso!";
   $arrRetorno["Pessoa"] = $Pessoa;
   return $arrRetorno;
 }

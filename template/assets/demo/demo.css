@@ -69,6 +69,12 @@ ul.pagination .item-success {
 .form-check .form-check-input:checked + .form-check-sign .check {
   background: #4caf50 !important;
 }
+.togglebutton label input[type=checkbox]:checked+.toggle {
+  background-color: #4caf50 !important;
+}
+.togglebutton label input[type="checkbox"]:checked + .toggle::after {
+  border-color: #4caf50;
+}
 
 @media (max-width: 720px) 
 {

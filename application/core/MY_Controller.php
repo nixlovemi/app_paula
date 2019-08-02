@@ -3,8 +3,7 @@ class MY_Controller extends CI_Controller
 {
   private $_min_credentials = 100;
   private $_credenciais     = 101;
-  private $_usuario_info    = false; #tb_usuario
-  private $_cliente_info    = false; #tb_pessoa
+  private $_usuario_info    = false; #tb_usuario OU tb_pessoa
 
   function __construct($admin=true, $grupo=false)
   {
@@ -12,7 +11,6 @@ class MY_Controller extends CI_Controller
 
     $this->_credenciais  = $this->session->userdata('credenciais') ?? 9999;
     $this->_usuario_info = $this->session->userdata('usuario_info') ?? false;
-    $this->_cliente_info = $this->session->userdata('cliente_info') ?? false;
 
     if($admin){
       #tb_usuario_admin
@@ -41,7 +39,8 @@ class MY_Controller extends CI_Controller
   private function initSistema()
   {
     $credenciaisOk = (!isset($this->_credenciais) or $this->_credenciais < $this->_min_credentials);
-    $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && $this->_usuario_info->admin == 0);
+    $ehCliente     = (isset($this->_usuario_info->cliente)) && $this->_usuario_info->cliente == 1;
+    $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && $this->_usuario_info->admin == 0 && !$ehCliente);
 
     if($credenciaisOk === false || $idUsuarioOk === false){
       $this->session->set_flashdata('LoginMessage', 'Sua sessão expirou. Faça o login novamente.');
@@ -53,9 +52,11 @@ class MY_Controller extends CI_Controller
   private function initGrupo()
   {
     $credenciaisOk = (!isset($this->_credenciais) or $this->_credenciais < $this->_min_credentials);
-    $idUsuarioOk   = ($this->_cliente_info === false) ? false: ($this->_cliente_info->id > 0);
+    $ehCliente     = (isset($this->_usuario_info->cliente)) && $this->_usuario_info->cliente == 1;
+    $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && $ehCliente);
+    $vGrpId        = $this->session->grp_id ?? NULL;
 
-    if($credenciaisOk === false || $idUsuarioOk === false){
+    if($credenciaisOk === false || $idUsuarioOk === false || !$vGrpId > 0){
       $this->session->set_flashdata('LoginMessage', 'Sua sessão expirou. Faça o login novamente.');
       redirect(BASE_URL . 'Login/grupo');
       return;

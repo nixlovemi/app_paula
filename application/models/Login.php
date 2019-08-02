@@ -37,13 +37,13 @@ function executaLogin($email, $senha, $adminLogin=false, $grupoLogin=false)
     $CI->db->where('pes_senha =', encripta_string($senha));
   } else if ($adminLogin) {
     #admin
-    $CI->db->select('usa_id AS id, usa_usuario AS usuario, usa_senha AS senha, usa_ativo AS ativo, 1 AS admin');
+    $CI->db->select('usa_id AS id, usa_usuario AS usuario, usa_senha AS senha, usa_ativo AS ativo, 1 AS admin, 0 AS cliente');
     $CI->db->from('tb_usuario_admin');
     $CI->db->where('usa_usuario =', $email);
     $CI->db->where('usa_senha =', encripta_string($senha));
   } else {
     #dono de algum grupo
-    $CI->db->select('usu_id AS id, usu_email AS usuario, usu_senha AS senha, usu_nome AS nome, usu_ativo AS ativo, 0 AS admin');
+    $CI->db->select('usu_id AS id, usu_email AS usuario, usu_senha AS senha, usu_nome AS nome, usu_ativo AS ativo, 0 AS admin, 0 AS cliente');
     $CI->db->from('tb_usuario');
     $CI->db->where('usu_email =', $email);
     $CI->db->where('usu_senha =', encripta_string($senha));

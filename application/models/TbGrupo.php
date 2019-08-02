@@ -64,6 +64,7 @@ function pegaGrupo($gruId, $apenasCamposTabela=false)
 
   // so exibe de quem cadastrou
   $UsuarioLog = $CI->session->usuario_info ?? array();
+  $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
   $camposTabela = "gru_id, gru_usu_id, gru_descricao, gru_dt_inicio, gru_dt_termino, gru_ativo";
@@ -75,7 +76,7 @@ function pegaGrupo($gruId, $apenasCamposTabela=false)
   $CI->db->from('tb_grupo');
   $CI->db->join('tb_usuario', 'usu_id = gru_usu_id', 'left');
   $CI->db->where('gru_id =', $gruId);
-  if($UsuarioLog->admin == 0){
+  if($UsuarioLog->admin == 0 && $vGrpId == NULL){
     $CI->db->where('gru_usu_id =', $UsuarioLog->id);
   }
 
@@ -153,12 +154,12 @@ function validaInsereGrupo($Grupo)
   }
 
   $vDtIni = $Grupo["gru_dt_inicio"] ?? "";
-  if(!valida_data($vDtIni)){
+  if(!isValidDate($vDtIni, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma data de início válida.";
   }
 
   $vDtFim = $Grupo["gru_dt_termino"] ?? "";
-  if(!valida_data($vDtFim)){
+  if(!isValidDate($vDtFim, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma data de término válida.";
   }
 
@@ -268,12 +269,12 @@ function validaEditaGrupo($Grupo)
   }
 
   $vDtIni = $Grupo["gru_dt_inicio"] ?? "";
-  if(!valida_data($vDtIni)){
+  if(!isValidDate($vDtIni, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma data de início válida.";
   }
 
   $vDtFim = $Grupo["gru_dt_termino"] ?? "";
-  if(!valida_data($vDtFim)){
+  if(!isValidDate($vDtFim, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma data de término válida.";
   }
 

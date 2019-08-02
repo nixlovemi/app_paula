@@ -127,21 +127,9 @@ function acerta_data_hora($dt)
   return $data;
 }
 
-function valida_data($str)
+function isValidDate($date, $format = 'Y-m-d H:i:s')
 {
-  if (strpos($str, "/") !== false) {
-    $str = Util::acerta_data($str);
-  }
-
-
-  $stamp = strtotime($str);
-  if (!$stamp != "") {
-    $str   = substr($str, 1, 2)."/".substr($str, 4, 2)."/".substr($str, 7, 4);
-    $stamp = strtotime($str);
-  }
-  if (!$stamp != "") {
-    return false;
-  } else {
-    return true;
-  }
+  $d = DateTime::createFromFormat($format, $date);
+  return $d && $d->format($format) == $date;
 }
+

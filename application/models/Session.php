@@ -6,7 +6,7 @@ function getArrSession()
   return $arrSession = array(
     "template_menu" => array(),
     "usuario_info"  => "",
-    "cliente_info"  => "",
+    "grp_id"        => "",
   );
 }
 
@@ -19,15 +19,14 @@ function salva_session($arrSession)
   }
 }
 
-function inicia_session($template_menu=array(), $usuario_info="", $cliente=false)
+function inicia_session($template_menu=array(), $usuario_info="", $cliente=false, $grpId="")
 {
   $arrSession = getArrSession();
 
   $arrSession["template_menu"] = $template_menu;
-  if(!$cliente){
-    $arrSession["usuario_info"] = $usuario_info;
-  } else {
-    $arrSession["cliente_info"] = $usuario_info;
+  $arrSession["usuario_info"]  = $usuario_info;
+  if($cliente){
+    $arrSession["grp_id"] = $grpId;
   }
 
   // pra checar session

@@ -21,6 +21,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
 
   // so exibe de quem cadastrou
   $UsuarioLog = $CI->session->usuario_info ?? array();
+  $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
   $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_ativo";
@@ -31,7 +32,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa');
   $CI->db->where('grp_id =', $id);
-  if($UsuarioLog->admin == 0){
+  if($UsuarioLog->admin == 0 && $vGrpId == NULL){
     $CI->db->where('gru_usu_id =', $UsuarioLog->id);
   }
 
@@ -81,6 +82,56 @@ function pegaGrupoPessoaPesGru($pes_id, $gru_id, $apenasCamposTabela=false)
   $id    = $row->grp_id ?? "";
 
   return pegaGrupoPessoa($id, $apenasCamposTabela);
+}
+
+function pegaGruposPessoaId($pes_id)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]         = false;
+  $arrRetorno["msg"]          = "";
+  $arrRetorno["GruposPessoa"] = [];
+
+  require_once(APPPATH."/models/TbPessoa.php");
+  $retP = pegaPessoa($pes_id);
+  if($retP["erro"]){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $retP["msg"];
+  } else {
+    $Pessoa = $retP["Pessoa"] ?? array();
+    $vPesId = $Pessoa["pes_id"] ?? "";
+
+    $CI = pega_instancia();
+    $CI->load->database();
+
+    $CI->db->select('grp_id');
+    $CI->db->from('v_tb_grupo_pessoa');
+    $CI->db->join('tb_grupo g', 'g.gru_id = grp_gru_id', 'left');
+    $CI->db->where('grp_pes_id =', $vPesId);
+    $CI->db->where('g.gru_ativo =', 1);
+    $CI->db->order_by('g.gru_dt_inicio', 'DESC');
+    $query = $CI->db->get();
+
+    if(!$query){
+      $arrRetorno["erro"] = true;
+      $arrRetorno["msg"]  = "Erro ao encontrar os grupos desse participante!";
+
+      return $arrRetorno;
+    }
+
+    foreach ($query->result() as $row) {
+      if (isset($row)) {
+        $vGrpId = $row->grp_id ?? "";
+
+        $retGP = pegaGrupoPessoa($vGrpId, false);
+        if(!$retGP["erro"]){
+          $GrupoPessoa = $retGP["GrupoPessoa"] ?? array();
+          $arrRetorno["GruposPessoa"][] = $GrupoPessoa;
+        }
+      }
+    }
+  }
+
+  return $arrRetorno;
 }
 
 function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao=false)

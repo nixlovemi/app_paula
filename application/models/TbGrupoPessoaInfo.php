@@ -235,7 +235,7 @@ function validaInsereGrupoPessoaInfo($GrupoPessoaInfo)
   }
 
   $vData = $GrupoPessoaInfo["gpi_data"] ?? "";
-  if(!valida_data($vData)){
+  if(!isValidDate($vData, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma data válida.";
   }
 
@@ -438,7 +438,7 @@ function validaEditaGrupoPessoaInfo($GrupoPessoaInfo)
   }
 
   $vData = $GrupoPessoaInfo["gpi_data"] ?? "";
-  if(!valida_data($vData)){
+  if(!isValidDate($vData, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma data válida.";
   }
 
