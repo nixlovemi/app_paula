@@ -61,9 +61,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
               <div class="col-md-12">
                 <div class="form-group bmd-form-group has-success" style="">
                   <label class="bmd-label-floating">Escreva algo para o grupo</label>
-                  <textarea class="form-control" rows="2" name="descricao">
-                    <?= $descricao; ?>
-                  </textarea>
+                  <textarea class="form-control" rows="2" name="descricao"><?= trim($descricao); ?></textarea>
                 </div>
               </div>
             </div>
@@ -100,13 +98,100 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
       </div>
     </div>
 
+    <h4>Postagens - <?= $vGruDescricao ?></h4>
+
+    <div class="row">
+      <div class="col-md-12">
+        <?php
+        foreach($arrPostagens as $postagem){
+          $titulo   = $postagem["grt_titulo"] ?? "";
+          $pessoa   = $postagem["pes_nome"] ?? "";
+          $data     = $postagem["grt_data"] ?? "";
+          $texto    = $postagem["grt_texto"] ?? "";
+          $foto     = $postagem["pes_foto"] ?? FOTO_DEFAULT;
+
+          $strData  = ($data != "") ? date("d/m H:m", strtotime($data)): "";
+          $strDataF = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
+          $strTexto = nl2br($texto);
+          ?>
+          <div class="row item-postagem">
+            <div class="col-md-12">
+              <div class="postagem-inner postagem-inner-top">
+                <div style="margin-right:10px;" class="profile-photo-small pull-left">
+                  <img src="<?= base_url() . $foto ?>" alt="Circle Image" class="rounded-circle img-fluid" />
+                </div>
+                <span class="titulo">
+                  <?=$titulo?>
+                </span>
+                <br />
+                <span title="<?=$strDataF?>" class="autor"><?=$pessoa?> | <?=$strData?></span>
+
+                <ul class="navbar-nav pull-right">
+                  <li class="dropdown nav-item">
+                    <a href="javascript:;" class="dropdown-toggle nav-link text-success" data-toggle="dropdown" aria-expanded="false">
+                      <i class="material-icons">more_horiz</i>
+                    </a>
+                    <div class="dropdown-menu">
+                      <h6 class="dropdown-header">Ações</h6>
+                      <a href="javascript:;" class="dropdown-item">Excluir</a>
+                      <a href="javascript:;" class="dropdown-item">Salvar Favorito</a>
+                      <?php
+                      /*
+                      <a href="javascript:;" class="dropdown-item">Something else here</a>
+                      <div class="dropdown-divider"></div>
+                      <a href="javascript:;" class="dropdown-item">Separated link</a>
+                      <div class="dropdown-divider"></div>
+                      <a href="javascript:;" class="dropdown-item">One more separated link</a>
+                      */
+                      ?>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="postagem-inner postagem-inner-bot">
+                <?=$strTexto?>
+              </div>
+            </div>
+          </div>
+          <?php
+        }
+        ?>
+      </div>
+    </div>
+
+    <?php
+    /*
     <div class="card" style="margin-top: 50px;">
       <div class="card-header card-header-success">
         <h4 class="card-title">Timeline do Grupo - <?= $vGruDescricao ?></h4>
       </div>
       <div class="card-body" style="padding-bottom:5px;">
+        <?php
+        foreach($arrPostagens as $postagem){
+          ?>
+          <div class="row item-postagem">
+            <div class="col-md-12">
+              <div style="margin-right:10px;" class="profile-photo-small pull-left">
+                <img src="https://demos.creative-tim.com/material-kit/assets/img/faces/avatar.jpg" alt="Circle Image" class="rounded-circle img-fluid" />
+              </div>
+              <span class="titulo">título</span>
+              <br />
+              <span class="autor">Leandro Parra 2 | 02/08/19 14:59</span>
+              <div class="ripple-container"></div>
+            </div>
+            <div class="col-md-12">
+              asd asd asd asd asd
+            </div>
+          </div>
+          <?php
+        }
+        ?>
       </div>
     </div>
+    */
+    ?>
   </div>
   <div class="col-md-3">
 

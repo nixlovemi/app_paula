@@ -75,6 +75,54 @@ ul.pagination .item-success {
 .togglebutton label input[type="checkbox"]:checked + .toggle::after {
   border-color: #4caf50;
 }
+.profile-photo-small {
+  height: 40px;
+  width: 40px;
+}
+.item-postagem{
+  margin-bottom: 30px;
+}
+.item-postagem:last-child{
+  margin-bottom: 0;
+}
+.item-postagem .postagem-inner{
+  padding: 10px 20px;
+  background-color: #FFF;
+  border-left: solid 1px #e0e0e0;
+  border-right: solid 1px #e0e0e0;
+  box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.14); /* right */
+  box-shadow: -5px 0 5px -5px rgba(0, 0, 0, 0.14); /* left */
+}
+.item-postagem .postagem-inner-top{
+  box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.14);
+  border-top: solid 1px #e0e0e0;
+}
+.item-postagem .postagem-inner-bot{
+  border-bottom: solid 1px #e0e0e0;
+  box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.14);
+}
+.item-postagem .titulo{
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+.item-postagem .autor{
+  position: relative;
+  top: -3px;
+  font-size: 12px;
+  color: #808080;
+}
+.item-postagem .dropdown-toggle::after {
+  display: none;
+}
+.item-postagem .navbar-nav{
+  margin-top: -35px;
+  margin-right: -8px;
+}
+.item-postagem .dropdown-item:hover,
+.item-postagem .dropdown-item:focus {
+  background-color: #4caf50;
+}
 
 @media (max-width: 720px) 
 {

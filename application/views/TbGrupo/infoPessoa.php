@@ -11,7 +11,7 @@ $editar             = $editar ?? false;
 
 $pesId       = $GrupoPessoa["grp_pes_id"] ?? "";
 $pesNome     = $GrupoPessoa["pes_nome"] ?? "";
-$pesFoto     = ($GrupoPessoa["pes_foto"] != "") ? $GrupoPessoa["pes_foto"]: "template/assets/img/faces/avatar.png";
+$pesFoto     = ($GrupoPessoa["pes_foto"] != "") ? $GrupoPessoa["pes_foto"]: FOTO_DEFAULT;
 $pesEmail    = $GrupoPessoa["pes_email"] ?? "";
 $petDesc     = $GrupoPessoa["pet_descricao"] ?? "";
 $gruId       = $GrupoPessoa["grp_gru_id"] ?? "";
