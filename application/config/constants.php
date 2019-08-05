@@ -94,3 +94,4 @@ defined('TEMPLATE_STR') OR define('TEMPLATE_STR', 'template/template');
 defined('BASE_URL')     OR define('BASE_URL', 'http://127.0.0.1/app_paula/');
 defined('SALT_KEY')     OR define('SALT_KEY', '201907161102');
 defined('FOTO_DEFAULT') OR define('FOTO_DEFAULT', 'template/assets/img/faces/avatar.png');
+defined('PASTA_UPLOAD') OR define('PASTA_UPLOAD', FCPATH . 'files/');

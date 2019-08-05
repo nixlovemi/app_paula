@@ -1,6 +1,7 @@
 <?php
 $GrupoTimeline = $GrupoTimeline ?? array();
 $arrPostagens  = $arrPostagens ?? array();
+$arrArquivos   = $arrArquivos ?? array();
 $vGruDescricao = $vGruDescricao ?? "";
 
 $titulo        = $GrupoTimeline["grt_titulo"] ?? "";
@@ -104,6 +105,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
       <div class="col-md-12">
         <?php
         foreach($arrPostagens as $postagem){
+          $id       = $postagem["grt_id"] ?? "";
           $titulo   = $postagem["grt_titulo"] ?? "";
           $pessoa   = $postagem["pes_nome"] ?? "";
           $data     = $postagem["grt_data"] ?? "";
@@ -154,6 +156,25 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                 <?=$strTexto?>
               </div>
             </div>
+            <?php
+            $arquivosPost = $arrArquivos[$id] ?? array();
+            if(count($arquivosPost) > 0){
+              ?>
+              <div class="col-md-12">
+                <div class="postagem-inner postagem-inner-bot">
+                  <?php
+                  #@todo melhorar a aparencia dos links
+                  $i = 1;
+                  foreach($arquivosPost as $arquivo){
+                    echo "<a class='btn btn-link btn-primary btn-sm' href='".base_url() . $arquivo["gta_caminho"] ."' target='_blank'>Anexo #$i: abrir</a><br />";
+                    $i++;
+                  }
+                  ?>
+                </div>
+              </div>
+              <?php
+            }
+            ?>
           </div>
           <?php
         }

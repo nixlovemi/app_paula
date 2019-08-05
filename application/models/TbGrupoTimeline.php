@@ -179,7 +179,7 @@ function pegaPostagensGrupo($gruId, $limit=50, $offset=0)
 
   if(!$query){
     $arrRetorno["erro"] = true;
-    $arrRetorno["msg"]  = "Erro ao encontrar carregar postagens desse grupo!";
+    $arrRetorno["msg"]  = "Erro ao carregar postagens desse grupo!";
 
     return $arrRetorno;
   }

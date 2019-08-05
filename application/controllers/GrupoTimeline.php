@@ -49,6 +49,16 @@ class GrupoTimeline extends MY_Controller
       geraNotificacao("Aviso!", $retInserir["msg"], "warning");
       redirect(BASE_URL . 'SisGrupo');
     } else {
+      $grtId = $retInserir["grtId"] ?? "";
+
+      // verifica anexos
+      if(count($_FILES) > 0){
+        require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
+        $arrFiles = preConfereArquivos($_FILES);
+        $retGTA   = insereArquivos($grtId, $arrFiles["arquivos"] ?? array());
+        // @todo talvez tratar o retorno
+      }
+      
       $this->session->set_flashdata('GrupoTimeline', array());
       geraNotificacao("Sucesso!", $retInserir["msg"], "success");
       redirect(BASE_URL . 'SisGrupo');
