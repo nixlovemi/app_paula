@@ -134,14 +134,14 @@ function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("pes_email AS \"Email\"", "L");
   $Lista_CI->addField("pet_descricao AS \"Tipo\"", "L");
   $Lista_CI->addField("ativo AS \"Ativo\"");
-  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonAlteraSenha(''Pessoa'', ''jsonPessoaAlteraSenha'', {pes_id})\"><i class=\"material-icons text-success\">vpn_key</i></a>', '{pes_id}', pes_id) AS \"Alterar Senha\" ", "C", "8%");
+  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonAlteraSenha(''Pessoa'', ''jsonPessoaAlteraSenha'', {pes_id})\"><i class=\"material-icons text-info\">vpn_key</i></a>', '{pes_id}', pes_id) AS \"Alterar Senha\" ", "C", "8%");
   if($detalhes){
     $url = base_url() . "Pessoa/visualizar/{pes_id}";
-    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">visibility</i></a>', '{pes_id}', pes_id) AS \"Visualizar\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">visibility</i></a>', '{pes_id}', pes_id) AS \"Visualizar\" ", "C", "3%");
   }
   if($edicao){
     $url = base_url() . "Pessoa/editar/{pes_id}";
-    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">create</i></a>', '{pes_id}', pes_id) AS \"Editar\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">create</i></a>', '{pes_id}', pes_id) AS \"Editar\" ", "C", "3%");
   }
   if($exclusao){
   }

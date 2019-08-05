@@ -46,12 +46,12 @@ ul.pagination .item {
   box-shadow: none;
   opacity: 0.6;
 }
-ul.pagination .item-success.active, ul.pagination .item-success:hover{
+ul.pagination .item-info.active, ul.pagination .item-info:hover{
   opacity: 1;
 }
-ul.pagination .item-success {
-  background-color: #4caf50;
-  border-color: #4caf50;
+ul.pagination .item-info {
+  background-color: #00bcd4;
+  border-color: #00bcd4;
 }
 .alert.alert-gray {
   background-color: #dbdbdb;
@@ -63,17 +63,17 @@ ul.pagination .item-success {
   border-top: 4px solid #DDD;
   margin: 20px 0;
 }
-.dropdown-item-success:hover{
-  background-color: #4caf50 !important;
+.dropdown-item-info:hover{
+  background-color: #00bcd4 !important;
 }
 .form-check .form-check-input:checked + .form-check-sign .check {
-  background: #4caf50 !important;
+  background: #00bcd4 !important;
 }
 .togglebutton label input[type=checkbox]:checked+.toggle {
-  background-color: #4caf50 !important;
+  background-color: #00bcd4 !important;
 }
 .togglebutton label input[type="checkbox"]:checked + .toggle::after {
-  border-color: #4caf50;
+  border-color: #00bcd4;
 }
 .profile-photo-small {
   height: 40px;
@@ -121,7 +121,7 @@ ul.pagination .item-success {
 }
 .item-postagem .dropdown-item:hover,
 .item-postagem .dropdown-item:focus {
-  background-color: #4caf50;
+  background-color: #00bcd4;
 }
 
 @media (max-width: 720px) 

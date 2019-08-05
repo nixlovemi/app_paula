@@ -21,11 +21,11 @@ function pegaListaGrupo($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("ativo AS \"Ativo\"");
   if($detalhes){
     $url = base_url() . "Grupo/visualizar/{gru_id}";
-    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">visibility</i></a>', '{gru_id}', gru_id) AS \"Visualizar\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">visibility</i></a>', '{gru_id}', gru_id) AS \"Visualizar\" ", "C", "3%");
   }
   if($edicao){
     $url = base_url() . "Grupo/editar/{gru_id}";
-    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">create</i></a>', '{gru_id}', gru_id) AS \"Editar\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">create</i></a>', '{gru_id}', gru_id) AS \"Editar\" ", "C", "3%");
   }
   if($exclusao){
   }

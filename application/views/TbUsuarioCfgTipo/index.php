@@ -11,7 +11,7 @@ $htmlLista = $htmlLista ?? "";
   </div>
 </div>
 <div class="card">
-  <div class="card-header card-header-success">
+  <div class="card-header card-header-info">
     <h3 class="card-title">Tipo de Configuração</h3>
     <p class="card-category">
       Configurações para controle dos usuários do sistema. Cada nova configuração deve ser programada no servidor.

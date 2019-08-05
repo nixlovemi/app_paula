@@ -65,7 +65,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
 <div class="row">
   <div class="col-md-8">
     <div class="card">
-      <div class="card-header card-header-success">
+      <div class="card-header card-header-info">
         <h4 class="card-title">Medidas iniciais</h4>
       </div>
       <div class="card-body">
@@ -90,31 +90,31 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
           } else {
             ?>
             <div class="col-md-2">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Data</label>
                 <input type="text" class="form-control" readonly="" value="<?php echo $strData; ?>" />
               </div>
             </div>
             <div class="col-md-2">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Altura</label>
                 <input type="text" class="form-control" readonly="" value="<?php echo $strAltura; ?>" />
               </div>
             </div>
             <div class="col-md-2">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Peso</label>
                 <input type="text" class="form-control" readonly="" value="<?php echo $strPeso; ?>" />
               </div>
             </div>
             <div class="col-md-2">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Peso (Objetivo)</label>
                 <input type="text" class="form-control" readonly="" value="<?php echo $strPesoObj; ?>" />
               </div>
             </div>
             <div class="col-md-2">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Diferença</label>
                 <input type="text" class="form-control" readonly="" value="<?php echo $strDif; ?>" />
               </div>
@@ -123,8 +123,8 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
               <?php
               if($editar){
                 ?>
-                <button style="position:relative; top:6px;" type="button" class="btn btn-success btn-sm" onclick="jsonEditaGrupoPessoaInfo(<?php echo $vGpiIdIni; ?>)">
-                  <i style="color:#FFF !important;" class="material-icons text-success">create</i>
+                <button style="position:relative; top:6px;" type="button" class="btn btn-info btn-sm" onclick="jsonEditaGrupoPessoaInfo(<?php echo $vGpiIdIni; ?>)">
+                  <i style="color:#FFF !important;" class="material-icons text-info">create</i>
                   <div class="ripple-container"></div>
                 </button>
                 <?php
@@ -142,7 +142,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
     if(count($infoInicial) > 0){
       ?>
       <div class="card">
-        <div class="card-header card-header-success">
+        <div class="card-header card-header-info">
           <h4 class="card-title">Acompanhamento</h4>
         </div>
         <div class="card-body">
@@ -187,7 +187,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
     if(count($infoInicial) > 0){
       ?>
       <div class="card card-chart">
-        <div class="card-header card-header-success">
+        <div class="card-header card-header-info">
           <div class="ct-chart" id="chartProgressaoMedidas"></div>
           <script>
             $( document ).ready(function(){
@@ -208,7 +208,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
         <div class="card-body">
           <h4 class="card-title">Progressão das Medidas</h4>
           <p class="card-category">
-            <span class="text-success">
+            <span class="text-info">
               Você está com <?php echo $difAtual; ?>% do objetivo concluído.
           </p>
         </div>
@@ -217,7 +217,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
     }
     ?>
 
-    <a href="<?php echo base_url() ?>Grupo/editar/<?php echo $gruId;?>" class="btn btn-info pull-right">
+    <a href="<?php echo base_url() ?>Grupo/editar/<?php echo $gruId;?>" class="btn btn-default pull-right">
       Voltar
       <div class="ripple-container"></div>
     </a>

@@ -19,26 +19,26 @@ $arrAtivo       = array(
   <div class="row">
     <div class="col-md-12">
       <div class="card">
-        <div class="card-header card-header-success">
+        <div class="card-header card-header-info">
           <h4 class="card-title">Editar Usuário</h4>
           <p class="card-category">Controle dos usuários (clientes) que terão acesso ao sistema. Lembre-se de configurar os parâmetros de cada cadastro.</p>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-2">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">ID</label>
                 <input readonly="" maxlength="80" name="id" id="id" type="text" class="form-control" value="<?php echo $vUsuId; ?>" />
               </div>
             </div>
             <div class="col-md-5">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Nome</label>
                 <input maxlength="100" name="nome" type="text" class="form-control" value="<?php echo $vUsuNome; ?>" />
               </div>
             </div>
             <div class="col-md-5">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Email</label>
                 <input maxlength="150" name="email" type="text" class="form-control" value="<?php echo $vUsuEmail; ?>" />
               </div>
@@ -46,7 +46,7 @@ $arrAtivo       = array(
           </div>
           <div class="row">
             <div class="col-md-4">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <select name="ativo" class="form-control" size="">
                   <?php
                   foreach($arrAtivo as $id => $text){
@@ -58,7 +58,7 @@ $arrAtivo       = array(
               </div>
             </div>
             <div class="col-md-8">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Cadastrado Por</label>
                 <input readonly="" maxlength="80" name="cadastrado_por" type="text" class="form-control" value="<?php echo $vUsaUsuario; ?>" />
               </div>
@@ -72,13 +72,13 @@ $arrAtivo       = array(
   <div class="row">
     <div class="col-md-12">
       <div class="card">
-        <div class="card-header card-header-success">
+        <div class="card-header card-header-info">
           <h4 class="card-title">Configuração</h4>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-3">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <select name="configuracao" id="configuracao" class="form-control" size="">
                   <?php
                   foreach($arrUsuCfgTipo as $UsuCfgTipo){
@@ -92,13 +92,13 @@ $arrAtivo       = array(
               </div>
             </div>
             <div class="col-md-7">
-              <div class="form-group bmd-form-group has-success">
+              <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Valor</label>
                 <input maxlength="100" name="valor" id="valor" type="text" class="form-control" value="" />
               </div>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-success btn-sm" onclick="jsonAddUsuCfg( $('form#frmEditaUsuario #id').val(), $('form#frmEditaUsuario #configuracao').val(), $('form#frmEditaUsuario #valor').val() );">
+              <button type="button" class="btn btn-info btn-sm" onclick="jsonAddUsuCfg( $('form#frmEditaUsuario #id').val(), $('form#frmEditaUsuario #configuracao').val(), $('form#frmEditaUsuario #valor').val() );">
                 Inserir
                 <div class="ripple-container"></div>
               </button>
@@ -121,10 +121,10 @@ $arrAtivo       = array(
     </div>
   </div>
   
-  <a href="<?php echo base_url() ?>Usuario" class="btn btn-info pull-right">
+  <a href="<?php echo base_url() ?>Usuario" class="btn btn-default pull-right">
     Voltar
     <div class="ripple-container"></div>
   </a>
-  <button type="submit" class="btn btn-success pull-right">Salvar</button>
+  <button type="submit" class="btn btn-info pull-right">Salvar</button>
   <div class="clearfix"></div>
 </form>

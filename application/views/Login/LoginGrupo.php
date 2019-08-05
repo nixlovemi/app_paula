@@ -26,12 +26,12 @@ $vLoginMsg = $vLoginMsg ?? "";
       <div class="col-md-4 col-sm-6 ml-auto mr-auto">
         <div class="card card-signup">
           <form id="formLogin" class="form" method="POST" action="<?php echo BASE_URL; ?>Login/grupoLogin">
-            <div class="card-header card-header-success text-center">
+            <div class="card-header card-header-info text-center">
               <h4 class="card-title">Entrar</h4>
             </div>
             <div class="card-body">
               <span class="bmd-form-group">
-                <div class="input-group has-success">
+                <div class="input-group has-info">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
                       <i class="material-icons">mail</i>
@@ -41,7 +41,7 @@ $vLoginMsg = $vLoginMsg ?? "";
                 </div>
               </span>
               <span class="bmd-form-group">
-                <div class="input-group has-success">
+                <div class="input-group has-info">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
                       <i class="material-icons">lock_outline</i>
@@ -66,7 +66,7 @@ $vLoginMsg = $vLoginMsg ?? "";
               ?>
             </div>
             <div class="footer text-center">
-              <a href="javascript:;" onClick="$('#formLogin').submit();" class="btn btn-success align-center">
+              <a href="javascript:;" onClick="$('#formLogin').submit();" class="btn btn-info align-center">
                 Entrar
                 <div class="ripple-container"></div>
               </a>

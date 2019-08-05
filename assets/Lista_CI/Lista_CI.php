@@ -31,7 +31,7 @@ class Lista_CII
     $this->_limit            = 50;
     $this->_offset           = 0;
     $this->_ID               = "table_".date("YmdHis");
-    $this->_colorClass       = "success";
+    $this->_colorClass       = "info";
     $this->_currentFilter    = "";
     $this->_currentFilterTxt = "";
     $this->_currentPage      = 1;
@@ -212,7 +212,7 @@ class Lista_CII
 
     $size    = "5px";
     $baseCss = "width:0px; height:0px; border-left:$size solid transparent; border-right:$size solid transparent; display:inline-block;";
-    $color   = "#4caf50";
+    $color   = "#00bcd4";
 
     if($this->_currentOrderAD == "" || $this->_currentOrderAD == "DESC" || $lastOrder != $this->_currentOrder){
       $this->_currentOrderAD = "ASC";
@@ -285,8 +285,9 @@ class Lista_CII
     $V_HTML .= "<div class='row' id='dv-row-filter-lista-ci-".$this->_ID."' data-lista-ci-id='".$this->_ID."' data-url-request-base='".$this->_baseUrl."'>";
     $V_HTML .= "  <div class='col-lg-3 col-sm-4'>";
     $V_HTML .= "    <div class='form-group has-".$this->_colorClass." bmd-form-group'>";
+    $V_HTML .= "      <label class='label-control bmd-label-static'>Filtrar por</label>";
     $V_HTML .= "      <select name='filter_field' id='filter_field_lista_ci' class='form-control' size='0'>";
-    $V_HTML .= "        <option value=''>Filtrar por ...</option>";
+    $V_HTML .= "        <option value=''></option>";
     foreach($this->_arrFilter as $filter){
       $field    = $filter["field"] ?? "";
       $label    = $filter["label"] ?? "";
@@ -301,7 +302,7 @@ class Lista_CII
     $V_HTML .= "  </div>";
     $V_HTML .= "  <div class='col-lg-9 col-sm-8'>";
     $V_HTML .= "    <div class='form-group has-".$this->_colorClass." bmd-form-group'>";
-    $V_HTML .= "      <label for='filter_text_".$this->_ID."' class='bmd-label-floating'>Filtro</label>";
+    $V_HTML .= "      <label for='filter_text_".$this->_ID."' class='label-control bmd-label-static'>Filtro</label>";
     $V_HTML .= "      <input onkeydown=\"input_filter_click(event, '".$this->_ID."')\" name='filter_text' id='filter_text_lista_ci' type='text' class='form-control' placeholder='' value='".$this->_currentFilterTxt."' />";
     $V_HTML .= "    </div>";
     $V_HTML .= "  </div>";

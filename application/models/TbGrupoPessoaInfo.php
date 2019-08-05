@@ -54,10 +54,10 @@ function pegaListaGrupoPessoaInfo($grpId, $detalhes=false, $edicao=false, $exclu
   if($detalhes){
   }
   if($edicao){
-    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonEditaGrupoPessoaInfo({gpi_id}) \"><i class=\"material-icons text-success\">create</i></a>', '{gpi_id}', gpi_id) AS \"Editar\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonEditaGrupoPessoaInfo({gpi_id}) \"><i class=\"material-icons text-info\">create</i></a>', '{gpi_id}', gpi_id) AS \"Editar\" ", "C", "3%");
   }
   if($exclusao){
-    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''$nomeLista'', ''GrupoPessoaInfo'', ''jsonDelete'', ''id={gpi_id}'')\"><i class=\"material-icons text-success\">delete</i></a>', '{gpi_id}', gpi_id) AS \"Excluir\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''$nomeLista'', ''GrupoPessoaInfo'', ''jsonDelete'', ''id={gpi_id}'')\"><i class=\"material-icons text-info\">delete</i></a>', '{gpi_id}', gpi_id) AS \"Excluir\" ", "C", "3%");
   }
   $Lista_CI->addFrom("v_tb_grupo_pessoa_info");
   $Lista_CI->addWhere("gpi_inicial = 0");

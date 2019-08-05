@@ -43,7 +43,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
 <div class="row">
   <div class="col-md-9">
     <div class="card">
-      <div class="card-header card-header-success">
+      <div class="card-header card-header-info">
         <h4 class="card-title">Nova Postagem</h4>
       </div>
       <div class="card-body" style="padding-bottom:5px;">
@@ -51,7 +51,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
           <div class="" style="margin-bottom:0; padding-bottom:0;">
             <div class="row">
               <div class="col-md-12">
-                <div class="form-group bmd-form-group has-success" style="">
+                <div class="form-group bmd-form-group has-info" style="">
                   <label class="bmd-label-floating">Título (opcional)</label>
                   <input maxlength="100" name="titulo" type="text" class="form-control" value="<?= $titulo; ?>" />
                 </div>
@@ -59,7 +59,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
             </div>
             <div class="row">
               <div class="col-md-12">
-                <div class="form-group bmd-form-group has-success" style="">
+                <div class="form-group bmd-form-group has-info" style="">
                   <label class="bmd-label-floating">Escreva algo para o grupo</label>
                   <textarea class="form-control" rows="2" name="descricao"><?= trim($descricao); ?></textarea>
                 </div>
@@ -87,7 +87,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
             </div>
             <div class="row">
               <div class="col-md-12">
-                <div class="form-group bmd-form-group has-success" style="">
+                <div class="form-group bmd-form-group has-info" style="">
                   <div id="lista-anexos" style="border-top: solid 1px #CCC; width: 100%; padding-top:8px;">
                 </div>
                 </div>
@@ -128,7 +128,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
 
                 <ul class="navbar-nav pull-right">
                   <li class="dropdown nav-item">
-                    <a href="javascript:;" class="dropdown-toggle nav-link text-success" data-toggle="dropdown" aria-expanded="false">
+                    <a href="javascript:;" class="dropdown-toggle nav-link text-info" data-toggle="dropdown" aria-expanded="false">
                       <i class="material-icons">more_horiz</i>
                     </a>
                     <div class="dropdown-menu">
@@ -164,7 +164,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
     <?php
     /*
     <div class="card" style="margin-top: 50px;">
-      <div class="card-header card-header-success">
+      <div class="card-header card-header-info">
         <h4 class="card-title">Timeline do Grupo - <?= $vGruDescricao ?></h4>
       </div>
       <div class="card-body" style="padding-bottom:5px;">

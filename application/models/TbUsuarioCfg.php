@@ -130,7 +130,7 @@ function pegaListaUsuarioCfg($usuario="", $detalhes=false, $edicao=false, $exclu
   if($edicao){
   }
   if($exclusao){
-    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''ListaUsuarioCfg'', ''UsuarioCfg'', ''jsonDelete'', ''id={usc_id}'')\"><i class=\"material-icons text-success\">delete</i></a>', '{usc_id}', usc_id) AS \"Excluir\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''ListaUsuarioCfg'', ''UsuarioCfg'', ''jsonDelete'', ''id={usc_id}'')\"><i class=\"material-icons text-info\">delete</i></a>', '{usc_id}', usc_id) AS \"Excluir\" ", "C", "3%");
   }
   $Lista_CI->addFrom("v_tb_usuario_cfg");
   if(is_numeric($usuario) && $usuario > 0){

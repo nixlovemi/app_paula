@@ -11,7 +11,7 @@ $htmlLista = $htmlLista ?? "";
   </div>
 </div>
 <div class="card">
-  <div class="card-header card-header-success">
+  <div class="card-header card-header-info">
     <h3 class="card-title">Pessoa</h3>
     <p class="card-category">
       Controle das pessoas que farão parte dos seus grupos. Isso inclui pessoas do staff e clientes.

@@ -11,7 +11,7 @@ $htmlLista = $htmlLista ?? "";
   </div>
 </div>
 <div class="card">
-  <div class="card-header card-header-success">
+  <div class="card-header card-header-info">
     <h3 class="card-title">Usuário</h3>
     <p class="card-category">
       Controle dos usuários (clientes) que terão acesso ao sistema. Lembre-se de configurar os parâmetros de cada cadastro.

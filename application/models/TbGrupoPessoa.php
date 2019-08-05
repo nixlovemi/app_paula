@@ -157,11 +157,11 @@ function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao
   $Lista_CI->addField("ativo AS \"Ativo\"");
   if($detalhes){
     $url = base_url() . "Grupo/infoPessoa/{gru_id}/{pes_id}/0";
-    $Lista_CI->addField("CASE pet_cliente WHEN 0 THEN '' ELSE REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) END AS \"Info\" ", "C", "3%");
+    $Lista_CI->addField("CASE pet_cliente WHEN 0 THEN '' ELSE REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) END AS \"Info\" ", "C", "3%");
   }
   if($edicao){
     $url = base_url() . "Grupo/infoPessoa/{gru_id}/{pes_id}/1";
-    $Lista_CI->addField("CASE pet_cliente WHEN 0 THEN '' ELSE REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-success\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) END AS \"Info\" ", "C", "3%");
+    $Lista_CI->addField("CASE pet_cliente WHEN 0 THEN '' ELSE REPLACE(REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">assignment</i></a>', '{gru_id}', grp_gru_id ), '{pes_id}', grp_pes_id) END AS \"Info\" ", "C", "3%");
   }
   if($exclusao){
   }

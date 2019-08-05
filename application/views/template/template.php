@@ -92,7 +92,7 @@ if($GRP_ID > 0){
   ?>
 
   <div class="wrapper">
-    <div class="sidebar" data-color="green" data-background-color="white" data-image="<?php echo $BASE_URL; ?>template/assets/img/<?php echo $IMG_SIDEBAR; ?>">
+    <div class="sidebar" data-color="azure" data-background-color="white" data-image="<?php echo $BASE_URL; ?>template/assets/img/<?php echo $IMG_SIDEBAR; ?>">
       <!--
         Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
@@ -189,11 +189,11 @@ if($GRP_ID > 0){
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item dropdown-item-success" href="#">Mike John responded to your email</a>
-                  <a class="dropdown-item dropdown-item-success" href="#">You have 5 new tasks</a>
-                  <a class="dropdown-item dropdown-item-success" href="#">You're now friend with Andrew</a>
-                  <a class="dropdown-item dropdown-item-success" href="#">Another Notification</a>
-                  <a class="dropdown-item dropdown-item-success" href="#">Another One</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">Mike John responded to your email</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">You have 5 new tasks</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">You're now friend with Andrew</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">Another Notification</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">Another One</a>
                 </div>
               </li>
               <li class="nav-item dropdown">
@@ -204,10 +204,10 @@ if($GRP_ID > 0){
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                  <a class="dropdown-item dropdown-item-success" href="#">Profile</a>
-                  <a class="dropdown-item dropdown-item-success" href="#">Settings</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">Profile</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">Settings</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item dropdown-item-success" href="<?php echo $URL_LOGOUT; ?>">Log out</a>
+                  <a class="dropdown-item dropdown-item-info" href="<?php echo $URL_LOGOUT; ?>">Log out</a>
                 </div>
               </li>
             </ul>

@@ -11,7 +11,7 @@ $htmlLista = $htmlLista ?? "";
   </div>
 </div>
 <div class="card">
-  <div class="card-header card-header-success">
+  <div class="card-header card-header-info">
     <h3 class="card-title">Grupo</h3>
     <p class="card-category">
       Controle dos grupos gerenciados por você. Crie ou visualize informações dos grupos aqui.

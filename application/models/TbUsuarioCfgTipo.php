@@ -92,11 +92,11 @@ function pegaListaUsuCfgTipo($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("ativo AS \"Ativo\"");
   if($detalhes){
     $url = base_url() . "UsuarioCfgTipo/visualizar";
-    $Lista_CI->addField(" CONCAT('<a href=\"$url/', uct_id, '\"><i class=\"material-icons text-success\">visibility</i></a>') AS \"Visualizar\" ", "C", "3%");
+    $Lista_CI->addField(" CONCAT('<a href=\"$url/', uct_id, '\"><i class=\"material-icons text-info\">visibility</i></a>') AS \"Visualizar\" ", "C", "3%");
   }
   if($edicao){
     $url = base_url() . "UsuarioCfgTipo/editar";
-    $Lista_CI->addField(" CONCAT('<a href=\"$url/', uct_id, '\"><i class=\"material-icons text-success\">create</i></a>') AS \"Editar\" ", "C", "3%");
+    $Lista_CI->addField(" CONCAT('<a href=\"$url/', uct_id, '\"><i class=\"material-icons text-info\">create</i></a>') AS \"Editar\" ", "C", "3%");
   }
   if($exclusao){
     //delete

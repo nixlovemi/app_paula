@@ -1,13 +1,13 @@
 <div class="row">
   <div class="col-md-4">
     <div class="card card-chart">
-      <div class="card-header card-header-success">
+      <div class="card-header card-header-info">
         <div class="ct-chart" id="dailySalesChart"></div>
       </div>
       <div class="card-body">
         <h4 class="card-title">Daily Sales</h4>
         <p class="card-category">
-          <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>
+          <span class="text-info"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>
       </div>
       <div class="card-footer">
         <div class="stats">
