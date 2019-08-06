@@ -54,7 +54,7 @@ class GrupoTimeline extends MY_Controller
       // verifica anexos
       if(count($_FILES) > 0){
         require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
-        $arrFiles = preConfereArquivos($_FILES);
+        $arrFiles = preConfereArquivos($_FILES, $grtId);
         $retGTA   = insereArquivos($grtId, $arrFiles["arquivos"] ?? array());
         // @todo talvez tratar o retorno
       }

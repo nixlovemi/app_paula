@@ -170,3 +170,55 @@ function resizeImage($newWidth, $targetFile, $originalFile)
   }
   $image_save_func($tmp, "$targetFile", $quality);
 }
+
+function sanitize_file_name($filename)
+{
+  $filename_raw  = $filename;
+  $special_chars = array("?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}");
+  $special_chars = apply_filters('sanitize_file_name_chars', $special_chars, $filename_raw);
+  $filename      = str_replace($special_chars, '', $filename);
+  $filename      = preg_replace('/[\s-]+/', '-', $filename);
+  $filename      = trim($filename, '.-_');
+  return apply_filters('sanitize_file_name', $filename, $filename_raw);
+}
+
+/**
+ * é função do WP
+ */
+function apply_filters($tag, $value)
+{
+  global $wp_filter, $wp_current_filter;
+
+  $args = array();
+
+  // Do 'all' actions first.
+  if (isset($wp_filter['all'])) {
+    $wp_current_filter[] = $tag;
+    $args                = func_get_args();
+    _wp_call_all_hook($args);
+  }
+
+  if (!isset($wp_filter[$tag])) {
+    if (isset($wp_filter['all'])) {
+      array_pop($wp_current_filter);
+    }
+    return $value;
+  }
+
+  if (!isset($wp_filter['all'])) {
+    $wp_current_filter[] = $tag;
+  }
+
+  if (empty($args)) {
+    $args = func_get_args();
+  }
+
+  // don't pass the tag name to WP_Hook
+  array_shift($args);
+
+  $filtered = $wp_filter[$tag]->apply_filters($value, $args);
+
+  array_pop($wp_current_filter);
+
+  return $filtered;
+}

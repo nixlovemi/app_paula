@@ -115,6 +115,20 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
           $strData  = ($data != "") ? date("d/m H:m", strtotime($data)): "";
           $strDataF = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
           $strTexto = nl2br($texto);
+
+          // anexos
+          $arquivosPost    = $arrArquivos[$id] ?? array();
+          $arquivosPostImg = []; #só imagens
+          $arquivosPostDiv = []; #diversos
+          foreach($arquivosPost as $arquivo){
+            $caminhoArquivo = FCPATH . $arquivo["gta_caminho"];
+            if(exif_imagetype($caminhoArquivo) !== false){
+              $arquivosPostImg[] = $arquivo["gta_caminho"];
+            } else {
+              $arquivosPostDiv[] = $arquivo;
+            }
+          }
+          // ======
           ?>
           <div class="row item-postagem">
             <div class="col-md-12">
@@ -154,20 +168,33 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
             <div class="col-md-12">
               <div class="postagem-inner postagem-inner-bot">
                 <?=$strTexto?>
+                <?php
+                if(count($arquivosPostImg) > 0){
+                  ?>
+                  <div class="fcbkGrid" style="display:none;">
+                    <?php
+                    foreach($arquivosPostImg as $caminhoArquivo){
+                      echo "<input type='hidden' class='img_url' value='".base_url() . $caminhoArquivo ."' />";
+                    }
+                    ?>
+                  </div>
+                  <?php
+                }
+                ?>
               </div>
             </div>
             <?php
-            $arquivosPost = $arrArquivos[$id] ?? array();
-            if(count($arquivosPost) > 0){
+            if(count($arquivosPostDiv) > 0){
               ?>
               <div class="col-md-12">
                 <div class="postagem-inner postagem-inner-bot">
                   <?php
                   #@todo melhorar a aparencia dos links
-                  $i = 1;
-                  foreach($arquivosPost as $arquivo){
-                    echo "<a class='btn btn-link btn-primary btn-sm' href='".base_url() . $arquivo["gta_caminho"] ."' target='_blank'>Anexo #$i: abrir</a><br />";
-                    $i++;
+                  foreach($arquivosPostDiv as $arquivo){
+                    $link = base_url() . $arquivo["gta_caminho"];
+                    $nome = basename($link);
+                    
+                    echo "<a class='btn btn-link btn-primary btn-sm' href='$link' target='_blank'>$nome</a><br />";
                   }
                   ?>
                 </div>

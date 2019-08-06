@@ -71,6 +71,27 @@ $( document ).ready(function()
     $('#dvMostraNotificacao').remove();
   }
   
+  // fcbk grid
+  $( "div.fcbkGrid" ).each(function() {
+    var arrImagens = [];
+    $(this).find('input.img_url').each(function() {
+      arrImagens.push( $(this).val() );
+    });
+    
+    $(this).imagesGrid({
+      images     : arrImagens,
+      align      : true,
+      onModalOpen: function($modal, image) {
+        setTimeout(function(){
+          var maxZindex   = pegaMaxZindex();
+          var alertZindex = maxZindex + 5;
+          $('.imgs-grid-modal').css({'z-index':alertZindex});
+        }, 600)
+      }
+    }).show();
+  });
+  // =========
+  
   init_components();
 });
 

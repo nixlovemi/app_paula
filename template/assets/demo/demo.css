@@ -123,6 +123,9 @@ ul.pagination .item-info {
 .item-postagem .dropdown-item:focus {
   background-color: #00bcd4;
 }
+.fcbkGrid{
+  margin-top: 20px;
+}
 
 @media (max-width: 720px) 
 {

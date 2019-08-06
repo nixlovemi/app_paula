@@ -25,7 +25,7 @@ function compressImage($caminhoImagem)
  * pega o $_FILES e faz as validacoes pra gravar
  * retorna um array com as info pra salvar
  */
-function preConfereArquivos($vFiles)
+function preConfereArquivos($vFiles, $grtId)
 {
   $arrRetorno             = [];
   $arrRetorno["erro"]     = false;
@@ -36,14 +36,21 @@ function preConfereArquivos($vFiles)
   $qtItens = count($vFiles["arquivos"]["name"]);
   for($i=0; $i<$qtItens; $i++){
     $nomeOriginal     = $vFiles["arquivos"]["name"][$i];
-    #$tipoArquivo      = $vFiles["arquivos"]["type"][$i];
     $pathTemporario   = $vFiles["arquivos"]["tmp_name"][$i];
+    #$tipoArquivo      = $vFiles["arquivos"]["type"][$i];
     #$tamanhoKbArquivo = $vFiles["arquivos"]["size"][$i] / 1000;
+    
+    // ve se pasta existe; senao cria
+    if(!file_exists(PASTA_UPLOAD . $grtId)){
+      mkdir(PASTA_UPLOAD . $grtId);
+    }
+    // ==============================
 
+    require_once(APPPATH."/helpers/utils_helper.php");
     $info             = new SplFileInfo($nomeOriginal);
     $extensaoArquivo  = strtolower($info->getExtension());
-    $nomeNovo         = md5(date("YmdHis") . $nomeOriginal);
-    $caminhoNovo      = PASTA_UPLOAD . $nomeNovo . "." . $extensaoArquivo;
+    $nomeNovo         = sanitize_file_name($nomeOriginal);
+    $caminhoNovo      = PASTA_UPLOAD . $grtId . "/" . $nomeNovo . "." . $extensaoArquivo;
 
     $ret = move_uploaded_file($pathTemporario, $caminhoNovo);
     if($ret){
