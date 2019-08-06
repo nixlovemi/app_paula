@@ -147,6 +147,12 @@ function init_components()
       });
     });
     // =====
+    
+    // audio video
+    $(function () {
+      $('audio, video').stylise();
+    });
+    // ===========
   } catch (err) { }
   
 }

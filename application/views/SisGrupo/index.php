@@ -118,16 +118,9 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
 
           // anexos
           $arquivosPost    = $arrArquivos[$id] ?? array();
-          $arquivosPostImg = []; #só imagens
-          $arquivosPostDiv = []; #diversos
-          foreach($arquivosPost as $arquivo){
-            $caminhoArquivo = FCPATH . $arquivo["gta_caminho"];
-            if(exif_imagetype($caminhoArquivo) !== false){
-              $arquivosPostImg[] = $arquivo["gta_caminho"];
-            } else {
-              $arquivosPostDiv[] = $arquivo;
-            }
-          }
+          $arquivosPostImg = $arquivosPost["imagens"] ?? array();
+          $arquivosPostAud = $arquivosPost["audio"] ?? array();
+          $arquivosPostDiv = $arquivosPost["documentos"] ?? array();
           // ======
           ?>
           <div class="row item-postagem">
@@ -168,17 +161,26 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
             <div class="col-md-12">
               <div class="postagem-inner postagem-inner-bot">
                 <?=$strTexto?>
+                
                 <?php
                 if(count($arquivosPostImg) > 0){
                   ?>
                   <div class="fcbkGrid" style="display:none;">
                     <?php
-                    foreach($arquivosPostImg as $caminhoArquivo){
-                      echo "<input type='hidden' class='img_url' value='".base_url() . $caminhoArquivo ."' />";
+                    foreach($arquivosPostImg as $arquivo){
+                      echo "<input type='hidden' class='img_url' value='".base_url() . $arquivo["gta_caminho"]."' />";
                     }
                     ?>
                   </div>
                   <?php
+                }
+                
+                if(count($arquivosPostAud) > 0){
+                  foreach($arquivosPostAud as $arquivo){
+                    echo "<audio>";
+                    echo "  <source src='".base_url() . $arquivo["gta_caminho"]."'>";
+                    echo "</audio>";
+                  }
                 }
                 ?>
               </div>
@@ -188,15 +190,22 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
               ?>
               <div class="col-md-12">
                 <div class="postagem-inner postagem-inner-bot">
-                  <?php
-                  #@todo melhorar a aparencia dos links
-                  foreach($arquivosPostDiv as $arquivo){
-                    $link = base_url() . $arquivo["gta_caminho"];
-                    $nome = basename($link);
-                    
-                    echo "<a class='btn btn-link btn-primary btn-sm' href='$link' target='_blank'>$nome</a><br />";
-                  }
-                  ?>
+                  <ul class="ul-base-arquivos">
+                    <?php
+                    #@todo melhorar a aparencia dos links
+                    foreach($arquivosPostDiv as $arquivo){
+                      $link = base_url() . $arquivo["gta_caminho"];
+                      $nome = basename($link);
+
+                      echo "<li>";
+                      echo "  <a class='btn btn-link btn-info btn-sm' href='$link' target='_blank'>";
+                      echo "    <i class='material-icons'>attach_file</i>";
+                      echo "    $nome";
+                      echo "  </a>";
+                      echo "</li>";
+                    }
+                    ?>
+                  </ul>
                 </div>
               </div>
               <?php

@@ -126,12 +126,72 @@ ul.pagination .item-info {
 .fcbkGrid{
   margin-top: 20px;
 }
+.item-postagem a.btn-info{
+  border: solid 1px;
+}
+.item-postagem ul.ul-base-arquivos{
+  padding-left: 0;
+}
+.item-postagem ul.ul-base-arquivos li{
+  list-style: none;
+  display: inline-block;
+}
+.stylised-player { 
+  margin-top: 20px;
+  margin-bottom: 0;
+  height: 36px;
+}
+.stylised-player h3 {
+  color: #FFF;
+}
+.stylised-player p { 
+  top: 6px;
+  color: #3C4858;
+}
+.stylised-play, .stylised-pause { 
+  height: 36px;
+  background-color: #00bcd4;
+  padding-top: 6px;
+}
+.stylised-restart { 
+  background-color: #00bcd4;
+  height: 36px;
+  background-size: 60px 60px;
+  background-position: 6px -11px;
+  background-image: url(../../../assets/VideoAudioPlayer/images/icon_restart_white.png);
+}
+.stylised-time-wrapper { 
+  left: 166px;
+  height: 36px;
+}
+.stylised-time-progress { 
+  background-color: #e4eced !important;
+  height: 36px;
+}
+.stylised-play:active, .stylised-pause:active, .stylised-restart:active { 
+  background-color: #0093a6;
+}
+.stylised-play-icon { 
+  top: 2px;
+  background-image: url(../../../assets/VideoAudioPlayer/images/icon_play_white.png);
+  left: 20px;
+}
+.stylised-pause-icon { 
+  top: 2px;
+  background-image: url(../../../assets/VideoAudioPlayer/images/icon_pause_white.png);
+}
 
 @media (max-width: 720px) 
 {
   .spn_Lista_CI{
     display: block;
     overflow-x: auto;
+  }
+}
+@media (max-width: 500px) 
+{
+  .stylised-player p { 
+    display: none;
   }
 }
 /*=======================================================*/

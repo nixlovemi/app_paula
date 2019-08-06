@@ -71,6 +71,7 @@ if($GRP_ID > 0){
   <!-- CSS Files -->
   <link href="<?php echo $BASE_URL; ?>template/assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <link href="<?php echo $BASE_URL; ?>assets/FcbkGrid/images-grid.css" rel="stylesheet" />
+  <link href="<?php echo $BASE_URL; ?>assets/VideoAudioPlayer/css/stylised.css" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="<?php echo $BASE_URL; ?>template/assets/demo/demo.css" rel="stylesheet" />
 
@@ -271,6 +272,7 @@ if($GRP_ID > 0){
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="<?php echo $BASE_URL; ?>template/assets/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
   <script src="<?php echo $BASE_URL; ?>assets/FcbkGrid/images-grid.js" type="text/javascript"></script>
+  <script src="<?php echo $BASE_URL; ?>assets/VideoAudioPlayer/mediastyler.js" type="text/javascript"></script>
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script src="<?php echo $BASE_URL; ?>template/assets/demo/demo.js"></script>
   <!-- Lista CI -->

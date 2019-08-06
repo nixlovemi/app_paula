@@ -50,7 +50,7 @@ function preConfereArquivos($vFiles, $grtId)
     $info             = new SplFileInfo($nomeOriginal);
     $extensaoArquivo  = strtolower($info->getExtension());
     $nomeNovo         = sanitize_file_name($nomeOriginal);
-    $caminhoNovo      = PASTA_UPLOAD . $grtId . "/" . $nomeNovo . "." . $extensaoArquivo;
+    $caminhoNovo      = PASTA_UPLOAD . $grtId . "/" . $nomeNovo;
 
     $ret = move_uploaded_file($pathTemporario, $caminhoNovo);
     if($ret){
@@ -111,7 +111,7 @@ function pegaArquivos($arrPostagens)
   $arrRetorno["erro"]     = false;
   $arrRetorno["msg"]      = "";
   $arrRetorno["arquivos"] = [];
-
+  
   require_once(APPPATH."/helpers/utils_helper.php");
   $CI = pega_instancia();
   $CI->load->database();
@@ -142,12 +142,27 @@ function pegaArquivos($arrPostagens)
       if($vGtaGrtId != ""){
         if(!array_key_exists($vGtaGrtId, $arrRetorno["arquivos"])){
           $arrRetorno["arquivos"][$vGtaGrtId] = [];
+          $arrRetorno["arquivos"][$vGtaGrtId]["imagens"]    = []; #jpg, png
+          $arrRetorno["arquivos"][$vGtaGrtId]["audio"]      = []; #mp3, ogg
+          $arrRetorno["arquivos"][$vGtaGrtId]["video"]      = [];
+          $arrRetorno["arquivos"][$vGtaGrtId]["documentos"] = []; #doc, xls, pdf ...
         }
 
-        $arrRetorno["arquivos"][$vGtaGrtId][] = array(
+        $arrArquivo = array(
           "gta_id" => $row->gta_id ?? "",
           "gta_caminho" => $row->gta_caminho ?? ""
         );
+
+        $caminhoArquivo = FCPATH . $row->gta_caminho;
+        if( exif_imagetype($caminhoArquivo) !== false ){
+          $textoIdx = "imagens";
+        } else if( eh_audio($caminhoArquivo) !== false ){
+          $textoIdx = "audio";
+        } else {
+          $textoIdx = "documentos";
+        }
+
+        $arrRetorno["arquivos"][$vGtaGrtId][$textoIdx][] = $arrArquivo;
       }
     }
   }

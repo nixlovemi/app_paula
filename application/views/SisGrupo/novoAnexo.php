@@ -11,7 +11,7 @@ $idAnexo = $idAnexo ?? date("YmdHis");
       </a>
       <div class="btn btn-info btn-sm float-left">
         <span onclick="$('<?= $frmId; ?> #anexo<?= $idAnexo; ?>').click();">Anexo:</span>
-        <input class="anexo" id="anexo<?= $idAnexo; ?>" type="file" name="arquivos[]" accept="image/png, image/jpeg, application/pdf, application/vnd.ms-excel, application/msword, .ogg, .mp3" />
+        <input class="anexo" id="anexo<?= $idAnexo; ?>" type="file" name="arquivos[]" accept="image/png, image/jpeg, application/pdf, .xls, .xlsx, .doc, .docx, .ogg, .mp3" />
         <span onclick="$('<?= $frmId; ?> #anexo<?= $idAnexo; ?>').click();" class="lbl_anexo">Selecione o arquivo ...</span>
       </div>
     </div>
