@@ -150,7 +150,13 @@ function init_components()
     
     // audio video
     $(function () {
-      $('audio, video').stylise();
+      //$('audio, video').stylise();
+      $('audio').stylise();
+    });
+    
+    $(".postagem-inner .post-video").each(function() {
+      console.log(1);
+      $(this).responsive(true);
     });
     // ===========
   } catch (err) { }

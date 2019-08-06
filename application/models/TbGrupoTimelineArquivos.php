@@ -22,6 +22,14 @@ function compressImage($caminhoImagem)
 }
 
 /**
+ * tipo funcao privada
+ */
+function convertVideo($caminhoImagem)
+{
+  exec("mencoder $caminhoImagem -o $caminhoImagem -oac copy -ovc lavc -lavcopts vcodec=mpeg1video -of mpeg");
+}
+
+/**
  * pega o $_FILES e faz as validacoes pra gravar
  * retorna um array com as info pra salvar
  */
@@ -56,6 +64,8 @@ function preConfereArquivos($vFiles, $grtId)
     if($ret){
       if($extensaoArquivo == "jpg"){
         compressImage($caminhoNovo);
+      } else if($extensaoArquivo == "avi"){
+        convertVideo($caminhoNovo);
       }
 
       $arrRetorno["arquivos"][] = array(
@@ -158,7 +168,9 @@ function pegaArquivos($arrPostagens)
           $textoIdx = "imagens";
         } else if( eh_audio($caminhoArquivo) !== false ){
           $textoIdx = "audio";
-        } else {
+        } else if(eh_video($caminhoArquivo)){
+          $textoIdx = "video";
+        }else {
           $textoIdx = "documentos";
         }
 

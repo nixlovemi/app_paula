@@ -136,6 +136,10 @@ ul.pagination .item-info {
   list-style: none;
   display: inline-block;
 }
+.postagem-inner .post-video{
+  width: 100%;
+  margin-bottom: 0;
+}
 .stylised-player { 
   margin-top: 20px;
   margin-bottom: 0;

@@ -80,7 +80,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
               </div>
               <div class="col-md-8">
                 <button type="button" onclick="$('#frmNovaPostagem').submit()" class="btn btn-info btn-sm pull-right">Publicar</button>
-                <a href="javascript:;" class="btn btn-info btn-sm pull-right" onclick="fncAnexarArqPostagem()">
+                <a href="javascript:;" class="btn btn-default btn-sm pull-right" onclick="fncAnexarArqPostagem()">
                   <i class="material-icons">attach_file</i>
                   Anexar
                 </a>
@@ -120,6 +120,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
           $arquivosPost    = $arrArquivos[$id] ?? array();
           $arquivosPostImg = $arquivosPost["imagens"] ?? array();
           $arquivosPostAud = $arquivosPost["audio"] ?? array();
+          $arquivosPostVid = $arquivosPost["video"] ?? array();
           $arquivosPostDiv = $arquivosPost["documentos"] ?? array();
           // ======
           ?>
@@ -180,6 +181,19 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                     echo "<audio>";
                     echo "  <source src='".base_url() . $arquivo["gta_caminho"]."'>";
                     echo "</audio>";
+                  }
+                }
+
+                if(count($arquivosPostVid) > 0){
+                  foreach($arquivosPostVid as $arquivo){
+                    
+                    #echo "<div class='wrapper'>";
+                    #echo "  <div class='videocontent'>";
+                    echo "    <video class='post-video' controls class='video-js vjs-layout-medium' preload='auto'>";
+                    echo "      <source src='".base_url() . $arquivo["gta_caminho"]."'>";
+                    echo "    </video>";
+                    #echo "  </div>";
+                    #echo "</div>";
                   }
                 }
                 ?>

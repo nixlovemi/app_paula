@@ -194,6 +194,16 @@ function eh_audio($caminho)
   }
 }
 
+function eh_video($caminho)
+{
+  $mime = mime_content_type($caminho);
+  if(strstr($mime, "video/")){
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function sanitize_file_name($filename)
 {
   $filename_raw  = $filename;
