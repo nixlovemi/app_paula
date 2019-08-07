@@ -372,11 +372,33 @@ async function fncAnexarArqPostagemYt()
 
 function deletarPostagem(id)
 {
-  mvc_post_ajax_var("GrupoTimeline", "jsonDeletaPostagem", "id=" + id);
+  Swal.fire({
+    title: 'Confirmação!',
+    text: "Deseja mesmo excluir essa postagem?",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sim',
+    cancelButtonText: 'Não ...'
+  }).then((result) => {
+    if (result.value) {
+      mvc_post_ajax_var("GrupoTimeline", "jsonDeletaPostagem", "id=" + id);
+    }
+  });
 }
 
 function removeDvPostagem(id)
 {
   $('div#item-postagem-' + id).remove();
+}
+
+function favoritarPostagem(id)
+{
+  mvc_post_ajax_var("GrupoTimelineSalvo", "jsonFavoritar", "id=" + id);
+}
+
+function jqueryMostraFavoritado(id){
+  $('div#item-postagem-' + id + ' .li-favoritado').show();
 }
 /* ========= */

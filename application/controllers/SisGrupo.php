@@ -26,6 +26,7 @@ class SisGrupo extends MY_Controller
 
     $retPost      = pegaPostagensGrupo($vGruId);
     $arrPostagens = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
+    $arrSalvos    = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
 
     require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
     $retGTA      = pegaArquivos($arrPostagens);
@@ -35,6 +36,7 @@ class SisGrupo extends MY_Controller
       "titulo"        => gera_titulo_template("Área Inicial"),
       "GrupoTimeline" => $GrupoTimeline,
       "arrPostagens"  => $arrPostagens,
+      "arrSalvos"     => $arrSalvos,
       "arrArquivos"   => $arrArquivos,
       "vGruDescricao" => $vGruDesc,
     ));

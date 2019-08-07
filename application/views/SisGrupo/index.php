@@ -1,6 +1,7 @@
 <?php
 $GrupoTimeline = $GrupoTimeline ?? array();
 $arrPostagens  = $arrPostagens ?? array();
+$arrSalvos     = $arrSalvos ?? array();
 $arrArquivos   = $arrArquivos ?? array();
 $vGruDescricao = $vGruDescricao ?? "";
 
@@ -118,10 +119,13 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
           $foto     = $postagem["pes_foto"] ?? FOTO_DEFAULT;
 
           $idUsuLogado       = pegaUsuarioLogadoId() ?? 0;
+          $grpPessoaLogado   = pegaGrupoPessoaLogadoId() ?? -1;
           $ehPostagemPropria = ($idUsuLogado == $pesId);
           $strData           = ($data != "") ? date("d/m H:m", strtotime($data)): "";
           $strDataF          = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
           $strTexto          = nl2br($texto);
+          $ehFavoritado      = isset($arrSalvos[$id][$grpPessoaLogado]);
+          $strFavoritado     = ($ehFavoritado) ? "display:block;": "display:none;";
 
           // anexos
           $arquivosPost    = $arrArquivos[$id] ?? array();
@@ -143,7 +147,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                 <br />
                 <span title="<?=$strDataF?>" class="autor"><?=$pessoa?> | <?=$strData?></span>
 
-                <ul class="navbar-nav pull-right">
+                <ul class="ul-top-sis-grupo-postagem navbar-nav pull-right">
                   <li class="dropdown nav-item">
                     <a href="javascript:;" class="dropdown-toggle nav-link text-info" data-toggle="dropdown" aria-expanded="false">
                       <i class="material-icons">more_horiz</i>
@@ -155,10 +159,12 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                         ?>
                         <a href="javascript:;" onclick="deletarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Excluir</a>
                         <?php
+                      } else {
+                        ?>
+                        <a href="javascript:;" onclick="favoritarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
+                        <?php
                       }
-                      ?>
-                      <a href="javascript:;" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
-                      <?php
+
                       /*
                       <a href="javascript:;" class="dropdown-item">Something else here</a>
                       <div class="dropdown-divider"></div>
@@ -168,6 +174,9 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                       */
                       ?>
                     </div>
+                  </li>
+                  <li class="nav-item li-favoritado" style="<?=$strFavoritado?>">
+                    <i class="material-icons text-success">favorite</i>
                   </li>
                 </ul>
               </div>

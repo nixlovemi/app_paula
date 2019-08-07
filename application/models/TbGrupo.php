@@ -112,6 +112,12 @@ function validaGrupo($id, $idUsuLogado)
   $arrRetorno["erro"]  = false;
   $arrRetorno["msg"]   = "";
 
+  // so exibe de quem cadastrou
+  $CI         = pega_instancia();
+  $UsuarioLog = $CI->session->usuario_info ?? array();
+  $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
+  // ==========================
+
   require_once(APPPATH."/models/TbGrupo.php");
   $retG = pegaGrupo($id, true);
 
@@ -128,7 +134,7 @@ function validaGrupo($id, $idUsuLogado)
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Este grupo já está terminado.";
     }
-    if($Grupo["gru_usu_id"] != $idUsuLogado){
+    if($Grupo["gru_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Este grupo não faz parte do seu cadastro.";
     }

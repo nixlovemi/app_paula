@@ -207,6 +207,7 @@ function pegaPostagensGrupo($gruId, $limit = 50, $offset = 0)
     $arrRetorno["erro"]      = false;
     $arrRetorno["msg"]       = "";
     $arrRetorno["postagens"] = [];
+    $arrRetorno["salvos"]    = [];
     $arrRetorno["limit"]     = $limit;
     $arrRetorno["offset"]    = $offset;
 
@@ -255,11 +256,32 @@ function pegaPostagensGrupo($gruId, $limit = 50, $offset = 0)
         return $arrRetorno;
     }
 
+    $arrGrtId   = [];
+    $arrGrtId[] = 0;
     foreach ($query->result() as $row) {
         if (isset($row)) {
             $arrRetorno["postagens"][] = (array) $row;
+            $arrGrtId[]                = $row->grt_id;
         }
     }
+
+    // todos os salvos
+    $CI->db->select('gts_grt_id, gts_grp_id');
+    $CI->db->from('tb_grupo_timeline_salvo');
+    $CI->db->where('gts_grt_id IN ('.implode(",", $arrGrtId).')');
+    $query2 = $CI->db->get();
+
+    if ($query2) {
+        foreach ($query2->result() as $row) {
+            $grtId = $row->gts_grt_id;
+            if(!array_key_exists($grtId, $arrRetorno["salvos"])){
+                $arrRetorno["salvos"][$grtId] = [];
+            }
+
+            $arrRetorno["salvos"][$grtId][$row->gts_grp_id] = true;
+        }
+    }
+    // ===============
 
     return $arrRetorno;
 }
@@ -284,12 +306,17 @@ function deletaGrupoTimeline($vGrtId)
             $arrRetorno["msg"]  = $retGRT["msg"];
         } else {
             $GrupoTimeline = $retGRT["GrupoTimeline"] ?? array();
+            $gruId         = $GrupoTimeline["grt_gru_id"] ?? "";
             $pesId         = $GrupoTimeline["grp_pes_id"] ?? "";
             $usuLogadoId   = pegaUsuarioLogadoId();
+            $gruLogadoId   = pegaGrupoLogadoId();
 
             if ($usuLogadoId != "" && $usuLogadoId != $pesId) {
                 $arrRetorno["erro"] = true;
                 $arrRetorno["msg"]  = "Essa postagem não pertence a você!";
+            } else if($gruLogadoId != "" && $gruLogadoId != $gruId){
+                $arrRetorno["erro"] = true;
+                $arrRetorno["msg"]  = "Essa postagem não pertence a esse grupo!";
             } else {
                 $data = array(
                     "grt_ativo" => (int) 0

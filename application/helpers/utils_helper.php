@@ -77,12 +77,37 @@ function geraNotificacao($titulo, $mensagem, $tipo)
   $CI->session->set_flashdata('geraNotificacao', array("titulo"=>$titulo, "mensagem"=>$mensagem, "tipo"=>$tipo));
 }
 
+/**
+ * pes_id, usu_id
+ */
 function pegaUsuarioLogadoId()
 {
   $Usuario = $_SESSION["usuario_info"] ?? null;
   $id      = $Usuario->id ?? null;
 
   return $id;
+}
+
+function pegaGrupoLogadoId()
+{
+  $gruId = NULL;
+  $grpId = $_SESSION["grp_id"] ?? null;
+  if($grpId != NULL){
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGrp = pegaGrupoPessoa($grpId);
+    if(!$retGrp["erro"]){
+      $GrupoPessoa = $retGrp["GrupoPessoa"];
+      $gruId       = $GrupoPessoa["grp_gru_id"] ?? NULL;
+    }
+  }
+
+  return $gruId;
+}
+
+function pegaGrupoPessoaLogadoId()
+{
+  $grpId = $_SESSION["grp_id"] ?? null;
+  return $grpId;
 }
 
 function acerta_moeda($str)

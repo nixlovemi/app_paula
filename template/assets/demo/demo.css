@@ -184,6 +184,9 @@ ul.pagination .item-info {
   top: 2px;
   background-image: url(../../../assets/VideoAudioPlayer/images/icon_pause_white.png);
 }
+.item-postagem .li-favoritado{
+  height: 24px;
+}
 
 @media (max-width: 720px) 
 {

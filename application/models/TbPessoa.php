@@ -167,6 +167,12 @@ function validaPessoa($id, $idUsuLogado)
   $arrRetorno["erro"]  = false;
   $arrRetorno["msg"]   = "";
 
+  // so exibe de quem cadastrou
+  $CI         = pega_instancia();
+  $UsuarioLog = $CI->session->usuario_info ?? array();
+  $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
+  // ==========================
+
   require_once(APPPATH."/models/TbPessoa.php");
   $retP = pegaPessoa($id, true);
 
@@ -179,7 +185,7 @@ function validaPessoa($id, $idUsuLogado)
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Esta pessoa não está ativa.";
     }
-    if($Pessoa["pes_usu_id"] != $idUsuLogado){
+    if($Pessoa["pes_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Esta pessoa não faz parte do seu cadastro.";
     }
