@@ -369,4 +369,14 @@ async function fncAnexarArqPostagemYt()
     mvc_post_ajax_var('SisGrupo', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo + '&linkYt=' + linkYt);
   }
 }
+
+function deletarPostagem(id)
+{
+  mvc_post_ajax_var("GrupoTimeline", "jsonDeletaPostagem", "id=" + id);
+}
+
+function removeDvPostagem(id)
+{
+  $('div#item-postagem-' + id).remove();
+}
 /* ========= */

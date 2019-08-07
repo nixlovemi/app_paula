@@ -110,15 +110,18 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
         <?php
         foreach($arrPostagens as $postagem){
           $id       = $postagem["grt_id"] ?? "";
+          $pesId    = $postagem["grp_pes_id"] ?? "";
           $titulo   = $postagem["grt_titulo"] ?? "";
           $pessoa   = $postagem["pes_nome"] ?? "";
           $data     = $postagem["grt_data"] ?? "";
           $texto    = $postagem["grt_texto"] ?? "";
           $foto     = $postagem["pes_foto"] ?? FOTO_DEFAULT;
 
-          $strData  = ($data != "") ? date("d/m H:m", strtotime($data)): "";
-          $strDataF = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
-          $strTexto = nl2br($texto);
+          $idUsuLogado       = pegaUsuarioLogadoId() ?? 0;
+          $ehPostagemPropria = ($idUsuLogado == $pesId);
+          $strData           = ($data != "") ? date("d/m H:m", strtotime($data)): "";
+          $strDataF          = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
+          $strTexto          = nl2br($texto);
 
           // anexos
           $arquivosPost    = $arrArquivos[$id] ?? array();
@@ -128,7 +131,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
           $arquivosPostDiv = $arquivosPost["documentos"] ?? array();
           // ======
           ?>
-          <div class="row item-postagem">
+          <div class="row item-postagem" id="item-postagem-<?= $id ?>">
             <div class="col-md-12">
               <div class="postagem-inner postagem-inner-top">
                 <div style="margin-right:10px;" class="profile-photo-small pull-left">
@@ -147,7 +150,13 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                     </a>
                     <div class="dropdown-menu">
                       <h6 class="dropdown-header">Ações</h6>
-                      <a href="javascript:;" class="dropdown-item dropdown-item-info">Excluir</a>
+                      <?php
+                      if($ehPostagemPropria){
+                        ?>
+                        <a href="javascript:;" onclick="deletarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Excluir</a>
+                        <?php
+                      }
+                      ?>
                       <a href="javascript:;" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
                       <?php
                       /*

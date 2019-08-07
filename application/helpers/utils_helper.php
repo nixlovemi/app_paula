@@ -84,6 +84,7 @@ function pegaUsuarioLogadoId()
 
   return $id;
 }
+
 function acerta_moeda($str)
 {
     $str = trim($str);
