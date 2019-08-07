@@ -40,37 +40,44 @@ function preConfereArquivos($vFiles, $grtId)
   $arrRetorno["msg"]      = "";
   $arrRetorno["arquivos"] = "";
 
-  // @todo talvez fazer a validacao dos tipos de arquivo aqui tb
+  // @todo talvez fazer a validacao dos tipos de arquivo aqui tb (pode vir links tbm)
   $qtItens = count($vFiles["arquivos"]["name"]);
   for($i=0; $i<$qtItens; $i++){
-    $nomeOriginal     = $vFiles["arquivos"]["name"][$i];
-    $pathTemporario   = $vFiles["arquivos"]["tmp_name"][$i];
+    $nomeOriginal     = $vFiles["arquivos"]["name"][$i] ?? "";
+    $pathTemporario   = $vFiles["arquivos"]["tmp_name"][$i] ?? "";
     #$tipoArquivo      = $vFiles["arquivos"]["type"][$i];
     #$tamanhoKbArquivo = $vFiles["arquivos"]["size"][$i] / 1000;
-    
-    // ve se pasta existe; senao cria
-    if(!file_exists(PASTA_UPLOAD . $grtId)){
-      mkdir(PASTA_UPLOAD . $grtId);
-    }
-    // ==============================
 
     require_once(APPPATH."/helpers/utils_helper.php");
-    $info             = new SplFileInfo($nomeOriginal);
-    $extensaoArquivo  = strtolower($info->getExtension());
-    $nomeNovo         = sanitize_file_name($nomeOriginal);
-    $caminhoNovo      = PASTA_UPLOAD . $grtId . "/" . $nomeNovo;
-
-    $ret = move_uploaded_file($pathTemporario, $caminhoNovo);
-    if($ret){
-      if($extensaoArquivo == "jpg"){
-        compressImage($caminhoNovo);
-      } else if($extensaoArquivo == "avi"){
-        convertVideo($caminhoNovo);
-      }
-
+    if(eh_link_youtube($nomeOriginal)){
       $arrRetorno["arquivos"][] = array(
-        "caminho" => str_replace(FCPATH, "", $caminhoNovo)
+        "caminho" => $nomeOriginal
       );
+    } else {
+      // ve se pasta existe; senao cria
+      if(!file_exists(PASTA_UPLOAD . $grtId)){
+        mkdir(PASTA_UPLOAD . $grtId);
+      }
+      // ==============================
+      
+      require_once(APPPATH."/helpers/utils_helper.php");
+      $info             = new SplFileInfo($nomeOriginal);
+      $extensaoArquivo  = strtolower($info->getExtension());
+      $nomeNovo         = sanitize_file_name($nomeOriginal);
+      $caminhoNovo      = PASTA_UPLOAD . $grtId . "/" . $nomeNovo;
+
+      $ret = move_uploaded_file($pathTemporario, $caminhoNovo);
+      if($ret){
+        if($extensaoArquivo == "jpg"){
+          compressImage($caminhoNovo);
+        } else if($extensaoArquivo == "avi"){
+          convertVideo($caminhoNovo);
+        }
+
+        $arrRetorno["arquivos"][] = array(
+          "caminho" => str_replace(FCPATH, "", $caminhoNovo)
+        );
+      }
     }
   }
 
@@ -164,11 +171,14 @@ function pegaArquivos($arrPostagens)
         );
 
         $caminhoArquivo = FCPATH . $row->gta_caminho;
-        if( exif_imagetype($caminhoArquivo) !== false ){
+        if(eh_link_youtube($row->gta_caminho)){
+          $textoIdx = "video";
+          $caminhoArquivo = $row->gta_caminho; #tira o path inteiro e deixa só o link
+        } else if( exif_imagetype($caminhoArquivo) !== false ){
           $textoIdx = "imagens";
         } else if( eh_audio($caminhoArquivo) !== false ){
           $textoIdx = "audio";
-        } else if(eh_video($caminhoArquivo)){
+        } else if( eh_video($caminhoArquivo)){
           $textoIdx = "video";
         }else {
           $textoIdx = "documentos";

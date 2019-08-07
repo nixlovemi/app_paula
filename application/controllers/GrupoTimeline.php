@@ -52,12 +52,19 @@ class GrupoTimeline extends MY_Controller
       $grtId = $retInserir["grtId"] ?? "";
 
       // verifica anexos
+      $arrLinks = $_REQUEST["arquivos"] ?? array();
+      foreach($arrLinks as $linkYT){
+        $_FILES["arquivos"]["name"][]     = $linkYT;
+        $_FILES["arquivos"]["tmp_name"][] = "";
+      }
+      
       if(count($_FILES) > 0){
         require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
         $arrFiles = preConfereArquivos($_FILES, $grtId);
         $retGTA   = insereArquivos($grtId, $arrFiles["arquivos"] ?? array());
         // @todo talvez tratar o retorno
       }
+      // ===============
       
       $this->session->set_flashdata('GrupoTimeline', array());
       geraNotificacao("Sucesso!", $retInserir["msg"], "success");

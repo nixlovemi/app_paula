@@ -155,7 +155,6 @@ function init_components()
     });
     
     $(".postagem-inner .post-video").each(function() {
-      console.log(1);
       $(this).responsive(true);
     });
     // ===========
@@ -350,5 +349,24 @@ function fncAnexarArqPostagem()
 {
   var idAnexo = $('#lista-anexos .anexo').length + 1;
   mvc_post_ajax_var('SisGrupo', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo);
+}
+
+async function fncAnexarArqPostagemYt()
+{
+  var idAnexo = $('#lista-anexos .anexo').length + 1;
+  const {value: linkYt} = await Swal.fire({
+    title: 'Digite o link do Youtube',
+    input: 'text',
+    inputPlaceholder: 'Link Youtube',
+    inputAttributes: {
+      maxlength: 60,
+      autocapitalize: 'off',
+      autocorrect: 'off'
+    }
+  });
+
+  if (linkYt) {
+    mvc_post_ajax_var('SisGrupo', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo + '&linkYt=' + linkYt);
+  }
 }
 /* ========= */

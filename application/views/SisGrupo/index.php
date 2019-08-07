@@ -80,10 +80,14 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
               </div>
               <div class="col-md-8">
                 <button type="button" onclick="$('#frmNovaPostagem').submit()" class="btn btn-info btn-sm pull-right">Publicar</button>
-                <a href="javascript:;" class="btn btn-default btn-sm pull-right" onclick="fncAnexarArqPostagem()">
+                <a href="javascript:;" data-toggle="dropdown" aria-expanded="false" class="btn btn-default btn-sm pull-right dropdown-toggle">
                   <i class="material-icons">attach_file</i>
                   Anexar
                 </a>
+                <div class="dropdown-menu">
+                  <a href="javascript:;" class="dropdown-item dropdown-item-info" onclick="fncAnexarArqPostagem()">Do Computador</a>
+                  <a href="javascript:;" class="dropdown-item dropdown-item-info" onclick="fncAnexarArqPostagemYt()">Youtube</a>
+                </div>
               </div>
             </div>
             <div class="row">
@@ -143,8 +147,8 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                     </a>
                     <div class="dropdown-menu">
                       <h6 class="dropdown-header">Ações</h6>
-                      <a href="javascript:;" class="dropdown-item">Excluir</a>
-                      <a href="javascript:;" class="dropdown-item">Salvar Favorito</a>
+                      <a href="javascript:;" class="dropdown-item dropdown-item-info">Excluir</a>
+                      <a href="javascript:;" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
                       <?php
                       /*
                       <a href="javascript:;" class="dropdown-item">Something else here</a>
@@ -164,6 +168,7 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
                 <?=$strTexto?>
                 
                 <?php
+                // @todo talvez criar uma view pra cada tipo de anexo
                 if(count($arquivosPostImg) > 0){
                   ?>
                   <div class="fcbkGrid" style="display:none;">
@@ -186,14 +191,22 @@ $strPublico    = ($publico == 1) ? "checked=''": "";
 
                 if(count($arquivosPostVid) > 0){
                   foreach($arquivosPostVid as $arquivo){
+                    if(eh_link_youtube($arquivo["gta_caminho"])){
+                      ?>
+                      <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
+                      <div class='embed-container'><iframe src='https://www.youtube.com/embed/<?php echo pegaStrLinkYoutube($arquivo["gta_caminho"]); ?>' frameborder='0' allowfullscreen></iframe></div>
+                      <?php
+                    } else {
+                      $url = base_url() . $arquivo["gta_caminho"];
                     
-                    #echo "<div class='wrapper'>";
-                    #echo "  <div class='videocontent'>";
-                    echo "    <video class='post-video' controls class='video-js vjs-layout-medium' preload='auto'>";
-                    echo "      <source src='".base_url() . $arquivo["gta_caminho"]."'>";
-                    echo "    </video>";
-                    #echo "  </div>";
-                    #echo "</div>";
+                      #echo "<div class='wrapper'>";
+                      #echo "  <div class='videocontent'>";
+                      echo "    <video class='post-video' controls class='video-js vjs-layout-medium' preload='auto'>";
+                      echo "      <source src='$url'>";
+                      echo "    </video>";
+                      #echo "  </div>";
+                      #echo "</div>";
+                    }
                   }
                 }
                 ?>

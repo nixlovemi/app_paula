@@ -204,6 +204,28 @@ function eh_video($caminho)
   }
 }
 
+function eh_link_youtube($link)
+{
+  $ehYoutube = strpos($link, "youtu.be") !== false || strpos($link, "youtube.com") !== false;
+  return $ehYoutube;
+}
+
+function pegaStrLinkYoutube($link)
+{
+  // @todo talvez melhorar a logica da analise do link
+  $ehEncurtado = strpos($link, "youtu.be") !== false;
+  $ehEmbed     = strpos($link, "youtube.com/embed/") !== false;
+  if($ehEncurtado || $ehEmbed){
+    $arrLink = explode("/", $link);
+    return end($arrLink);
+  } else {
+    $arrKeys = parse_url($link);
+    $strKeys = $arrKeys["query"] ?? "";
+    parse_str($strKeys);
+    return $v ?? "";
+  }
+}
+
 function sanitize_file_name($filename)
 {
   $filename_raw  = $filename;
