@@ -38,7 +38,7 @@ function preConfereArquivos($vFiles, $grtId)
   $arrRetorno             = [];
   $arrRetorno["erro"]     = false;
   $arrRetorno["msg"]      = "";
-  $arrRetorno["arquivos"] = "";
+  $arrRetorno["arquivos"] = [];
 
   // @todo talvez fazer a validacao dos tipos de arquivo aqui tb (pode vir links tbm)
   $qtItens = count($vFiles["arquivos"]["name"]);
