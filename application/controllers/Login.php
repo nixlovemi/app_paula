@@ -138,4 +138,33 @@ class Login extends CI_Controller
       }
     }
   }
+
+  /**
+   * qdo admin tá no editar do grupo e vai pra dashboard
+   */
+  public function visualizarDashGrupo()
+  {
+    $variaveisPost = processaPost();
+    $gruId         = $variaveisPost->g_id ?? "";
+    $usuId         = $variaveisPost->u_id ?? "";
+
+    require_once(APPPATH."/models/Login.php");
+    $retLogin = executaLoginAdmGrupo($gruId, $usuId);
+    if($retLogin->erro){
+      $this->session->set_flashdata('LoginMessage', $retLogin->msg);
+      redirect(BASE_URL . 'Login/sistema');
+    } else {
+      $infoUsr = $retLogin->infoUsr ?? array();
+      $Usuario = json_decode($infoUsr);
+
+      require_once(APPPATH."/models/Session.php");
+      require_once(APPPATH."/models/TbMenu.php");
+      $arrMenu = geraArrMenuUsuario($Usuario->id, false, true);
+      inicia_session($arrMenu, $Usuario, true, -1); #coloco -1 pra iniciar, depois altero pro certo
+
+      $this->session->grp_id       = $gruId;
+      $this->session->usuario_dash = true;
+      redirect(BASE_URL . 'SisGrupo');
+    }
+  }
 }
