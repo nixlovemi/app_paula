@@ -208,10 +208,10 @@ if($GRP_ID > 0){
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                  <a class="dropdown-item dropdown-item-info" href="#">Profile</a>
-                  <a class="dropdown-item dropdown-item-info" href="#">Settings</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">Perfil</a>
+                  <a class="dropdown-item dropdown-item-info" href="#">Configurações</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item dropdown-item-info" href="<?php echo $URL_LOGOUT; ?>">Log out</a>
+                  <a class="dropdown-item dropdown-item-info" href="<?php echo $URL_LOGOUT; ?>">Sair</a>
                 </div>
               </li>
             </ul>

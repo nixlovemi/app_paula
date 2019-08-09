@@ -24,7 +24,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
-  $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_ativo";
+  $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_usu_id, grp_ativo";
   if(!$apenasCamposTabela){
     $camposTabela .= ", ativo, gru_usu_id, gru_descricao, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
   }
@@ -50,6 +50,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $Grupo["grp_id"]          = $row->grp_id;
   $Grupo["grp_gru_id"]      = $row->grp_gru_id;
   $Grupo["grp_pes_id"]      = $row->grp_pes_id;
+  $Grupo["grp_usu_id"]      = $row->grp_usu_id;
   $Grupo["grp_ativo"]       = $row->grp_ativo;
   if(!$apenasCamposTabela){
     $Grupo["ativo"]         = $row->ativo;
@@ -126,6 +127,68 @@ function pegaGruposPessoaId($pes_id)
         if(!$retGP["erro"]){
           $GrupoPessoa = $retGP["GrupoPessoa"] ?? array();
           $arrRetorno["GruposPessoa"][] = $GrupoPessoa;
+        }
+      }
+    }
+  }
+
+  return $arrRetorno;
+}
+
+function pegaGrupoPessoasGru($gru_id, $apenas_staff=false)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]          = false;
+  $arrRetorno["msg"]           = "";
+  $arrRetorno["GruposPessoas"] = [];
+  $idUsuLogado                 = pegaUsuarioLogadoId();
+
+  if(!is_numeric($gru_id)){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Grupo inválido para buscar pessoas!";
+  } else {
+    // valida grupo válido
+    require_once(APPPATH."/models/TbGrupo.php");
+    $retGrp = validaGrupo($gru_id, $idUsuLogado);
+    if($retGrp["erro"]){
+      $arrRetorno["erro"] = true;
+      $arrRetorno["msg"]  = $retGrp["msg"];
+    } else {
+      $CI = pega_instancia();
+      $CI->load->database();
+
+      // so exibe de quem cadastrou
+      $UsuarioLog = $CI->session->usuario_info ?? array();
+      $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
+      // ==========================
+
+      $CI->db->select('grp_id');
+      $CI->db->from('v_tb_grupo_pessoa');
+      $CI->db->where('grp_gru_id =', $gru_id);
+      if($UsuarioLog->admin == 0 && $vGrpId == NULL){
+        $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+      }
+      if($apenas_staff){
+        $CI->db->where('pet_cliente =', 0);
+      }
+      $query = $CI->db->get();
+
+      if(!$query){
+        $arrRetorno["erro"] = true;
+        $arrRetorno["msg"]  = "Erro ao encontrar os participantes desse grupo!";
+
+        return $arrRetorno;
+      }
+
+      foreach ($query->result() as $row) {
+        if (isset($row)) {
+          $vGrpId = $row->grp_id ?? "";
+
+          $retGP = pegaGrupoPessoa($vGrpId, false);
+          if(!$retGP["erro"]){
+            $GrupoPessoa = $retGP["GrupoPessoa"] ?? array();
+            $arrRetorno["GruposPessoas"][] = $GrupoPessoa;
+          }
         }
       }
     }
@@ -283,6 +346,66 @@ function insereGrupoPessoaBatch($arrGrupoPessoa)
   } else {
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = "Nenhuma pessoa encontrada para inserir no Grupo.";
+  }
+
+  return $arrRetorno;
+}
+
+function insereGrupoPessoaDono($gru_id, $usu_id)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+  $idUsuLogado         = pegaUsuarioLogadoId();
+
+  // validacao basica dos campos
+  $strValida   = "";
+
+  if(!is_numeric($gru_id)){
+    $strValida .= "<br />&nbsp;&nbsp;* Grupo inválido para adicionar pessoa.";
+  }
+
+  if(!is_numeric($usu_id)){
+    $strValida .= "<br />&nbsp;&nbsp;* Usuário inválido para gerenciar grupo.";
+  }
+  // ===========================
+
+  // valida grupo válido
+  require_once(APPPATH."/models/TbGrupo.php");
+  $retGrp = validaGrupo($gru_id, $idUsuLogado);
+  if($retGrp["erro"]){
+    $strValida .= "<br />&nbsp;&nbsp;* " . $retGrp["msg"];
+  }
+  // ===================
+  
+  if($strValida != ""){
+    $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";
+      
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $strValida;
+  } else {
+    $data = array(
+      "grp_gru_id" => $gru_id,
+      "grp_usu_id" => $usu_id,
+      "grp_ativo"  => (int) 1,
+    );
+
+    $CI = pega_instancia();
+    $CI->load->database();
+
+    if(count($data) > 0){
+      $retInsert = $CI->db->insert('tb_grupo_pessoa', $data);
+      if($retInsert === false){
+        $arrRetorno["erro"] = true;
+        $arrRetorno["msg"]  = "Erro ao inserir as pessoas no Grupo.";
+      } else {
+        $arrRetorno["erro"]  = false;
+        $arrRetorno["msg"]   = "Pessoas inseridas no grupo com sucesso.";
+      }
+    } else {
+      $arrRetorno["erro"] = true;
+      $arrRetorno["msg"]  = "Nenhuma pessoa encontrada para inserir no Grupo.";
+    }   
   }
 
   return $arrRetorno;

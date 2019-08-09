@@ -201,89 +201,90 @@ function insereGrupoTimeline($GrupoTimeline)
     return $arrRetorno;
 }
 
-function pegaPostagensGrupo($gruId, $limit = 50, $offset = 0)
+function pegaPostagensGrupo($gruId, $grpId = NULL, $limit = 50, $offset = 0)
 {
-    $arrRetorno              = [];
-    $arrRetorno["erro"]      = false;
-    $arrRetorno["msg"]       = "";
-    $arrRetorno["postagens"] = [];
-    $arrRetorno["salvos"]    = [];
-    $arrRetorno["limit"]     = $limit;
-    $arrRetorno["offset"]    = $offset;
+  $arrRetorno              = [];
+  $arrRetorno["erro"]      = false;
+  $arrRetorno["msg"]       = "";
+  $arrRetorno["postagens"] = [];
+  $arrRetorno["salvos"]    = [];
+  $arrRetorno["gruId"]     = $gruId;
+  $arrRetorno["grpId"]     = $grpId;
+  $arrRetorno["limit"]     = $limit;
+  $arrRetorno["offset"]    = $offset;
+  $idUsuLogado             = pegaUsuarioLogadoId();
 
-    // validacoes
-    if (!is_numeric($gruId)) {
-        $arrRetorno["erro"] = true;
-        $arrRetorno["msg"]  = "ID inválido para buscar postagens!";
-        return $arrRetorno;
-    }
+  // validacoes
+  if (!is_numeric($gruId)) {
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "ID inválido para buscar postagens!";
+    return $arrRetorno;
+  }
 
-    require_once(APPPATH."/models/TbGrupo.php");
-    $retGrp = pegaGrupo($gruId);
-    if ($retGrp["erro"]) {
-        $arrRetorno["erro"] = true;
-        $arrRetorno["msg"]  = $retGrp["msg"];
-        return $arrRetorno;
-    } else {
-        $Grupo     = $retGrp["Grupo"] ?? array();
-        $vGruAtivo = $Grupo["gru_ativo"] ?? 0;
-        if ($vGruAtivo <> 1) {
-            $arrRetorno["erro"] = true;
-            $arrRetorno["msg"]  = "Esse grupo está inativo.";
-            return $arrRetorno;
-        }
-    }
-    // ==========
-
-    $CI = pega_instancia();
-    $CI->load->database();
-
-    $CI->db->select('*');
-    $CI->db->from('v_tb_grupo_timeline');
-    $CI->db->where('grt_gru_id =', $gruId);
-    $CI->db->where('grt_publico =', 1);
-    $CI->db->where('grt_ativo =', 1);
-    $CI->db->where('grt_resposta_id IS NULL');
-    $CI->db->where('pet_cliente =', 1);
-    $CI->db->order_by('grt_data', 'DESC');
-    $CI->db->limit($limit, $offset);
-    $query = $CI->db->get();
-
-    if (!$query) {
-        $arrRetorno["erro"] = true;
-        $arrRetorno["msg"]  = "Erro ao carregar postagens desse grupo!";
-
-        return $arrRetorno;
-    }
-
-    $arrGrtId   = [];
-    $arrGrtId[] = 0;
-    foreach ($query->result() as $row) {
-        if (isset($row)) {
-            $arrRetorno["postagens"][] = (array) $row;
-            $arrGrtId[]                = $row->grt_id;
-        }
-    }
-
-    // todos os salvos
-    $CI->db->select('gts_grt_id, gts_grp_id');
-    $CI->db->from('tb_grupo_timeline_salvo');
-    $CI->db->where('gts_grt_id IN ('.implode(",", $arrGrtId).')');
-    $query2 = $CI->db->get();
-
-    if ($query2) {
-        foreach ($query2->result() as $row) {
-            $grtId = $row->gts_grt_id;
-            if(!array_key_exists($grtId, $arrRetorno["salvos"])){
-                $arrRetorno["salvos"][$grtId] = [];
-            }
-
-            $arrRetorno["salvos"][$grtId][$row->gts_grp_id] = true;
-        }
-    }
-    // ===============
+  // valida grupo válido
+  require_once(APPPATH."/models/TbGrupo.php");
+  $retGrp = validaGrupo($gruId, $idUsuLogado);
+  if($retGrp["erro"]){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $retGrp["msg"];
 
     return $arrRetorno;
+  }
+  // ===================
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('*');
+  $CI->db->from('v_tb_grupo_timeline');
+  $CI->db->where('grt_gru_id =', $gruId);
+  $CI->db->where('grt_publico =', 1);
+  $CI->db->where('grt_ativo =', 1);
+  $CI->db->where('grt_resposta_id IS NULL');
+  if($grpId > 0){
+    $CI->db->where('grp_id =', $grpId);
+  } else {
+    $CI->db->where('pet_cliente =', 1);
+  }
+  $CI->db->order_by('grt_data', 'DESC');
+  $CI->db->limit($limit, $offset);
+  $query = $CI->db->get();
+
+  if (!$query) {
+      $arrRetorno["erro"] = true;
+      $arrRetorno["msg"]  = "Erro ao carregar postagens desse grupo!";
+
+      return $arrRetorno;
+  }
+
+  $arrGrtId   = [];
+  $arrGrtId[] = 0;
+  foreach ($query->result() as $row) {
+    if (isset($row)) {
+      $arrRetorno["postagens"][] = (array) $row;
+      $arrGrtId[] = $row->grt_id;
+    }
+  }
+
+  // todos os salvos
+  $CI->db->select('gts_grt_id, gts_grp_id');
+  $CI->db->from('tb_grupo_timeline_salvo');
+  $CI->db->where('gts_grt_id IN ('.implode(",", $arrGrtId).')');
+  $query2 = $CI->db->get();
+
+  if ($query2) {
+    foreach ($query2->result() as $row) {
+      $grtId = $row->gts_grt_id;
+      if (!array_key_exists($grtId, $arrRetorno["salvos"])) {
+        $arrRetorno["salvos"][$grtId] = [];
+      }
+
+      $arrRetorno["salvos"][$grtId][$row->gts_grp_id] = true;
+    }
+  }
+  // ===============
+
+  return $arrRetorno;
 }
 
 function deletaGrupoTimeline($vGrtId)

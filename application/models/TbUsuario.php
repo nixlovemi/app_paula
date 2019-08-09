@@ -16,7 +16,7 @@ function pegaUsuario($usuId, $apenasCamposTabela=false)
   $CI = pega_instancia();
   $CI->load->database();
 
-  $campos = "usu_id, usu_email, usu_senha, usu_nome, usu_ativo, usu_usa_id";
+  $campos = "usu_id, usu_email, usu_senha, usu_nome, usu_foto, usu_ativo, usu_usa_id";
   if(!$apenasCamposTabela){
     $campos .= ", usa_usuario";
   }
@@ -40,6 +40,7 @@ function pegaUsuario($usuId, $apenasCamposTabela=false)
   $Usuario["usu_email"]   = $row->usu_email;
   $Usuario["usu_senha"]   = $row->usu_senha;
   $Usuario["usu_nome"]    = $row->usu_nome;
+  $Usuario["usu_foto"]    = $row->usu_foto;
   $Usuario["usu_ativo"]   = $row->usu_ativo;
   $Usuario["usu_usa_id"]  = $row->usu_usa_id;
   if(!$apenasCamposTabela){

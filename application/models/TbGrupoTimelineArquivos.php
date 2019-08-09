@@ -141,50 +141,52 @@ function pegaArquivos($arrPostagens)
     }
   }
 
-  $CI->db->select('gta_id, gta_grt_id, gta_caminho');
-  $CI->db->from('tb_grupo_timeline_arquivos');
-  $CI->db->where('gta_grt_id IN ('.implode(",", $arrGrtId).')');
-  $query = $CI->db->get();
-  
-  if(!$query){
-    $arrRetorno["erro"] = true;
-    $arrRetorno["msg"]  = "Erro ao encontrar arquivos das postagens desse grupo!";
+  if( count($arrGrtId) > 0 ){
+    $CI->db->select('gta_id, gta_grt_id, gta_caminho');
+    $CI->db->from('tb_grupo_timeline_arquivos');
+    $CI->db->where('gta_grt_id IN ('.implode(",", $arrGrtId).')');
+    $query = $CI->db->get();
 
-    return $arrRetorno;
-  }
+    if(!$query){
+      $arrRetorno["erro"] = true;
+      $arrRetorno["msg"]  = "Erro ao encontrar arquivos das postagens desse grupo!";
 
-  foreach ($query->result() as $row) {
-    if (isset($row)) {
-      $vGtaGrtId = $row->gta_grt_id ?? "";
-      if($vGtaGrtId != ""){
-        if(!array_key_exists($vGtaGrtId, $arrRetorno["arquivos"])){
-          $arrRetorno["arquivos"][$vGtaGrtId] = [];
-          $arrRetorno["arquivos"][$vGtaGrtId]["imagens"]    = []; #jpg, png
-          $arrRetorno["arquivos"][$vGtaGrtId]["audio"]      = []; #mp3, ogg
-          $arrRetorno["arquivos"][$vGtaGrtId]["video"]      = [];
-          $arrRetorno["arquivos"][$vGtaGrtId]["documentos"] = []; #doc, xls, pdf ...
+      return $arrRetorno;
+    }
+
+    foreach ($query->result() as $row) {
+      if (isset($row)) {
+        $vGtaGrtId = $row->gta_grt_id ?? "";
+        if($vGtaGrtId != ""){
+          if(!array_key_exists($vGtaGrtId, $arrRetorno["arquivos"])){
+            $arrRetorno["arquivos"][$vGtaGrtId] = [];
+            $arrRetorno["arquivos"][$vGtaGrtId]["imagens"]    = []; #jpg, png
+            $arrRetorno["arquivos"][$vGtaGrtId]["audio"]      = []; #mp3, ogg
+            $arrRetorno["arquivos"][$vGtaGrtId]["video"]      = [];
+            $arrRetorno["arquivos"][$vGtaGrtId]["documentos"] = []; #doc, xls, pdf ...
+          }
+
+          $arrArquivo = array(
+            "gta_id" => $row->gta_id ?? "",
+            "gta_caminho" => $row->gta_caminho ?? ""
+          );
+
+          $caminhoArquivo = FCPATH . $row->gta_caminho;
+          if(eh_link_youtube($row->gta_caminho)){
+            $textoIdx = "video";
+            $caminhoArquivo = $row->gta_caminho; #tira o path inteiro e deixa só o link
+          } else if( exif_imagetype($caminhoArquivo) !== false ){
+            $textoIdx = "imagens";
+          } else if( eh_audio($caminhoArquivo) !== false ){
+            $textoIdx = "audio";
+          } else if( eh_video($caminhoArquivo)){
+            $textoIdx = "video";
+          }else {
+            $textoIdx = "documentos";
+          }
+
+          $arrRetorno["arquivos"][$vGtaGrtId][$textoIdx][] = $arrArquivo;
         }
-
-        $arrArquivo = array(
-          "gta_id" => $row->gta_id ?? "",
-          "gta_caminho" => $row->gta_caminho ?? ""
-        );
-
-        $caminhoArquivo = FCPATH . $row->gta_caminho;
-        if(eh_link_youtube($row->gta_caminho)){
-          $textoIdx = "video";
-          $caminhoArquivo = $row->gta_caminho; #tira o path inteiro e deixa só o link
-        } else if( exif_imagetype($caminhoArquivo) !== false ){
-          $textoIdx = "imagens";
-        } else if( eh_audio($caminhoArquivo) !== false ){
-          $textoIdx = "audio";
-        } else if( eh_video($caminhoArquivo)){
-          $textoIdx = "video";
-        }else {
-          $textoIdx = "documentos";
-        }
-
-        $arrRetorno["arquivos"][$vGtaGrtId][$textoIdx][] = $arrArquivo;
       }
     }
   }

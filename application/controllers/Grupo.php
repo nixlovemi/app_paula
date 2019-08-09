@@ -72,6 +72,7 @@ class Grupo extends MY_Controller
 
       require_once(APPPATH."/models/TbGrupoPessoa.php");
       insereGrupoPessoaBatch($arrGrupoPessoa);
+      insereGrupoPessoaDono($retInserir["gruId"], pegaUsuarioLogadoId());
       // ==========================
 
       geraNotificacao("Sucesso!", $retInserir["msg"], "success");
