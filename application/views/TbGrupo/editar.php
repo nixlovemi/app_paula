@@ -65,7 +65,7 @@ $arrAtivo   = array("0"=>"Não", "1"=>"Sim");
           </div>
             <div class="row">
               <div class="col-md-12">
-                <a href="javascript:;" onclick="$('#frmVisualizarDashGrupo').submit()" class="btn btn-info btn-lg">
+                <a href="javascript:;" class="btn btn-info btn-lg">
                   Visualizar Dashboard do Grupo
                   <div class="ripple-container"></div>
                 </a>
@@ -95,9 +95,4 @@ $arrAtivo   = array("0"=>"Não", "1"=>"Sim");
   </a>
   <button type="submit" class="btn btn-info pull-right">Salvar</button>
   <div class="clearfix"></div>
-</form>
-
-<form id="frmVisualizarDashGrupo" method="post" action="<?php echo base_url() ?>Login/visualizarDashGrupo"">
-  <input type="hidden" name="g_id" value="<?php echo $vId; ?>" />
-  <input type="hidden" name="u_id" value="<?php echo pegaUsuarioLogadoId(); ?>" />
 </form>

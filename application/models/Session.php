@@ -7,7 +7,6 @@ function getArrSession()
     "template_menu" => array(),
     "usuario_info"  => "",
     "grp_id"        => "",
-    "usuario_dash"  => false, #qdo usuário (dono do grupo) entra na dash do grupo
   );
 }
 
