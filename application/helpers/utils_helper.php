@@ -120,6 +120,17 @@ function pegaFotoLogado()
   return BASE_URL . $img;
 }
 
+function pegaControllerAction()
+{
+  $CI = pega_instancia();
+
+  $arrRet = [];
+  $arrRet["controller"] = $CI->router->fetch_class();
+  $arrRet["action"]     = $CI->router->fetch_method();
+
+  return $arrRet;
+}
+
 function acerta_moeda($str)
 {
     $str = trim($str);

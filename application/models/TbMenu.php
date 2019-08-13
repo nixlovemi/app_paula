@@ -14,8 +14,10 @@ function geraArrMenuUsuario($id, $admin=false, $grupo=false)
   $CI->db->where('men_ativo =', 1);
   if($grupo){
     $CI->db->where('men_grupo =', 1);
+    $CI->db->where('men_admin =', 0);
   } else {
     $CI->db->where('men_admin =', ($admin) ? 1: 0);
+    $CI->db->where('men_grupo =', 0);
   }
   $CI->db->order_by('men_descricao', 'ASC');
 

@@ -110,6 +110,9 @@ class SisGrupo extends MY_Controller
     $arrPostagens = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
     $arrSalvos    = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
 
+    $retResp = pegaRespostasGrupoTimeline($arrPostagens);
+    $arrResp = (!$retResp["erro"] && isset($retResp["respostas"])) ? $retResp["respostas"]: array();
+
     require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
     $retGTA      = pegaArquivos($arrPostagens);
     $arrArquivos = ($retGTA["erro"]) ? array(): $retGTA["arquivos"];
@@ -123,6 +126,7 @@ class SisGrupo extends MY_Controller
       "arrPostagens"  => $arrPostagens,
       "arrSalvos"     => $arrSalvos,
       "arrArquivos"   => $arrArquivos,
+      "arrResp"       => $arrResp,
       "vPesNome"      => $GrupoPessoa["pes_nome"] ?? "",
     ), true);
 

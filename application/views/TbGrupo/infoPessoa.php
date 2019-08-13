@@ -7,7 +7,9 @@ $GrupoPessoa        = $GrupoPessoa ?? array();
 $Grupo              = $Grupo ?? array();
 $GrupoPessoaInfoGrp = $GrupoPessoaInfoGrp ?? array();
 $htmlPeso           = $htmlPeso ?? "";
+$lancar             = $lancar ?? true;
 $editar             = $editar ?? false;
+$exibeVoltar        = $exibeVoltar ?? true;
 
 $pesId       = $GrupoPessoa["grp_pes_id"] ?? "";
 $pesNome     = $GrupoPessoa["pes_nome"] ?? "";
@@ -76,7 +78,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
             <div class="col-md-12">
               <p style="margin-bottom: 0;">As medidas iniciais não foram lançadas.</p>
               <?php
-              if($editar){
+              if($editar || $lancar){
                 ?>
                 <a href="javascript:;" class="btn btn-info btn-sm" onclick="jsonAddGrupoPessoaInfo(<?php echo $pesId; ?>, <?php echo $gruId; ?>);">
                   Lançar agora
@@ -149,7 +151,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
           <div class="row">
             <div class="col-md-12">
               <?php
-              if($editar){
+              if($editar || $lancar){
                 ?>
                 <a href="javascript:;" class="btn btn-info btn-sm" onclick="jsonAddGrupoPessoaInfo(<?php echo $pesId; ?>, <?php echo $gruId; ?>);">
                   Lançar medida
@@ -217,9 +219,15 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
     }
     ?>
 
-    <a href="<?php echo base_url() ?>Grupo/editar/<?php echo $gruId;?>" class="btn btn-default pull-right">
-      Voltar
-      <div class="ripple-container"></div>
-    </a>
+    <?php
+    if($exibeVoltar){
+      ?>
+      <a href="<?php echo base_url() ?>Grupo/editar/<?php echo $gruId;?>" class="btn btn-default pull-right">
+        Voltar
+        <div class="ripple-container"></div>
+      </a>
+      <?php
+    }
+    ?>
   </div>
 </div>

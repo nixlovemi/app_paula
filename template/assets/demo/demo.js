@@ -270,7 +270,7 @@ async function jsonAlteraSenha(controller, action, id)
 /* grupo pessoa info */
 function jsonAddGrupoPessoaInfo(pessoa, grupo)
 {
-  mvc_post_ajax_var("GrupoPessoaInfo", "jsonPegaViewAddGpi", "pessoa=" + pessoa + '&grupo=' + grupo);
+  mvc_post_ajax_var("Json", "jsonPegaViewAddGpi", "pessoa=" + pessoa + '&grupo=' + grupo);
 }
 
 function jsonShowAddGrupoPessoaInfo(html)
@@ -295,7 +295,7 @@ function jsonShowAddGrupoPessoaInfo(html)
 
 function jsonSaveGrupoPessoaInfo(strVars)
 {
-  mvc_post_ajax_var("GrupoPessoaInfo", "jsonPostAddGpi", strVars);
+  mvc_post_ajax_var("Json", "jsonPostAddGpi", strVars);
 }
 
 function jsonEditaGrupoPessoaInfo(id)
