@@ -135,11 +135,16 @@ function geraHtmlRespostas($arrRespostas)
 {
   $html = "";
   foreach($arrRespostas as $resposta){
+    $grtId     = $resposta["grt_id"] ?? "";
+    $grpId     = $resposta["grp_id"] ?? "";
+    $grpLogado = pegaGrupoPessoaLogadoId();
+    $htmlDel   = ($grpLogado == $grpId) ? "<a class='delete' href='javascript:;' data-id='$grtId'><i class='material-icons'>delete</i></a>": "";
+
     $foto3 = ($resposta["pes_foto"] != "") ? BASE_URL . $resposta["pes_foto"]: BASE_URL . FOTO_DEFAULT;
     $nome  = $resposta['pes_nome'] ?? "";
     $texto = (isset($resposta['grt_texto'])) ? nl2br($resposta['grt_texto']): "";
 
-    $html .= "<div class='row' style='padding-bottom:6px;'>";
+    $html .= "<div class='row dv-item-resposta-$grtId' style='padding-bottom:6px;'>";
     $html .= "  <div class='col-md-1 dv-img-comentario' style='padding:0;'>";
     $html .= "    <a class='text-info' href='javascript:;'>";
     $html .= "      <img src='$foto3' alt='Circle Image' class='rounded-circle img-fluid img-comentario' />";
@@ -149,6 +154,7 @@ function geraHtmlRespostas($arrRespostas)
     $html .= "    <p class='comentario-texto'>";
     $html .= "      <span>$nome:</span>";
     $html .= "      $texto";
+    $html .= "      $htmlDel";
     $html .= "    </p>";
     $html .= "  </div>";
     $html .= "</div>";

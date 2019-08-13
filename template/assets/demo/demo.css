@@ -238,6 +238,19 @@ img.img-comentario{
   padding: 4px;
   margin-bottom: 0;
 }
+.item-postagem .dv-area-comentario a.delete{
+  position:absolute;
+  right:0;
+  top: 0;
+  display: none;
+}
+.item-postagem .dv-area-comentario a.delete i{
+  font-size:16px;
+  color:#f44336;
+}
+.dv-resposta .comentario-texto:hover > a.delete {
+  display:block;
+}
 
 @media (max-width: 720px) 
 {

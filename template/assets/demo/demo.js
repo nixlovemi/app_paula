@@ -413,4 +413,24 @@ $('.item-postagem .dv-area-comentario').on('keypress','textarea' , function(e)
     mvc_post_ajax_var("GrupoTimeline", "jsonAddComentario", "grtId=" + grtId + "&texto=" + text);
   }
 });
+ 
+$('.item-postagem .dv-area-comentario').on('click','a.delete' , function(e)
+{
+  var grtId = $(this).data("id");
+  
+  Swal.fire({
+    title: 'Confirmação!',
+    text: "Deseja mesmo excluir esse comentário?",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sim',
+    cancelButtonText: 'Não ...'
+  }).then((result) => {
+    if (result.value) {
+      mvc_post_ajax_var("GrupoTimeline", "jsonDeletaComentario", "id=" + grtId);
+    }
+  });
+});
 /* ========= */

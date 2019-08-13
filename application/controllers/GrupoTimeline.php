@@ -144,4 +144,23 @@ class GrupoTimeline extends MY_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function jsonDeletaComentario()
+  {
+    $variaveisPost = processaPost();
+    $vGrtId        = $variaveisPost->id ?? "";
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    $retDel = deletaGrupoTimeline($vGrtId);
+
+    if($retDel["erro"]){
+      $arrRet["msg"]        = $retDel["msg"];
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"]   = "warning";
+    } else {
+      $arrRet["callback"]   = "$('.item-postagem .dv-resposta .dv-item-resposta-$vGrtId').remove()";
+    }
+
+    echo json_encode($arrRet);
+  }
 }
