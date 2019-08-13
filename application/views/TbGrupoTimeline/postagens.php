@@ -1,8 +1,11 @@
 <?php
+//@todo melhorar CSS inline
+
 $vGruDescricao = $vGruDescricao ?? "";
 $arrPostagens  = $arrPostagens ?? array();
 $arrArquivos   = $arrArquivos ?? array();
 $arrSalvos     = $arrSalvos ?? array();
+$arrResp       = $arrResp ?? array();
 $vPesNome      = $vPesNome ?? "";
 
 $strPesNome    = "";
@@ -45,10 +48,14 @@ if($vPesNome != ""){
         $arquivosPostVid = $arquivosPost["video"] ?? array();
         $arquivosPostDiv = $arquivosPost["documentos"] ?? array();
         // ======
+
+        // resposta
+        $loopRespostas = $arrResp[$id] ?? array();
+        // ========
         ?>
-        <div class="row item-postagem" id="item-postagem-<?= $id ?>">
+        <div class="row item-postagem" id="item-postagem-<?=$id?>">
           <div class="col-md-12">
-            <div class="postagem-inner postagem-inner-top">
+            <div class="postagem-inner postagem-inner-top" style="padding-left:10px; padding-right:10px;">
               <div style="margin-right:10px;" class="profile-photo-small pull-left">
                 <img src="<?= base_url() . $foto ?>" alt="Circle Image" class="rounded-circle img-fluid" />
               </div>
@@ -75,14 +82,6 @@ if($vPesNome != ""){
                       <a href="javascript:;" onclick="favoritarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
                       <?php
                     }
-
-                    /*
-                    <a href="javascript:;" class="dropdown-item">Something else here</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="javascript:;" class="dropdown-item">Separated link</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="javascript:;" class="dropdown-item">One more separated link</a>
-                    */
                     ?>
                   </div>
                 </li>
@@ -93,7 +92,7 @@ if($vPesNome != ""){
             </div>
           </div>
           <div class="col-md-12">
-            <div class="postagem-inner postagem-inner-bot">
+            <div class="postagem-inner postagem-inner-bot" style="padding-left:10px; padding-right:10px;">
               <?=$strTexto?>
 
               <?php
@@ -127,14 +126,9 @@ if($vPesNome != ""){
                     <?php
                   } else {
                     $url = base_url() . $arquivo["gta_caminho"];
-
-                    #echo "<div class='wrapper'>";
-                    #echo "  <div class='videocontent'>";
-                    echo "    <video class='post-video' controls class='video-js vjs-layout-medium' preload='auto'>";
-                    echo "      <source src='$url'>";
-                    echo "    </video>";
-                    #echo "  </div>";
-                    #echo "</div>";
+                    echo "<video class='post-video' controls class='video-js vjs-layout-medium' preload='auto'>";
+                    echo "  <source src='$url'>";
+                    echo "</video>";
                   }
                 }
               }
@@ -148,7 +142,6 @@ if($vPesNome != ""){
               <div class="postagem-inner postagem-inner-bot">
                 <ul class="ul-base-arquivos">
                   <?php
-                  #@todo melhorar a aparencia dos links
                   foreach($arquivosPostDiv as $arquivo){
                     $link = base_url() . $arquivo["gta_caminho"];
                     $nome = basename($link);
@@ -166,7 +159,39 @@ if($vPesNome != ""){
             </div>
             <?php
           }
+
+          if(count($loopRespostas) > 0){
+            ?>
+            <div class="col-md-12">
+              <div class="postagem-inner postagem-inner-bot dv-resposta" style="border-bottom:none; padding-bottom:0;">
+                <?php
+                echo geraHtmlRespostas($loopRespostas);
+                ?>
+              </div>
+            </div>
+            <?php
+          }
           ?>
+          <div class="col-md-12">
+            <div class="postagem-inner postagem-inner-bot">
+              <?php
+              $foto2 = pegaFotoLogado();
+              ?>
+              
+              <div class="row">
+                <div class="col-md-1 dv-img-comentario">
+                  <a class="text-info" href="javascript:;">
+                    <img src="<?=$foto2?>" alt="Circle Image" class="rounded-circle img-fluid img-comentario">
+                  </a>
+                </div>
+                <div class="col-md-11 dv-area-comentario">
+                  <div class="form-group bmd-form-group has-info" style="margin-top:0; padding-bottom:0;">
+                    <textarea data-id="<?=$id?>" style="padding-top:0; padding-bottom:0;" placeholder="Escreva um comentário" class="form-control" rows="1" name="comentario"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <?php
       }

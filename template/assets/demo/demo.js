@@ -401,4 +401,16 @@ function favoritarPostagem(id)
 function jqueryMostraFavoritado(id){
   $('div#item-postagem-' + id + ' .li-favoritado').show();
 }
+
+$('.item-postagem .dv-area-comentario').on('keypress','textarea' , function(e)
+{
+  if(e.which == 13 && !e.shiftKey) {
+    e.preventDefault();
+    
+    var grtId = $(this).data('id');
+    var text  = $(this).val();
+    
+    mvc_post_ajax_var("GrupoTimeline", "jsonAddComentario", "grtId=" + grtId + "&texto=" + text);
+  }
+});
 /* ========= */

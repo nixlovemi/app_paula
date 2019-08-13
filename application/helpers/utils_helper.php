@@ -110,6 +110,16 @@ function pegaGrupoPessoaLogadoId()
   return $grpId;
 }
 
+function pegaFotoLogado()
+{
+  $img = $_SESSION["foto"] ?? "";
+  if($img == ""){
+    $img = FOTO_DEFAULT;
+  }
+
+  return BASE_URL . $img;
+}
+
 function acerta_moeda($str)
 {
     $str = trim($str);

@@ -73,6 +73,90 @@ function pegaGrupoTimeline($vGrtId, $apenasCamposTabela = false)
     return $arrRetorno;
 }
 
+/**
+ * $arrPostagens vem da função pegaPostagensGrupo
+ */
+function pegaRespostasGrupoTimeline($arrPostagens)
+{
+  $arrRetorno              = [];
+  $arrRetorno["erro"]      = false;
+  $arrRetorno["msg"]       = "";
+  $arrRetorno["respostas"] = [];
+
+  require_once(APPPATH."/helpers/utils_helper.php");
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $arrGrtId = [];
+  foreach($arrPostagens as $postagem){
+    $vGrtId     = $postagem["grt_id"] ?? "";
+    if($vGrtId > 0){
+      $arrGrtId[] = $vGrtId;
+    }
+  }
+
+  if( count($arrGrtId) > 0 ){
+    $CI->db->select('grt_id, grt_resposta_id, grt_data, grt_texto, grp_id, pes_nome, pes_email, pes_foto');
+    $CI->db->from('v_tb_grupo_timeline');
+    $CI->db->where('grt_resposta_id IN ('.implode(",", $arrGrtId).')');
+    $CI->db->where('grt_ativo = ', 1);
+    $CI->db->order_by('grt_resposta_id ASC, grt_data ASC');
+    $query = $CI->db->get();
+
+    if(!$query){
+      $arrRetorno["erro"] = true;
+      $arrRetorno["msg"]  = "Erro ao encontrar respostas das postagens!";
+
+      return $arrRetorno;
+    }
+
+    foreach ($query->result() as $row) {
+      if (isset($row)) {
+        $vGrtRespostaId = $row->grt_resposta_id ?? "";
+        if($vGrtRespostaId != ""){
+          if(!array_key_exists($vGrtRespostaId, $arrRetorno["respostas"])){
+            $arrRetorno["respostas"][$vGrtRespostaId] = [];
+          }
+
+          $arrRetorno["respostas"][$vGrtRespostaId][] = (array) $row;
+        }
+      }
+    }
+  }
+
+  //@todo talvez tratar erros
+  return $arrRetorno;
+}
+
+/**
+ * vem da funcao pegaRespostasGrupoTimeline
+ */
+function geraHtmlRespostas($arrRespostas)
+{
+  $html = "";
+  foreach($arrRespostas as $resposta){
+    $foto3 = ($resposta["pes_foto"] != "") ? BASE_URL . $resposta["pes_foto"]: BASE_URL . FOTO_DEFAULT;
+    $nome  = $resposta['pes_nome'] ?? "";
+    $texto = (isset($resposta['grt_texto'])) ? nl2br($resposta['grt_texto']): "";
+
+    $html .= "<div class='row' style='padding-bottom:6px;'>";
+    $html .= "  <div class='col-md-1 dv-img-comentario' style='padding:0;'>";
+    $html .= "    <a class='text-info' href='javascript:;'>";
+    $html .= "      <img src='$foto3' alt='Circle Image' class='rounded-circle img-fluid img-comentario' />";
+    $html .= "    </a>";
+    $html .= "  </div>";
+    $html .= "  <div class='col-md-11 dv-area-comentario' style='padding-left:0;'>";
+    $html .= "    <p class='comentario-texto'>";
+    $html .= "      <span>$nome:</span>";
+    $html .= "      $texto";
+    $html .= "    </p>";
+    $html .= "  </div>";
+    $html .= "</div>";
+  }
+
+  return $html;
+}
+
 function validaInsereGrupoTimeline($GrupoTimeline)
 {
     require_once(APPPATH."/helpers/utils_helper.php");
