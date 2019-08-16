@@ -22,6 +22,9 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   // so exibe de quem cadastrou
   $UsuarioLog = $CI->session->usuario_info ?? array();
   $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
+  if($vGrpId == NULL){
+    $ehDonoDeGrupo = count($_SESSION["usuario_grps"] > 0);
+  }
   // ==========================
 
   $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_usu_id, grp_ativo";
@@ -32,7 +35,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa');
   $CI->db->where('grp_id =', $id);
-  if($UsuarioLog->admin == 0 && $vGrpId == NULL){
+  if($UsuarioLog->admin == 0 && $vGrpId == NULL && !$ehDonoDeGrupo){
     $CI->db->where('gru_usu_id =', $UsuarioLog->id);
   }
 
@@ -76,6 +79,23 @@ function pegaGrupoPessoaPesGru($pes_id, $gru_id, $apenasCamposTabela=false)
   $CI->db->select("grp_id");
   $CI->db->from('tb_grupo_pessoa');
   $CI->db->where('grp_pes_id =', $pes_id);
+  $CI->db->where('grp_gru_id =', $gru_id);
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+  $id    = $row->grp_id ?? "";
+
+  return pegaGrupoPessoa($id, $apenasCamposTabela);
+}
+
+function pegaGrupoPessoaUsuGru($usu_id, $gru_id, $apenasCamposTabela=false)
+{
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select("grp_id");
+  $CI->db->from('tb_grupo_pessoa');
+  $CI->db->where('grp_usu_id =', $usu_id);
   $CI->db->where('grp_gru_id =', $gru_id);
 
   $query = $CI->db->get();

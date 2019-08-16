@@ -40,7 +40,7 @@ class MY_Controller extends CI_Controller
   {
     $credenciaisOk = (!isset($this->_credenciais) or $this->_credenciais < $this->_min_credentials);
     $ehCliente     = (isset($this->_usuario_info->cliente)) && $this->_usuario_info->cliente == 1;
-    $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && $this->_usuario_info->admin == 0 && !$ehCliente);
+    $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && $this->_usuario_info->admin == 0 && !$ehCliente && !isset($this->_usuario_info->usuario_cad));
 
     if($credenciaisOk === false || $idUsuarioOk === false){
       $this->session->set_flashdata('LoginMessage', 'Sua sessão expirou. Faça o login novamente.');
@@ -52,8 +52,8 @@ class MY_Controller extends CI_Controller
   private function initGrupo()
   {
     $credenciaisOk = (!isset($this->_credenciais) or $this->_credenciais < $this->_min_credentials);
-    $ehCliente     = (isset($this->_usuario_info->cliente)) && $this->_usuario_info->cliente == 1;
-    $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && $ehCliente);
+    $ehAdmin       = (isset($this->_usuario_info->admin)) && $this->_usuario_info->admin == 1;
+    $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && !$ehAdmin);
     $vGrpId        = $this->session->grp_id ?? NULL;
 
     if($credenciaisOk === false || $idUsuarioOk === false || !$vGrpId > 0){

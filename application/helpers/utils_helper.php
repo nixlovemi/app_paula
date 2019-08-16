@@ -92,6 +92,7 @@ function pegaGrupoLogadoId()
 {
   $gruId = NULL;
   $grpId = $_SESSION["grp_id"] ?? null;
+  
   if($grpId != NULL){
     require_once(APPPATH."/models/TbGrupoPessoa.php");
     $retGrp = pegaGrupoPessoa($grpId);
@@ -106,7 +107,7 @@ function pegaGrupoLogadoId()
 
 function pegaGrupoPessoaLogadoId()
 {
-  $grpId = $_SESSION["grp_id"] ?? null;
+  $grpId = $_SESSION["grp_id"] ?? NULL;
   return $grpId;
 }
 
@@ -125,8 +126,22 @@ function pegaControllerAction()
   $CI = pega_instancia();
 
   $arrRet = [];
-  $arrRet["controller"] = $CI->router->fetch_class();
-  $arrRet["action"]     = $CI->router->fetch_method();
+  $arrRet["controller"] = "";
+  $arrRet["action"]     = "";
+  $arrRet["vars"]       = []; // na ordem que aparece na URL
+
+  $i = 1;
+  foreach($CI->router->uri->segments as $info){
+    if($i == 1){
+      $arrRet["controller"] = $info;
+    } else if($i == 2){
+      $arrRet["action"] = $info;
+    } else {
+      $arrRet["vars"][] = $info;
+    }
+
+    $i++;
+  }
 
   return $arrRet;
 }

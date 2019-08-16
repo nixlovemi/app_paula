@@ -80,6 +80,7 @@ class Login extends CI_Controller
       require_once(APPPATH."/models/TbMenu.php");
       $arrMenu = geraArrMenuUsuario($Usuario->id, $Usuario->admin);
       inicia_session($arrMenu, $Usuario);
+      inicia_usuario_grps();
 
       redirect(BASE_URL . 'Sistema');
     }
@@ -133,7 +134,7 @@ class Login extends CI_Controller
         $GruposPessoa          = $retGrp["GruposPessoa"] ?? array();
         $vGrpId                = $GruposPessoa[0]["grp_id"] ?? NULL; #@todo aqui peguei o primeiro que veio / o certo é mostrar tds e a pessoa escolher
         $this->session->grp_id = $vGrpId;
-
+        
         redirect(BASE_URL . 'SisGrupo');
       }
     }

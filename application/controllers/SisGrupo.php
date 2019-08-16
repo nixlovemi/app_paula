@@ -13,46 +13,15 @@ class SisGrupo extends MY_Controller
 
   public function index()
   {
-    $GrupoTimeline = $this->session->flashdata('GrupoTimeline') ?? array();
-
     require_once(APPPATH."/models/TbGrupoTimeline.php");
     $vGrpId = $this->session->grp_id ?? NULL;
 
     require_once(APPPATH."/models/TbGrupoPessoa.php");
     $retGP       = pegaGrupoPessoa($vGrpId);
     $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
-    $vGruId      = $GrupoPessoa["grp_gru_id"] ?? NULL;
-    $vGruDesc    = $GrupoPessoa["gru_descricao"] ?? NULL;
 
-    $retPost      = pegaPostagensGrupo($vGruId);
-    $arrPostagens = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
-    $arrSalvos    = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
-
-    $retResp = pegaRespostasGrupoTimeline($arrPostagens);
-    $arrResp = (!$retResp["erro"] && isset($retResp["respostas"])) ? $retResp["respostas"]: array();
-
-    require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
-    $retGTA      = pegaArquivos($arrPostagens);
-    $arrArquivos = ($retGTA["erro"]) ? array(): $retGTA["arquivos"];
-    
-    $retGpss  = pegaGrupoPessoasGru($vGruId, true);
-    $arrStaff = ($retGpss["erro"]) ? array(): $retGpss["GruposPessoas"];
-
-    // view posts
-    $htmlPosts = $this->load->view('TbGrupoTimeline/postagens', array(
-      "vGruDescricao" => $vGruDesc,
-      "arrPostagens"  => $arrPostagens,
-      "arrSalvos"     => $arrSalvos,
-      "arrArquivos"   => $arrArquivos,
-      "arrResp"       => $arrResp,
-    ), true);
-
-    $this->template->load(TEMPLATE_STR, 'SisGrupo/index', array(
-      "titulo"        => gera_titulo_template("Área Inicial"),
-      "arrStaff"      => $arrStaff,
-      "htmlPosts"     => $htmlPosts,
-      "GrupoTimeline" => $GrupoTimeline,
-    ));
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    geraHtmlViewGrupoTimeline($GrupoPessoa);
   }
 
   public function jsonPegaHtmlAnexo()
@@ -95,7 +64,6 @@ class SisGrupo extends MY_Controller
     $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
     $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
     $vGruLogado  = pegaGrupoLogadoId();
-    $vGruDesc    = $GrupoPessoa["gru_descricao"] ?? NULL;
 
     // valida grupo logado
     if($vGruId != $vGruLogado){
@@ -105,35 +73,6 @@ class SisGrupo extends MY_Controller
     }
 
     require_once(APPPATH."/models/TbGrupoTimeline.php");
-    $retPost = pegaPostagensGrupo($vGruId, $vGrpId);
-
-    $arrPostagens = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
-    $arrSalvos    = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
-
-    $retResp = pegaRespostasGrupoTimeline($arrPostagens);
-    $arrResp = (!$retResp["erro"] && isset($retResp["respostas"])) ? $retResp["respostas"]: array();
-
-    require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
-    $retGTA      = pegaArquivos($arrPostagens);
-    $arrArquivos = ($retGTA["erro"]) ? array(): $retGTA["arquivos"];
-
-    $retGpss  = pegaGrupoPessoasGru($vGruId, true);
-    $arrStaff = ($retGpss["erro"]) ? array(): $retGpss["GruposPessoas"];
-
-    // view posts
-    $htmlPosts = $this->load->view('TbGrupoTimeline/postagens', array(
-      "vGruDescricao" => $vGruDesc,
-      "arrPostagens"  => $arrPostagens,
-      "arrSalvos"     => $arrSalvos,
-      "arrArquivos"   => $arrArquivos,
-      "arrResp"       => $arrResp,
-      "vPesNome"      => $GrupoPessoa["pes_nome"] ?? "",
-    ), true);
-
-    $this->template->load(TEMPLATE_STR, 'SisGrupo/indexInfo', array(
-      "titulo"    => gera_titulo_template("Área Inicial"),
-      "arrStaff"  => $arrStaff,
-      "htmlPosts" => $htmlPosts,
-    ));
+    geraHtmlViewGrupoTimeline($GrupoPessoa, true);
   }
 }

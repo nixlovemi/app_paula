@@ -383,7 +383,7 @@ function deletarPostagem(id)
     cancelButtonText: 'Não ...'
   }).then((result) => {
     if (result.value) {
-      mvc_post_ajax_var("GrupoTimeline", "jsonDeletaPostagem", "id=" + id);
+      mvc_post_ajax_var("Json", "jsonDeletaPostagem", "id=" + id);
     }
   });
 }
@@ -410,14 +410,12 @@ $('.item-postagem .dv-area-comentario').on('keypress','textarea' , function(e)
     var grtId = $(this).data('id');
     var text  = $(this).val();
     
-    mvc_post_ajax_var("GrupoTimeline", "jsonAddComentario", "grtId=" + grtId + "&texto=" + text);
+    mvc_post_ajax_var("Json", "jsonAddComentario", "grtId=" + grtId + "&texto=" + text);
   }
 });
- 
-$('.item-postagem .dv-area-comentario').on('click','a.delete' , function(e)
+
+function fncItemPostagemDelComentario(grtId)
 {
-  var grtId = $(this).data("id");
-  
   Swal.fire({
     title: 'Confirmação!',
     text: "Deseja mesmo excluir esse comentário?",
@@ -429,8 +427,8 @@ $('.item-postagem .dv-area-comentario').on('click','a.delete' , function(e)
     cancelButtonText: 'Não ...'
   }).then((result) => {
     if (result.value) {
-      mvc_post_ajax_var("GrupoTimeline", "jsonDeletaComentario", "id=" + grtId);
+      mvc_post_ajax_var("Json", "jsonDeletaComentario", "id=" + grtId);
     }
   });
-});
+}
 /* ========= */

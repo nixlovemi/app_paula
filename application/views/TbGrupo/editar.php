@@ -65,7 +65,7 @@ $arrAtivo   = array("0"=>"Não", "1"=>"Sim");
           </div>
             <div class="row">
               <div class="col-md-12">
-                <a href="javascript:;" class="btn btn-info btn-lg">
+                <a href="<?=BASE_URL?>Grupo/timeline/<?=$vId?>" class="btn btn-info btn-lg">
                   Visualizar Dashboard do Grupo
                   <div class="ripple-container"></div>
                 </a>

@@ -34,7 +34,20 @@ if($vPesNome != ""){
 
         $idUsuLogado       = pegaUsuarioLogadoId() ?? 0;
         $grpPessoaLogado   = pegaGrupoPessoaLogadoId() ?? -1;
-        $ehPostagemPropria = ($idUsuLogado == $pesId);
+        $ehAdminLogado     = false;
+        if($grpPessoaLogado == NULL || $grpPessoaLogado == -1){
+          require_once(APPPATH."/models/TbGrupoTimeline.php");
+          $retGrt            = pegaGrupoTimeline($id);
+          $GrupoTimeline     = ($retGrt["erro"]) ? array(): $retGrt["GrupoTimeline"];
+          $vGruId            = $GrupoTimeline["grt_gru_id"] ?? "";
+
+          $grpPessoaLogado   = $_SESSION["usuario_grps"][$vGruId] ?? NULL;
+          $ehPostagemPropria = false;
+          $ehAdminLogado     = count($_SESSION["usuario_grps"]) > 0;
+        } else {
+          $ehPostagemPropria = ($idUsuLogado == $pesId);
+        }
+        
         $strData           = ($data != "") ? date("d/m H:m", strtotime($data)): "";
         $strDataF          = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
         $strTexto          = nl2br($texto);
@@ -73,14 +86,21 @@ if($vPesNome != ""){
                   <div class="dropdown-menu">
                     <h6 class="dropdown-header">Ações</h6>
                     <?php
-                    if($ehPostagemPropria){
+                    if($ehAdminLogado){
                       ?>
+                      <a href="javascript:;" onclick="favoritarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
                       <a href="javascript:;" onclick="deletarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Excluir</a>
                       <?php
                     } else {
-                      ?>
-                      <a href="javascript:;" onclick="favoritarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
-                      <?php
+                      if($ehPostagemPropria){
+                        ?>
+                        <a href="javascript:;" onclick="deletarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Excluir</a>
+                        <?php
+                      } else {
+                        ?>
+                        <a href="javascript:;" onclick="favoritarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
+                        <?php
+                      }
                     }
                     ?>
                   </div>

@@ -187,4 +187,57 @@ class Grupo extends MY_Controller
       ));
     }
   }
+
+  public function timeline($gruId)
+  {
+    require_once(APPPATH."/models/TbGrupo.php");
+    $ret = pegaGrupo($gruId);
+    if($ret["erro"]){
+      geraNotificacao("Aviso!", $ret["msg"], "warning");
+      redirect(BASE_URL . 'Grupo');
+    } else {
+      $Grupo      = $ret["Grupo"] ?? array();
+      $vGruUsuId  = $Grupo["gru_usu_id"] ?? "";
+      $vUsuLogado = pegaUsuarioLogadoId();
+
+      if($vGruUsuId != $vUsuLogado){
+        geraNotificacao("Aviso!", "Esse grupo não pertence a você!", "warning");
+        redirect(BASE_URL . 'Grupo');
+      } else {
+        require_once(APPPATH."/models/TbGrupoPessoa.php");
+        $retGP = pegaGrupoPessoaUsuGru($vUsuLogado, $gruId);
+        if($retGP["erro"]){
+          geraNotificacao("Aviso!", $retGP["msg"], "warning");
+          redirect(BASE_URL . 'Grupo');
+        } else {
+          $GrupoPessoa = $retGP["GrupoPessoa"] ?? array();
+
+          require_once(APPPATH."/models/TbGrupoTimeline.php");
+          geraHtmlViewGrupoTimeline($GrupoPessoa);
+        }
+      }
+    }
+  }
+
+  public function indexInfo($grpId)
+  {
+    $vGrpId = $grpId ?? "";
+
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGP       = pegaGrupoPessoa($vGrpId);
+    $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
+    $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
+    $vGruLogado  = pegaGrupoLogadoId();
+
+    // valida grupo logado
+    // @todo nao sei o melhor jeito de tratar isso
+    /*if($vGruId != $vGruLogado){
+      geraNotificacao("Aviso!", "Esse conteúdo não faz parte do seu grupo!", "warning");
+      redirect(BASE_URL . 'Grupo/index');
+      return;
+    }*/
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    geraHtmlViewGrupoTimeline($GrupoPessoa, true);
+  }
 }
