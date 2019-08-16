@@ -75,4 +75,25 @@ class SisGrupo extends MY_Controller
     require_once(APPPATH."/models/TbGrupoTimeline.php");
     geraHtmlViewGrupoTimeline($GrupoPessoa, true);
   }
+
+  public function favoritos($grpId)
+  {
+    $vGrpId = $grpId ?? "";
+
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGP       = pegaGrupoPessoa($vGrpId);
+    $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
+    $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
+    $vGruLogado  = pegaGrupoLogadoId();
+
+    // valida grupo logado
+    if($vGruId != $vGruLogado){
+      geraNotificacao("Aviso!", "Esse conteúdo não faz parte do seu grupo!", "warning");
+      redirect(BASE_URL . 'SisGrupo');
+      return;
+    }
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    geraHtmlViewGrupoTimeline($GrupoPessoa, false, true);
+  }
 }

@@ -395,7 +395,7 @@ function removeDvPostagem(id)
 
 function favoritarPostagem(id)
 {
-  mvc_post_ajax_var("GrupoTimelineSalvo", "jsonFavoritar", "id=" + id);
+  mvc_post_ajax_var("Json", "jsonFavoritar", "id=" + id);
 }
 
 function jqueryMostraFavoritado(id){

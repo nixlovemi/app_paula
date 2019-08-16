@@ -179,19 +179,16 @@ if($vPesNome != ""){
             </div>
             <?php
           }
-
-          if(count($loopRespostas) > 0){
-            ?>
-            <div class="col-md-12">
-              <div class="postagem-inner postagem-inner-bot dv-resposta" style="border-bottom:none; padding-bottom:0;">
-                <?php
-                echo geraHtmlRespostas($loopRespostas);
-                ?>
-              </div>
-            </div>
-            <?php
-          }
           ?>
+          <div class="col-md-12">
+            <div class="postagem-inner postagem-inner-bot dv-resposta" style="border-bottom:none; padding-bottom:0;">
+              <?php
+              if(count($loopRespostas) > 0){
+                echo geraHtmlRespostas($loopRespostas);
+              }
+              ?>
+            </div>
+          </div>
           <div class="col-md-12">
             <div class="postagem-inner postagem-inner-bot">
               <?php

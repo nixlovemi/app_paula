@@ -1,12 +1,13 @@
 <?php
-$GrupoTimeline  = $GrupoTimeline ?? array();
-$arrStaff       = $arrStaff ?? array();
-$ulrStaff       = $urlStaff ?? "SisGrupo/indexInfo";
-$urlTdsPosts    = $urlTdsPosts ?? "";
-$vGruDescricao  = $vGruDescricao ?? "";
-$htmlPosts      = $htmlPosts ?? "";
-$mostraNovoPost = $mostraNovoPost ?? false;
-$urlNovoPostRed = $urlNovoPostRed ?? BASE_URL . "SisGrupo";
+$GrupoTimeline     = $GrupoTimeline ?? array();
+$arrStaff          = $arrStaff ?? array();
+$ulrStaff          = $urlStaff ?? "SisGrupo/indexInfo";
+$urlTdsPosts       = $urlTdsPosts ?? "";
+$urlPostsFavoritos = $urlPostsFavoritos ?? "";
+$vGruDescricao     = $vGruDescricao ?? "";
+$htmlPosts         = $htmlPosts ?? "";
+$mostraNovoPost    = $mostraNovoPost ?? false;
+$urlNovoPostRed    = $urlNovoPostRed ?? BASE_URL . "SisGrupo";
 
 $titulo         = $GrupoTimeline["grt_titulo"] ?? "";
 $descricao      = $GrupoTimeline["grt_texto"] ?? "";
@@ -139,8 +140,13 @@ if(!$grpIdLogado > 0){
             ?>
           </ul>
           <a style="width:100%;" class="btn" href="<?=base_url() . $urlTdsPosts?>">
-              Todas postagens do grupo
-            </a>
+            Todas postagens do grupo
+          </a>
+          <a style="width:100%;" class="btn" href="<?=base_url() . $urlPostsFavoritos?>">
+            <i class="material-icons">favorite</i>
+            &nbsp;
+            Postagens Favoritas
+          </a>
           <?php
         }
         ?>

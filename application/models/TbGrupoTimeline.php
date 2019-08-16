@@ -170,16 +170,16 @@ function geraHtmlRespostas($arrRespostas)
   return $html;
 }
 
-function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false)
+function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenasFavoritos=false)
 {
   $CI            = pega_instancia();
   $GrupoTimeline = $CI->session->flashdata('GrupoTimeline') ?? array();
   $vGruDesc      = $GrupoPessoa["gru_descricao"] ?? NULL;
   $gruId         = $GrupoPessoa["grp_gru_id"] ?? "";
-  $grpId         = ($postagemPropria) ? $GrupoPessoa["grp_id"]: NULL;
+  $grpId         = ($postagemPropria || $apenasFavoritos) ? $GrupoPessoa["grp_id"]: NULL;
 
   require_once(APPPATH."/models/TbGrupoTimeline.php");
-  $retPost       = pegaPostagensGrupo($gruId, $grpId);
+  $retPost       = pegaPostagensGrupo($gruId, $grpId, $apenasFavoritos);
   $arrPostagens  = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
   $arrSalvos     = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
 
@@ -201,7 +201,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false)
   $urlVarGrpId    = $ControllerAction["vars"][0] ?? "";
   if(!$vGrpLogado > 0){
     foreach($_SESSION["usuario_grps"] as $lgGrupo => $lgGrp){
-      if($lgGrp == $gruId){
+      if($lgGrupo == $gruId){
         $vGrpLogado = $lgGrp;
         break;
       }
@@ -217,24 +217,35 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false)
   }
   // ==============
 
-  $mostraNovoPost   = false;
-  $urlNovoPostRed   = BASE_URL . "SisGrupo";
+  $mostraNovoPost    = false;
+  $urlNovoPostRed    = BASE_URL . "SisGrupo";
+  $urlStaff          = "SisGrupo/indexInfo";
+  $urlTdsPosts       = "SisGrupo";
+  $urlPostsFavoritos = "SisGrupo/favoritos/$vGrpLogado";
+
+  $tituloPag         = "";
+  if($postagemPropria){
+    $tituloPag = " - " . ($GrupoPessoa["pes_nome"] ?? "");
+  } else if($apenasFavoritos){
+    $tituloPag = " - Favoritos";
+  }
 
   if($ControllerAction["controller"] == "SisGrupo" && ($ControllerAction["action"] == "index" || $ControllerAction["action"] == "")){
-    $mostraNovoPost = !$ehStaff;
-    $urlNovoPostRed = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"];
-    $urlStaff       = "SisGrupo/indexInfo";
-    $urlTdsPosts    = "SisGrupo";
+    $mostraNovoPost    = !$ehStaff;
+    $urlNovoPostRed    = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"];
   } else if($ControllerAction["controller"] == "SisGrupo" && $ControllerAction["action"] == "indexInfo"){
-    $mostraNovoPost = ($ehStaff) && ($urlVarGrpId == $vGrpLogado);
-    $urlNovoPostRed = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"] . "/" . $grpId;
-    $urlStaff       = "SisGrupo/indexInfo";
-    $urlTdsPosts    = "SisGrupo";
+    $mostraNovoPost    = ($ehStaff) && ($urlVarGrpId == $vGrpLogado);
+    $urlNovoPostRed    = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"] . "/" . $grpId;
   } else if($ControllerAction["controller"] == "Grupo" && ($ControllerAction["action"] == "timeline" || $ControllerAction["action"] == "indexInfo")){
-    $mostraNovoPost = ($ehStaff) && ($urlVarGrpId == $vGrpLogado);
-    $urlNovoPostRed = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"] . "/" . $grpId;
-    $urlStaff       = "Grupo/indexInfo";
-    $urlTdsPosts    = "Grupo/timeline/$gruId";
+    $mostraNovoPost    = ($ehStaff) && ($urlVarGrpId == $vGrpLogado);
+    $urlNovoPostRed    = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"] . "/" . $grpId;
+    $urlStaff          = "Grupo/indexInfo";
+    $urlTdsPosts       = "Grupo/timeline/$gruId";
+    $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
+  } else if($ControllerAction["controller"] == "Grupo" && $ControllerAction["action"] == "favoritos"){
+    $urlStaff          = "Grupo/indexInfo";
+    $urlTdsPosts       = "Grupo/timeline/$gruId";
+    $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
   }
 
   // view posts
@@ -247,15 +258,16 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false)
   ), true);
 
   $CI->template->load(TEMPLATE_STR, 'SisGrupo/index', array(
-    "titulo"         => gera_titulo_template("Timeline do Grupo"),
-    "arrStaff"       => $arrStaff,
-    "urlStaff"       => $urlStaff,
-    "urlTdsPosts"    => $urlTdsPosts,
-    "htmlPosts"      => $htmlPosts,
-    "GrupoTimeline"  => $GrupoTimeline,
-    "mostraNovoPost" => $mostraNovoPost,
-    "urlNovoPostRed" => $urlNovoPostRed,
-    "vGrpLogado"     => $vGrpLogado,
+    "titulo"            => gera_titulo_template("Timeline do Grupo $tituloPag"),
+    "arrStaff"          => $arrStaff,
+    "urlStaff"          => $urlStaff,
+    "urlTdsPosts"       => $urlTdsPosts,
+    "urlPostsFavoritos" => $urlPostsFavoritos,
+    "htmlPosts"         => $htmlPosts,
+    "GrupoTimeline"     => $GrupoTimeline,
+    "mostraNovoPost"    => $mostraNovoPost,
+    "urlNovoPostRed"    => $urlNovoPostRed,
+    "vGrpLogado"        => $vGrpLogado,
   ));
 }
 
@@ -387,7 +399,7 @@ function insereGrupoTimeline($GrupoTimeline)
     return $arrRetorno;
 }
 
-function pegaPostagensGrupo($gruId, $grpId = NULL, $limit = 50, $offset = 0)
+function pegaPostagensGrupo($gruId, $grpId = NULL, $apenasFavoritos=false, $limit = 50, $offset = 0)
 {
   $arrRetorno              = [];
   $arrRetorno["erro"]      = false;
@@ -423,14 +435,20 @@ function pegaPostagensGrupo($gruId, $grpId = NULL, $limit = 50, $offset = 0)
 
   $CI->db->select('*');
   $CI->db->from('v_tb_grupo_timeline');
+  if($apenasFavoritos){
+    $CI->db->join('tb_grupo_timeline_salvo gts', "gts.gts_grt_id = grt_id");
+    $CI->db->where("gts.gts_grp_id = $grpId");
+  }
   $CI->db->where('grt_gru_id =', $gruId);
   $CI->db->where('grt_publico =', 1);
   $CI->db->where('grt_ativo =', 1);
   $CI->db->where('grt_resposta_id IS NULL');
-  if($grpId > 0){
-    $CI->db->where('grp_id =', $grpId);
-  } else {
-    $CI->db->where('pet_cliente =', 1);
+  if(!$apenasFavoritos){
+    if($grpId > 0){
+      $CI->db->where('grp_id =', $grpId);
+    } else {
+      $CI->db->where('pet_cliente =', 1);
+    }
   }
   $CI->db->order_by('grt_data', 'DESC');
   $CI->db->limit($limit, $offset);

@@ -6,7 +6,6 @@ function validaInsereGrupoTimelineSalvo($GrupoTimelineSalvo)
   require_once(APPPATH."/helpers/utils_helper.php");
   $strValida   = "";
   $idUsuLogado = pegaUsuarioLogadoId();
-  $idGruLogado = pegaGrupoLogadoId();
 
   // validacao basica dos campos
   $vGrtId = $GrupoTimelineSalvo["gts_grt_id"] ?? "";
@@ -20,10 +19,23 @@ function validaInsereGrupoTimelineSalvo($GrupoTimelineSalvo)
   }
   // ===========================
 
+  require_once(APPPATH."/models/TbGrupoPessoa.php");
   $retGrpes    = pegaGrupoPessoa($vGrpId);
   $GrupoPessoa = $retGrpes["GrupoPessoa"] ?? array();
   $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
   $vPesId      = $GrupoPessoa["grp_pes_id"] ?? "";
+
+  $idGruLogado = pegaGrupoLogadoId();
+  $ehAdminGrp  = false;
+  if($idGruLogado == NULL){
+    $arrLoop = $_SESSION["usuario_grps"] ?? array();
+    foreach($arrLoop as $lgGru => $lgGrp){
+      if($lgGru == $vGruId){
+        $idGruLogado = $lgGru;
+        $ehAdminGrp  = true;
+      }
+    }
+  }
 
   // vê se grupo condiz com a session
   if($idGruLogado != $vGruId){
@@ -40,10 +52,12 @@ function validaInsereGrupoTimelineSalvo($GrupoTimelineSalvo)
   // ===================
 
   // valida pessoa válida
-  require_once(APPPATH."/models/TbPessoa.php");
-  $retPes = validaPessoa($vPesId, $idUsuLogado);
-  if($retPes["erro"]){
-    $strValida .= "<br />&nbsp;&nbsp;* " . $retPes["msg"];
+  if(!$ehAdminGrp){
+    require_once(APPPATH."/models/TbPessoa.php");
+    $retPes = validaPessoa($vPesId, $idUsuLogado);
+    if($retPes["erro"]){
+      $strValida .= "<br />&nbsp;&nbsp;* " . $retPes["msg"];
+    }
   }
   // ====================
 
