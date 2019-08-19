@@ -51,11 +51,13 @@ $ehAdminLogado = ehAdminGrupo($gruId);
 if($GRP_ID > 0 && !$ehAdminLogado){
   $URL_HOME       = $BASE_URL . "SisGrupo";
   $URL_LOGOUT     = $BASE_URL . "Login/grupo";
+  $URL_CONFIG     = $BASE_URL . "GrpConfig";
   $IMG_SIDEBAR    = "sidebar-3.jpg";
   $EH_GRUPO       = true;
 } else {
   $URL_HOME       = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL . "Dashboard": $BASE_URL . "Sistema";
   $URL_LOGOUT     = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL: $BASE_URL . "Login/sistema";
+  $URL_CONFIG     = "javascript:;";
   $IMG_SIDEBAR    = ($USUARIO_LOGADO->admin == 1) ? "sidebar-1.jpg": "sidebar-3.jpg";
   $EH_GRUPO       = false;
 }
@@ -216,8 +218,8 @@ if($GRP_ID > 0 && !$ehAdminLogado){
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                  <a class="dropdown-item dropdown-item-info" href="#">Perfil</a>
-                  <a class="dropdown-item dropdown-item-info" href="#">Configurações</a>
+                  <?php #<a class="dropdown-item dropdown-item-info" href="#">Perfil</a> ?>
+                  <a class="dropdown-item dropdown-item-info" href="<?=$URL_CONFIG?>">Configurações</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item dropdown-item-info" href="<?php echo $URL_LOGOUT; ?>">Sair</a>
                 </div>

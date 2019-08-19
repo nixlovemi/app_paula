@@ -324,7 +324,7 @@ function inserePessoa($Pessoa)
   return $arrRetorno;
 }
 
-function validaEditaPessoa($Pessoa)
+function validaEditaPessoa($Pessoa, $adminAlterando=true)
 {
   require_once(APPPATH."/helpers/utils_helper.php");
   $strValida = "";
@@ -362,27 +362,29 @@ function validaEditaPessoa($Pessoa)
   // ===========================
 
   // valida limite ativos
-  $retP   = pegaPessoa($vId);
-  if($retP["erro"]){
-    $strValida .= "<br />&nbsp;&nbsp;* " . $retLim["msg"];
-  } else {
-    $Pessoa = $retP["Pessoa"];
+  if($adminAlterando){
+    $retP   = pegaPessoa($vId);
+    if($retP["erro"]){
+      $strValida .= "<br />&nbsp;&nbsp;* " . $retP["msg"];
+    } else {
+      $Pessoa = $retP["Pessoa"];
 
-    #estava inativo e agora vai pra ativo
-    if($Pessoa["pes_ativo"] == 0 && $vAtivo == 1){
-      require_once(APPPATH."/models/TbUsuarioCfg.php");
-      $retLim = pegaMaximoUsuarios($vUsuId);
-      if($retLim["erro"]){
-        $strValida .= "<br />&nbsp;&nbsp;* " . $retLim["msg"];
-      } else {
-        $maxUsuarios = $retLim["valor"];
+      #estava inativo e agora vai pra ativo
+      if($Pessoa["pes_ativo"] == 0 && $vAtivo == 1){
+        require_once(APPPATH."/models/TbUsuarioCfg.php");
+        $retLim = pegaMaximoUsuarios($vUsuId);
+        if($retLim["erro"]){
+          $strValida .= "<br />&nbsp;&nbsp;* " . $retLim["msg"];
+        } else {
+          $maxUsuarios = $retLim["valor"];
 
-        require_once(APPPATH."/models/TbUsuario.php");
-        $retTot   = pegaTotalPessoasAtivas($vUsuId);
-        $totAtivo = ($retTot["erro"]) ? 999: $retTot["total"];
+          require_once(APPPATH."/models/TbUsuario.php");
+          $retTot   = pegaTotalPessoasAtivas($vUsuId);
+          $totAtivo = ($retTot["erro"]) ? 999: $retTot["total"];
 
-        if($totAtivo > $maxUsuarios){
-          $strValida .= "<br />&nbsp;&nbsp;* Você não pode cadastrar mais pessoas pois seu limite é " . $maxUsuarios;
+          if($totAtivo > $maxUsuarios){
+            $strValida .= "<br />&nbsp;&nbsp;* Você não pode cadastrar mais pessoas pois seu limite é " . $maxUsuarios;
+          }
         }
       }
     }
@@ -413,7 +415,7 @@ function validaEditaPessoa($Pessoa)
   return $strValida;
 }
 
-function editaPessoa($Pessoa)
+function editaPessoa($Pessoa, $adminAlterando=true)
 {
   $arrRetorno          = [];
   $arrRetorno["erro"]  = false;
@@ -435,7 +437,7 @@ function editaPessoa($Pessoa)
   }
   // ==================
 
-  $strValida = validaEditaPessoa($data);
+  $strValida = validaEditaPessoa($data, $adminAlterando);
   if($strValida != ""){
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = $strValida;
