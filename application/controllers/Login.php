@@ -80,7 +80,6 @@ class Login extends CI_Controller
       require_once(APPPATH."/models/TbMenu.php");
       $arrMenu = geraArrMenuUsuario($Usuario->id, $Usuario->admin);
       inicia_session($arrMenu, $Usuario);
-      inicia_usuario_grps();
 
       redirect(BASE_URL . 'Sistema');
     }

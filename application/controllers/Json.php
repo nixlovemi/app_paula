@@ -98,13 +98,6 @@ class Json extends CI_Controller
     $vGrtId        = $variaveisPost->grtId ?? ""; #grupo timeline
     $vTexto        = $variaveisPost->texto ?? "";
     $vGrpId        = pegaGrupoPessoaLogadoId();
-    if($vGrpId == NULL){
-      require_once(APPPATH."/models/TbGrupoTimeline.php");
-      $retGrt        = pegaGrupoTimeline($vGrtId);
-      $GrupoTimeline = ($retGrt["erro"]) ? array(): $retGrt["GrupoTimeline"];
-      $vGruId        = $GrupoTimeline["grt_gru_id"] ?? "";
-      $vGrpId        = $_SESSION["usuario_grps"][$vGruId] ?? NULL;
-    }
 
     // preenche os dados
     $GrupoTimeline                    = [];
@@ -254,13 +247,6 @@ class Json extends CI_Controller
     $variaveisPost = processaPost();
     $vGrtId = $variaveisPost->id ?? "";
     $vGrpId = pegaGrupoPessoaLogadoId() ?? "";
-    if ($vGrpId == NULL) {
-      require_once(APPPATH . "/models/TbGrupoTimeline.php");
-      $retGrt = pegaGrupoTimeline($vGrtId);
-      $GrupoTimeline = ($retGrt["erro"]) ? array() : $retGrt["GrupoTimeline"];
-      $vGruId = $GrupoTimeline["grt_gru_id"] ?? "";
-      $vGrpId = $_SESSION["usuario_grps"][$vGruId] ?? NULL;
-    }
 
     $GrupoTimelineSalvo = [];
     $GrupoTimelineSalvo["gts_grt_id"] = $vGrtId;

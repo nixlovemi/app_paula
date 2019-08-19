@@ -38,9 +38,17 @@ $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
 $USUARIO_LOGADO   = $this->session->usuario_info ?? array();
 $GRP_ID           = $this->session->grp_id ?? NULL;
 
+// pega grupo pela pessoa
+require_once(APPPATH."/models/TbGrupoPessoa.php");
+$retGRP        = pegaGrupoPessoa($GRP_ID);
+$GrupoPessoa   = ($retGRP["erro"]) ? array(): $retGRP["GrupoPessoa"];
+$gruId         = $GrupoPessoa["grp_gru_id"] ?? "";
+
+$ehAdminLogado = ehAdminGrupo($gruId);
+// ======================
+
 // qdo tiver na tela do grupo
-// @todo melhorar essa lógica das variáveis
-if($GRP_ID > 0){
+if($GRP_ID > 0 && !$ehAdminLogado){
   $URL_HOME       = $BASE_URL . "SisGrupo";
   $URL_LOGOUT     = $BASE_URL . "Login/grupo";
   $IMG_SIDEBAR    = "sidebar-3.jpg";
@@ -62,7 +70,7 @@ if($GRP_ID > 0){
   <link rel="icon" type="image/png" href="<?php echo $BASE_URL; ?>template/assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    Material Dashboard by Creative Tim
+    VC+LEVE | Sistema
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -104,7 +112,7 @@ if($GRP_ID > 0){
       -->
       <div class="logo">
         <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-          Creative Tim
+          VC+ LEVE
         </a>
       </div>
     

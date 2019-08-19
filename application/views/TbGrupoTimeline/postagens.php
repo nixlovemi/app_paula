@@ -25,6 +25,7 @@ if($vPesNome != ""){
     } else {
       foreach($arrPostagens as $postagem){
         $id       = $postagem["grt_id"] ?? "";
+        $gruId    = $postagem["grt_gru_id"] ?? "";
         $pesId    = $postagem["grp_pes_id"] ?? "";
         $titulo   = $postagem["grt_titulo"] ?? "";
         $pessoa   = $postagem["pes_nome"] ?? "";
@@ -34,20 +35,8 @@ if($vPesNome != ""){
 
         $idUsuLogado       = pegaUsuarioLogadoId() ?? 0;
         $grpPessoaLogado   = pegaGrupoPessoaLogadoId() ?? -1;
-        $ehAdminLogado     = false;
-        if($grpPessoaLogado == NULL || $grpPessoaLogado == -1){
-          require_once(APPPATH."/models/TbGrupoTimeline.php");
-          $retGrt            = pegaGrupoTimeline($id);
-          $GrupoTimeline     = ($retGrt["erro"]) ? array(): $retGrt["GrupoTimeline"];
-          $vGruId            = $GrupoTimeline["grt_gru_id"] ?? "";
-
-          $grpPessoaLogado   = $_SESSION["usuario_grps"][$vGruId] ?? NULL;
-          $ehPostagemPropria = false;
-          $ehAdminLogado     = count($_SESSION["usuario_grps"]) > 0;
-        } else {
-          $ehPostagemPropria = ($idUsuLogado == $pesId);
-        }
-        
+        $ehAdminLogado     = ehAdminGrupo($gruId);
+        $ehPostagemPropria = ($idUsuLogado == $pesId);
         $strData           = ($data != "") ? date("d/m H:m", strtotime($data)): "";
         $strDataF          = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
         $strTexto          = nl2br($texto);

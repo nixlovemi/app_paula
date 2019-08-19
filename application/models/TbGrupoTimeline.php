@@ -96,7 +96,7 @@ function pegaRespostasGrupoTimeline($arrPostagens)
   }
 
   if( count($arrGrtId) > 0 ){
-    $CI->db->select('grt_id, grt_resposta_id, grt_data, grt_texto, grp_id, pes_nome, pes_email, pes_foto');
+    $CI->db->select('grt_id, grt_gru_id, grt_resposta_id, grt_data, grt_texto, grp_id, pes_nome, pes_email, pes_foto');
     $CI->db->from('v_tb_grupo_timeline');
     $CI->db->where('grt_resposta_id IN ('.implode(",", $arrGrtId).')');
     $CI->db->where('grt_ativo = ', 1);
@@ -135,17 +135,12 @@ function geraHtmlRespostas($arrRespostas)
 {
   $html = "";
   foreach($arrRespostas as $resposta){
-    $grtId     = $resposta["grt_id"] ?? "";
-    $grpId     = $resposta["grp_id"] ?? "";
-    $grpLogado = pegaGrupoPessoaLogadoId();
-    if($grpLogado == NULL){
-      require_once(APPPATH."/models/TbGrupoTimeline.php");
-      $retGrt        = pegaGrupoTimeline($grtId);
-      $GrupoTimeline = ($retGrt["erro"]) ? array(): $retGrt["GrupoTimeline"];
-      $vGruId        = $GrupoTimeline["grt_gru_id"] ?? "";
-      $grpLogado     = $_SESSION["usuario_grps"][$vGruId] ?? NULL;
-    }
-    $htmlDel   = ($grpLogado == $grpId) ? "<a class='delete' href='javascript:;' onclick='fncItemPostagemDelComentario($grtId)'><i class='material-icons'>delete</i></a>": "";
+    $grtId         = $resposta["grt_id"] ?? "";
+    $grpId         = $resposta["grp_id"] ?? "";
+    $gruId         = $resposta["grt_gru_id"] ?? "";
+    $ehAdminLogado = ehAdminGrupo($gruId);
+    $grpLogado     = pegaGrupoPessoaLogadoId();
+    $htmlDel       = ($grpLogado == $grpId || $ehAdminLogado) ? "<a class='delete' href='javascript:;' onclick='fncItemPostagemDelComentario($grtId)'><i class='material-icons'>delete</i></a>": "";
 
     $foto3 = ($resposta["pes_foto"] != "") ? BASE_URL . $resposta["pes_foto"]: BASE_URL . FOTO_DEFAULT;
     $nome  = $resposta['pes_nome'] ?? "";
@@ -195,19 +190,6 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
   
   // ve se eh staff
   $vGrpLogado = pegaGrupoPessoaLogadoId();
-
-  #@todo melhorar essa logica pro dono do grupo
-  $ControllerAction = pegaControllerAction();
-  $urlVarGrpId    = $ControllerAction["vars"][0] ?? "";
-  if(!$vGrpLogado > 0){
-    foreach($_SESSION["usuario_grps"] as $lgGrupo => $lgGrp){
-      if($lgGrupo == $gruId){
-        $vGrpLogado = $lgGrp;
-        break;
-      }
-    }
-  }
-
   $ehStaff    = false;
   foreach($arrStaff as $staff){
     if($staff["grp_id"] == $vGrpLogado){
@@ -230,6 +212,8 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
     $tituloPag = " - Favoritos";
   }
 
+  $ControllerAction = pegaControllerAction();
+  $urlVarGrpId      = $ControllerAction["vars"][0] ?? "";
   if($ControllerAction["controller"] == "SisGrupo" && ($ControllerAction["action"] == "index" || $ControllerAction["action"] == "")){
     $mostraNovoPost    = !$ehStaff;
     $urlNovoPostRed    = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"];
@@ -267,7 +251,6 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
     "GrupoTimeline"     => $GrupoTimeline,
     "mostraNovoPost"    => $mostraNovoPost,
     "urlNovoPostRed"    => $urlNovoPostRed,
-    "vGrpLogado"        => $vGrpLogado,
   ));
 }
 
@@ -514,23 +497,9 @@ function deletaGrupoTimeline($vGrtId)
             $gruId         = $GrupoTimeline["grt_gru_id"] ?? "";
             $pesId         = $GrupoTimeline["grp_pes_id"] ?? "";
 
-            # se for admin deletando, trata diferente
-            # se for admin e for do grupo dele, deleta qqr coisa
-            if(isset($_SESSION["usuario_grps"]) && count($_SESSION["usuario_grps"]) > 0){
-              require_once(APPPATH."/models/TbGrupoTimeline.php");
-              $retGrt         = pegaGrupoTimeline($vGrtId);
-              $GrupoTimeline  = ($retGrt["erro"]) ? array(): $retGrt["GrupoTimeline"];
-              $vGruId         = $GrupoTimeline["grp_gru_id"] ?? "";
-              $vGrpIdSession  = $_SESSION["usuario_grps"][$vGruId] ?? NULL;
-
-              $adminDeletando = $vGrpIdSession > 0;
-              $gruLogadoId    = $vGruId;
-              $usuLogadoId    = -1;
-            } else {
-              $usuLogadoId    = pegaUsuarioLogadoId();
-              $gruLogadoId    = pegaGrupoLogadoId();
-              $adminDeletando = false;
-            }
+            $usuLogadoId    = pegaUsuarioLogadoId();
+            $gruLogadoId    = pegaGrupoLogadoId();
+            $adminDeletando = ehAdminGrupo($gruId);
             
             if (($adminDeletando == false) && ($usuLogadoId != "" && $usuLogadoId != $pesId)) {
                 $arrRetorno["erro"] = true;

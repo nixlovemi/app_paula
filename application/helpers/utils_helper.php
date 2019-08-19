@@ -146,9 +146,22 @@ function pegaControllerAction()
   return $arrRet;
 }
 
-function acerta_moeda($str)
+function ehAdminGrupo($gruId)
 {
-    $str = trim($str);
+  require_once(APPPATH."/models/TbGrupo.php");
+  $retGrupo   = pegaGrupo($gruId);
+  $Grupo      = (!$retGrupo["erro"]) ? $retGrupo["Grupo"]: array();
+  $vGruUsuId  = $Grupo["gru_usu_id"] ?? "";
+  $UsuarioLog = $_SESSION["usuario_info"] ?? array();
+  $usuLogado  = $UsuarioLog->id ?? "";
+  $cliente    = $UsuarioLog->cliente ?? 1;
+
+  return ($vGruUsuId == $usuLogado) && ($cliente == 0);
+}
+
+function acerta_moeda($strInput)
+{
+    $str = trim($strInput);
 
     if (strlen($str) <= 0) {
         return null;

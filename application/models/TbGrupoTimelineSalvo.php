@@ -26,16 +26,7 @@ function validaInsereGrupoTimelineSalvo($GrupoTimelineSalvo)
   $vPesId      = $GrupoPessoa["grp_pes_id"] ?? "";
 
   $idGruLogado = pegaGrupoLogadoId();
-  $ehAdminGrp  = false;
-  if($idGruLogado == NULL){
-    $arrLoop = $_SESSION["usuario_grps"] ?? array();
-    foreach($arrLoop as $lgGru => $lgGrp){
-      if($lgGru == $vGruId){
-        $idGruLogado = $lgGru;
-        $ehAdminGrp  = true;
-      }
-    }
-  }
+  $ehAdminGrp  = ehAdminGrupo($vGruId);
 
   // vê se grupo condiz com a session
   if($idGruLogado != $vGruId){

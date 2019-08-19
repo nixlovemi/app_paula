@@ -206,11 +206,14 @@ class Grupo extends MY_Controller
       } else {
         require_once(APPPATH."/models/TbGrupoPessoa.php");
         $retGP = pegaGrupoPessoaUsuGru($vUsuLogado, $gruId);
+
         if($retGP["erro"]){
           geraNotificacao("Aviso!", $retGP["msg"], "warning");
           redirect(BASE_URL . 'Grupo');
         } else {
-          $GrupoPessoa = $retGP["GrupoPessoa"] ?? array();
+          $GrupoPessoa        = $retGP["GrupoPessoa"] ?? array();
+          $_SESSION["grp_id"] = $GrupoPessoa["grp_id"] ?? "";
+          $_SESSION["foto"]   = $GrupoPessoa["pes_foto"] ?? NULL;
 
           require_once(APPPATH."/models/TbGrupoTimeline.php");
           geraHtmlViewGrupoTimeline($GrupoPessoa);
@@ -226,19 +229,16 @@ class Grupo extends MY_Controller
     require_once(APPPATH."/models/TbGrupoPessoa.php");
     $retGP       = pegaGrupoPessoa($vGrpId);
     $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
-    $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
-    $vGruLogado  = pegaGrupoLogadoId();
+    $vGruUsuId   = $GrupoPessoa["gru_usu_id"] ?? "";
+    $vUsuLogado  = pegaUsuarioLogadoId();
 
-    // valida grupo logado
-    // @todo nao sei o melhor jeito de tratar isso
-    /*if($vGruId != $vGruLogado){
-      geraNotificacao("Aviso!", "Esse conteúdo não faz parte do seu grupo!", "warning");
-      redirect(BASE_URL . 'Grupo/index');
-      return;
-    }*/
-
-    require_once(APPPATH."/models/TbGrupoTimeline.php");
-    geraHtmlViewGrupoTimeline($GrupoPessoa, true);
+    if($vGruUsuId != $vUsuLogado){
+      geraNotificacao("Aviso!", "Esse grupo não pertence a você!", "warning");
+      redirect(BASE_URL . 'Grupo');
+    } else {
+      require_once(APPPATH."/models/TbGrupoTimeline.php");
+      geraHtmlViewGrupoTimeline($GrupoPessoa, true);
+    }
   }
 
   public function favoritos($grpId)
@@ -248,18 +248,15 @@ class Grupo extends MY_Controller
     require_once(APPPATH."/models/TbGrupoPessoa.php");
     $retGP       = pegaGrupoPessoa($vGrpId);
     $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
-    $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
-    $vGruLogado  = pegaGrupoLogadoId();
+    $vGruUsuId   = $GrupoPessoa["gru_usu_id"] ?? "";
+    $vUsuLogado  = pegaUsuarioLogadoId();
 
-    // valida grupo logado
-    // @todo nao sei o melhor jeito de tratar isso
-    /*if($vGruId != $vGruLogado){
-      geraNotificacao("Aviso!", "Esse conteúdo não faz parte do seu grupo!", "warning");
-      redirect(BASE_URL . 'Grupo/index');
-      return;
-    }*/
-
-    require_once(APPPATH."/models/TbGrupoTimeline.php");
-    geraHtmlViewGrupoTimeline($GrupoPessoa, false, true);
+    if($vGruUsuId != $vUsuLogado){
+      geraNotificacao("Aviso!", "Esse grupo não pertence a você!", "warning");
+      redirect(BASE_URL . 'Grupo');
+    } else {
+      require_once(APPPATH."/models/TbGrupoTimeline.php");
+      geraHtmlViewGrupoTimeline($GrupoPessoa, false, true);
+    }
   }
 }

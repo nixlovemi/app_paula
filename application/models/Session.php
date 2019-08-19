@@ -6,7 +6,6 @@ function getArrSession()
   return $arrSession = array(
     "template_menu" => array(),
     "usuario_info"  => "",
-    "usuario_grps"  => array(),
     "grp_id"        => "",
   );
 }
@@ -34,30 +33,6 @@ function inicia_session($template_menu=array(), $usuario_info="", $cliente=false
   $arrSession["credenciais"] = rand (51, 99);
 
   salva_session($arrSession);
-}
-
-function inicia_usuario_grps()
-{
-  $Usuario = $_SESSION["usuario_info"] ?? null;
-  $vUsuid  = $Usuario->id ?? null;
-
-  $CI = pega_instancia();
-  $CI->load->database();
-
-  #@todo talvez passar isso pra um model
-  $CI->db->select('grp_id, grp_gru_id, pes_foto');
-  $CI->db->from('v_tb_grupo_pessoa');
-  $CI->db->where('grp_usu_id = ', $vUsuid);
-  $query = $CI->db->get();
-
-  if($query){
-    foreach ($query->result() as $row) {
-      if (isset($row)) {
-        $_SESSION["usuario_grps"][$row->grp_gru_id] = $row->grp_id;
-        $_SESSION["foto"]                           = $row->pes_foto;
-      }
-    }
-  }
 }
 
 function fecha_session()
