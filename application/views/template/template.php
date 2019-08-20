@@ -82,12 +82,14 @@ if($GRP_ID > 0 && !$ehAdminLogado){
   <link href="<?php echo $BASE_URL; ?>template/assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <link href="<?php echo $BASE_URL; ?>assets/FcbkGrid/images-grid.css" rel="stylesheet" />
   <link href="<?php echo $BASE_URL; ?>assets/VideoAudioPlayer/css/stylised.css" rel="stylesheet" />
-  <link href="https://vjs.zencdn.net/7.6.0/video-js.css" rel="stylesheet">
+  <link href="<?php echo $BASE_URL; ?>assets/Croppie/croppie.css" rel="stylesheet" />
+  <!--<link href="https://vjs.zencdn.net/7.6.0/video-js.css" rel="stylesheet">-->
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="<?php echo $BASE_URL; ?>template/assets/demo/demo.css" rel="stylesheet" />
 
   <script src="<?php echo $BASE_URL; ?>template/assets/js/core/jquery.min.js"></script>
-  <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+  <script src="<?php echo $BASE_URL; ?>assets/videojs-ie8.min.js"></script>
+  <!--<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>-->
 </head>
 
 <body class="" data-base-url="<?php echo $BASE_URL; ?>">
@@ -285,7 +287,8 @@ if($GRP_ID > 0 && !$ehAdminLogado){
   <script src="<?php echo $BASE_URL; ?>template/assets/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
   <script src="<?php echo $BASE_URL; ?>assets/FcbkGrid/images-grid.js" type="text/javascript"></script>
   <script src="<?php echo $BASE_URL; ?>assets/VideoAudioPlayer/mediastyler.js" type="text/javascript"></script>
-  <script src='https://vjs.zencdn.net/7.6.0/video.js'></script>
+  <script src="<?php echo $BASE_URL; ?>assets/Croppie/croppie.min.js" type="text/javascript"></script>
+  <!--<script src='https://vjs.zencdn.net/7.6.0/video.js'></script>-->
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script src="<?php echo $BASE_URL; ?>template/assets/demo/demo.js"></script>
   <!-- Lista CI -->

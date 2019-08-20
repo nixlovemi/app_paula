@@ -251,6 +251,9 @@ img.img-comentario{
 .dv-resposta .comentario-texto:hover > a.delete {
   display:block;
 }
+.croppie-container .cr-image {
+  position: unset;
+}
 
 @media (max-width: 720px) 
 {

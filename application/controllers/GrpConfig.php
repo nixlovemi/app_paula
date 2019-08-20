@@ -29,6 +29,7 @@ class GrpConfig extends MY_Controller
       "pesEmail" => $pesEmail,
     ));
   }
+
   public function postIndex()
   {
     $variaveisPost  = processaPost();
@@ -67,9 +68,7 @@ class GrpConfig extends MY_Controller
     }
     // ======================
 
-    require_once(APPPATH."/models/TbPessoa.php");
     $retEditar = editaPessoa($Pessoa, false);
-
     if($retEditar["erro"]){
       geraNotificacao("Aviso!", $retEditar["msg"], "warning");
       redirect(BASE_URL . 'GrpConfig');
@@ -82,5 +81,4 @@ class GrpConfig extends MY_Controller
       redirect(BASE_URL . 'GrpConfig');
     }
   }
-
 }

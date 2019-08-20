@@ -268,4 +268,128 @@ class Json extends CI_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function jsonHtmlFotoPerfil()
+  {
+    $arrRet   = [];
+    $htmlView = $this->load->view('FotoPerfil/index', array(
+      "titulo" => gera_titulo_template("Alterar Foto do Perfil"),
+    ), true);
+
+    $htmlAjustado  = processaJsonHtml($htmlView);
+    $arrRet["callback"] = "fncShowAlterarFotoPerfil('$htmlAjustado')";
+
+    echo json_encode($arrRet);
+  }
+
+  public function jsonPostHtmlFotoPerfil()
+  {
+    $arrRet = [];
+
+    # fazer o upload, carregar nova janela e "ligar" o plugin
+    if(!isset($_FILES["file"])){
+      $arrRet["msg"]        = "Selecione uma imagem para prosseguir!";
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"]   = "warning";
+    } else {
+      $imgTipo   = $_FILES['file']['type'];
+      $imgInfo   = getimagesize($_FILES["file"]["tmp_name"]);
+      $imgWidth  = $imgInfo[0];
+      $imgHeight = $imgInfo[1];
+
+      $permitido = array("image/jpeg", "image/png");
+      if(!in_array($imgTipo, $permitido)) {
+        $arrRet["msg"]        = "Selecione uma imagem do tipo JPG ou PNG para prosseguir!";
+        $arrRet["msg_titulo"] = "Aviso!";
+        $arrRet["msg_tipo"]   = "warning";
+      } else if($imgWidth < 250 && $imgHeight < 250){
+        $arrRet["msg"]        = "A imagem precisa ter pelo menos 250x250 de tamanho!";
+        $arrRet["msg_titulo"] = "Aviso!";
+        $arrRet["msg_tipo"]   = "warning";
+      } else {
+        $usuLogado = pegaUsuarioLogadoId();
+        $ext       = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        $caminho   = FCPATH."assets/cache/temp-foto-perfil-pes-$usuLogado.$ext";
+
+        $ret = move_uploaded_file($_FILES['file']['tmp_name'], $caminho);
+        if(!$ret){
+          $arrRet["msg"]        = "Erro ao executar upload! Tente novamente.";
+          $arrRet["msg_titulo"] = "Aviso!";
+          $arrRet["msg_tipo"]   = "warning";
+        } else {
+          resizeImage(500, $caminho, $caminho);
+
+          $htmlView = $this->load->view('FotoPerfil/crop', array(
+            "caminhoImg" => str_replace(FCPATH, base_url(), $caminho),
+          ), true);
+
+          $htmlAjustado       = processaJsonHtml($htmlView);
+          $arrRet["callback"] = "fncShowAlterarFotoPerfilCrop('$htmlAjustado')";
+        }
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
+
+  public function jsonPostHtmlFotoPerfilCrop()
+  {
+    #@todo talvez tratar erros melhor
+    $arrRet = [];
+    $base64 = $_REQUEST["base64"] ?? "";
+    $imgUrl = $_REQUEST["imgUrl"] ?? "";
+    $tdOk   = ($base64 != "") && ($imgUrl != "");
+
+    if(!$tdOk){
+      $arrRet["msg"]        = "Erro ao recortar imagem! Tente novamente.";
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"]   = "warning";
+    } else {
+      $srcImg = str_replace(BASE_URL, FCPATH, $imgUrl);
+      $ext    = pathinfo($srcImg, PATHINFO_EXTENSION);
+      if($ext == "png"){
+        $type = "data:image/png";
+      } else {
+        $type = "data:image/jpg";
+      }
+
+      list($type, $base64) = explode(';', $base64);
+      list(, $base64)      = explode(',', $base64);
+      $base64              = base64_decode($base64);
+
+      $ret = file_put_contents($srcImg, $base64);
+      if($ret === false){
+        $arrRet["msg"]        = "Erro ao salvar imagem! Tente novamente.";
+        $arrRet["msg_titulo"] = "Aviso!";
+        $arrRet["msg_tipo"]   = "warning";
+      } else {
+        $nomeImg  = basename($srcImg);
+        $novoPath = FCPATH . "template/assets/img/pessoas/$nomeImg";
+
+        rename($srcImg, $novoPath);
+        
+        $UsuarioLog = $_SESSION["usuario_info"] ?? array();
+        $pesId      = $UsuarioLog->id ?? "";
+
+        require_once(APPPATH."/models/TbPessoa.php");
+        $ret                = pegaPessoa($pesId);
+        $Pessoa             = $this->session->flashdata('Pessoa') ?? $ret["Pessoa"];
+        $Pessoa["pes_foto"] = str_replace(FCPATH, "", $novoPath);
+
+        $retEditar = editaPessoa($Pessoa, false);
+        if($retEditar["erro"]){
+          $arrRet["msg"]        = $retEditar["msg"];
+          $arrRet["msg_titulo"] = "Aviso!";
+          $arrRet["msg_tipo"]   = "warning";
+        } else {
+          $_SESSION["foto"]         = $Pessoa["pes_foto"];
+          $UsuarioLog->foto         = $Pessoa["pes_foto"];
+          $_SESSION["usuario_info"] = $UsuarioLog;
+          $arrRet["callback"]       = "document.location.href=document.location.href;";
+        }
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }

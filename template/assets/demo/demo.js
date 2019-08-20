@@ -1,4 +1,5 @@
 V_GLOB_URL_BASE = $('body').data('base-url');
+V_CROPPIE       = null;
 
 // moment js pt-br locale
 !function(e,d){"object"==typeof exports&&"undefined"!=typeof module&&"function"==typeof require?d(require("../moment")):"function"==typeof define&&define.amd?define(["../moment"],d):d(e.moment)}(this,function(e){"use strict";return e.defineLocale("pt-br",{months:"Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro".split("_"),monthsShort:"Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez".split("_"),weekdays:"Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado".split("_"),weekdaysShort:"Dom_Seg_Ter_Qua_Qui_Sex_Sáb".split("_"),weekdaysMin:"Do_2ª_3ª_4ª_5ª_6ª_Sá".split("_"),weekdaysParseExact:!0,longDateFormat:{LT:"HH:mm",LTS:"HH:mm:ss",L:"DD/MM/YYYY",LL:"D [de] MMMM [de] YYYY",LLL:"D [de] MMMM [de] YYYY [às] HH:mm",LLLL:"dddd, D [de] MMMM [de] YYYY [às] HH:mm"},calendar:{sameDay:"[Hoje às] LT",nextDay:"[Amanhã às] LT",nextWeek:"dddd [às] LT",lastDay:"[Ontem às] LT",lastWeek:function(){return 0===this.day()||6===this.day()?"[Último] dddd [às] LT":"[Última] dddd [às] LT"},sameElse:"L"},relativeTime:{future:"em %s",past:"há %s",s:"poucos segundos",ss:"%d segundos",m:"um minuto",mm:"%d minutos",h:"uma hora",hh:"%d horas",d:"um dia",dd:"%d dias",M:"um mês",MM:"%d meses",y:"um ano",yy:"%d anos"},dayOfMonthOrdinalParse:/\d{1,2}º/,ordinal:"%dº"})});
@@ -162,6 +163,36 @@ function init_components()
   
 }
 
+function process_mvc_ret(data)
+{
+  if(typeof data.callback !== 'undefined'){
+    if(data.callback !== ""){
+      setTimeout(data.callback, 350);
+    }
+  }
+
+  if(typeof data.msg !== 'undefined' && typeof data.msg_titulo !== 'undefined' && typeof data.msg_tipo !== 'undefined'){
+    if(data.msg !== "" && data.msg_titulo !== "" && data.msg_tipo !== ""){
+      mostraNotificacao(data.msg_titulo, data.msg, data.msg_tipo);
+    }
+  }
+
+  if(typeof data.html !== 'undefined' && typeof data.html_selector !== 'undefined'){
+    var append = false;
+    if(data.html_append !== 'undefined'){
+      append = data.html_append;
+    }
+
+    if(data.html !== "" && data.html_selector !== ""){
+      if(append){
+        $(data.html_selector).append(data.html);
+      } else {
+        $(data.html_selector).html(data.html);
+      }
+    }
+  }
+}
+
 function mvc_post_ajax_var(controller, action, vars)
 {
   $.ajax({
@@ -176,32 +207,7 @@ function mvc_post_ajax_var(controller, action, vars)
       
     },
     success: function (data) {
-      if(typeof data.callback !== 'undefined'){
-        if(data.callback !== ""){
-          setTimeout(data.callback, 350);
-        }
-      }
-      
-      if(typeof data.msg !== 'undefined' && typeof data.msg_titulo !== 'undefined' && typeof data.msg_tipo !== 'undefined'){
-        if(data.msg !== "" && data.msg_titulo !== "" && data.msg_tipo !== ""){
-          mostraNotificacao(data.msg_titulo, data.msg, data.msg_tipo);
-        }
-      }
-      
-      if(typeof data.html !== 'undefined' && typeof data.html_selector !== 'undefined'){
-        var append = false;
-        if(data.html_append !== 'undefined'){
-          append = data.html_append;
-        }
-        
-        if(data.html !== "" && data.html_selector !== ""){
-          if(append){
-            $(data.html_selector).append(data.html);
-          } else {
-            $(data.html_selector).html(data.html);
-          }
-        }
-      }
+      process_mvc_ret(data);
     }
   });
   
@@ -398,7 +404,8 @@ function favoritarPostagem(id)
   mvc_post_ajax_var("Json", "jsonFavoritar", "id=" + id);
 }
 
-function jqueryMostraFavoritado(id){
+function jqueryMostraFavoritado(id)
+{
   $('div#item-postagem-' + id + ' .li-favoritado').show();
 }
 
@@ -432,3 +439,92 @@ function fncItemPostagemDelComentario(grtId)
   });
 }
 /* ========= */
+
+/* foto perfil */
+function fncAlterarFotoPerfil()
+{
+  mvc_post_ajax_var("Json", "jsonHtmlFotoPerfil", "");
+}
+
+function fncShowAlterarFotoPerfil(html)
+{
+  $(document).ready(function(){
+    $('#frmAlterarFotoPerfil input[type="file"]').change(function(e){
+      var fileName = e.target.files[0].name;
+      $(this).parent().find('#spn_nome_foto').html('Foto selecionada. Faça o upload.');
+      //alert('The file "' + fileName +  '" has been selected.');
+    });
+  });
+  
+  Swal.fire({
+    html: html,
+    showCloseButton: true,
+    focusConfirm: false,
+    confirmButtonColor: '#00bcd4',
+    confirmButtonText: 'Subir foto',
+    width: '200px'
+  })
+  .then((result) => {
+    if (result.value) {
+      var file     = document.getElementById("file-alterar-foto-perfil").files[0];
+      var formData = new FormData();
+      formData.append('file', file);
+      
+      $.ajax({type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        url: V_GLOB_URL_BASE + 'Json' + '/' + 'jsonPostHtmlFotoPerfil',
+        dataType: 'json',
+        success: function (data) {
+          process_mvc_ret(data);
+        }
+      });
+    }
+  });
+  
+  setTimeout("init_components()", 300);
+}
+
+function fncShowAlterarFotoPerfilCrop(html)
+{
+  setTimeout(function(){
+    V_CROPPIE = $('#img-foto-perfil-crop').croppie({
+      viewport: {
+        width: 300,
+        height: 300
+      },
+      mouseWheelZoom: false,
+    });
+  }, 400);
+  
+  Swal.fire({
+    html: html,
+    showCloseButton: true,
+    focusConfirm: false,
+    confirmButtonColor: '#00bcd4',
+    confirmButtonText: 'Salvar',
+    width: '50%'
+  })
+  .then((result) => {
+    if (result.value) {
+      V_CROPPIE.croppie('result', 'base64').then(function(base64) {
+        var formData = new FormData();
+        formData.append('base64', base64);
+        formData.append('imgUrl', $("#img-foto-perfil-crop").attr("src"));
+
+        $.ajax({type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          url: V_GLOB_URL_BASE + 'Json' + '/' + 'jsonPostHtmlFotoPerfilCrop',
+          dataType: 'json',
+          success: function (data) {
+            process_mvc_ret(data);
+          }
+        });
+      });
+    }
+  });
+}
+/* =========== */

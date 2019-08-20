@@ -223,7 +223,7 @@ function resizeImage($newWidth, $targetFile, $originalFile)
       $image_create_func = 'imagecreatefrompng';
       $image_save_func   = 'imagepng';
       $new_image_ext     = 'png';
-      $quality           = '75';
+      $quality           = '5';
       break;
     case 'image/gif':
       $image_create_func = 'imagecreatefromgif';
@@ -238,8 +238,7 @@ function resizeImage($newWidth, $targetFile, $originalFile)
   list($width, $height) = getimagesize($originalFile);
   $newHeight = ($height / $width) * $newWidth;
   $tmp       = imagecreatetruecolor($newWidth, $newHeight);
-  imagecopyresampled($tmp, $img, 0, 0, 0, 0, $newWidth, $newHeight, $width,
-    $height);
+  imagecopyresampled($tmp, $img, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
   if (file_exists($targetFile)) {
     unlink($targetFile);
   }

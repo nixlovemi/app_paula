@@ -63,7 +63,7 @@ $pesEmail = $pesEmail ?? "";
     <div class="col-md-4">
       <div class="card card-profile">
         <div class="card-avatar">
-          <a href="#pablo">
+          <a href="javascript:;" onclick="fncAlterarFotoPerfil();">
             <img class="img" src="<?php echo $pesFoto; ?>" />
           </a>
         </div>
