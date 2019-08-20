@@ -131,6 +131,7 @@ if(!$grpIdLogado > 0){
                 </div>
                 <span>
                   <a style="color:#3C4858 !important;" class="text-info" href="<?=base_url() . $url?>">
+                    <span data-id="<?=$grpId?>" id="grupo-staff-notificacao-<?=$grpId?>" class="notification grupo-staff-notificacao"></span>
                     <?=$nome?>
                   </a>
                 </span>

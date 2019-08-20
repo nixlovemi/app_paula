@@ -93,8 +93,38 @@ $( document ).ready(function()
   });
   // =========
   
+  if( $('.grupo-staff-notificacao').length > 0 ){
+    atualizaNotificacaoStaff();
+    setInterval(
+      "atualizaNotificacaoStaff()"
+      ,25000);
+  }
+  
   init_components();
 });
+
+function atualizaNotificacaoStaff()
+{
+  $.ajax({type: 'POST',
+    contentType: false,
+    processData: false,
+    url: V_GLOB_URL_BASE + 'Json' + '/' + 'jsonAtualizaNotificacaoStaff',
+    dataType: 'json',
+    success: function (data) {
+      if(!data.erro){
+        $(".grupo-staff-notificacao").each(function() {
+          var spanId         = $(this).data("id");
+          var cntNotificacao = data.notificacao[spanId];
+          if(typeof cntNotificacao == "undefined"){
+            $(this).hide();
+          } else {
+            $(this).html(cntNotificacao).show();
+          }
+        });
+      }
+    }
+  });
+}
 
 function init_components()
 {

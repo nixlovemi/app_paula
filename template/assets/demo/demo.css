@@ -254,6 +254,23 @@ img.img-comentario{
 .croppie-container .cr-image {
   position: unset;
 }
+.informacao-grupo-side .notification {
+  position: absolute;
+  top: -18px;
+  left: -26px;
+  border: 1px solid #FFF;
+  font-size: 9px;
+  background: #f44336;
+  color: #FFFFFF;
+  min-width: 20px;
+  padding: 0px 5px;
+  height: 20px;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 19px;
+  vertical-align: middle;
+  display: none;
+}
 
 @media (max-width: 720px) 
 {

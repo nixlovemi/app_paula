@@ -405,4 +405,14 @@ class Json extends CI_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function jsonAtualizaNotificacaoStaff()
+  {
+    $vGrpId = pegaGrupoPessoaLogadoId();
+
+    require_once(APPPATH."/models/TbGrupoTimelineStatus.php");
+    $ret = pegaInfoStaffNotificacao($vGrpId);
+
+    echo json_encode($ret);
+  }
 }
