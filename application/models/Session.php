@@ -7,6 +7,7 @@ function getArrSession()
     "template_menu" => array(),
     "usuario_info"  => "",
     "grp_id"        => "",
+    "foto"          => "",
   );
 }
 
@@ -28,6 +29,7 @@ function inicia_session($template_menu=array(), $usuario_info="", $cliente=false
   if($cliente){
     $arrSession["grp_id"] = $grpId;
   }
+  $arrSession["foto"] = $usuario_info->foto;
 
   // pra checar session
   $arrSession["credenciais"] = rand (51, 99);

@@ -1,25 +1,20 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class GrpConfig extends MY_Controller
+class UsuConfig extends MY_Controller
 {
-  var $cliente_logado;
-
   public function __construct()
   {
-      $admin = false;
-      $grupo = true;
-      parent::__construct($admin, $grupo);
-      $this->load->helper("utils_helper");
-
-      $this->cliente_logado = $this->session->usuario_info ?? array();
+    $admin = false;
+    parent::__construct($admin);
+    $this->load->helper("utils_helper");
   }
 
   public function index()
   {
     $UsuarioLog = $_SESSION["usuario_info"] ?? array();
     $pesFoto    = pegaFotoLogado();
-    $pesNome    = $UsuarioLog->usuario ?? "";
+    $pesNome    = $UsuarioLog->nome ?? "";
     $pesEmail   = $UsuarioLog->email ?? "";
 
     $this->template->load(TEMPLATE_STR, 'GrpConfig/index', array(
@@ -27,8 +22,8 @@ class GrpConfig extends MY_Controller
       "pesFoto"  => $pesFoto,
       "pesNome"  => $pesNome,
       "pesEmail" => $pesEmail,
-      "postUrl"  => BASE_URL . "GrpConfig/postIndex",
-      "voltaUrl" => BASE_URL . "SisGrupo",
+      "postUrl"  => BASE_URL . "UsuConfig/postIndex",
+      "voltaUrl" => BASE_URL . "Sistema",
     ));
   }
 
@@ -51,14 +46,14 @@ class GrpConfig extends MY_Controller
     if($ret["erro"]){
       geraNotificacao("Aviso!", $ret["msg"], "warning");
     } else {
-      $UsuarioLog               = $_SESSION["usuario_info"] ?? array();
-      $UsuarioLog->usuario      = $vNome;
+      $UsuarioLog               = $_SESSION["usuario_info"];
+      $UsuarioLog->nome         = $vNome;
       $UsuarioLog->senha        = $vNovaSenha;
       $_SESSION["usuario_info"] = $UsuarioLog;
 
       geraNotificacao("Sucesso!", "Informações atualizadas!", "success");
     }
 
-    redirect(BASE_URL . 'GrpConfig');
+    redirect(BASE_URL . 'UsuConfig');
   }
 }

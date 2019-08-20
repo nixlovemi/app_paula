@@ -172,9 +172,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
   <div class="col-md-4">
     <div class="card card-profile">
       <div class="card-avatar">
-        <a href="#pablo">
-          <img class="img" src="<?php echo base_url(); ?><?php echo $pesFoto; ?>" />
-        </a>
+        <img class="img" src="<?php echo base_url(); ?><?php echo $pesFoto; ?>" />
       </div>
       <div class="card-body">
         <h4 class="card-title"><?php echo $pesNome; ?></h4>

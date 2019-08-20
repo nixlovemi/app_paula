@@ -284,7 +284,10 @@ class Json extends CI_Controller
 
   public function jsonPostHtmlFotoPerfil()
   {
-    $arrRet = [];
+    $arrRet     = [];
+    $UsuarioLog = $_SESSION["usuario_info"] ?? array();
+    $ehCliente  = $UsuarioLog->cliente > 0;
+    $prefix     = ($ehCliente) ? "pes": "usu";
 
     # fazer o upload, carregar nova janela e "ligar" o plugin
     if(!isset($_FILES["file"])){
@@ -309,7 +312,7 @@ class Json extends CI_Controller
       } else {
         $usuLogado = pegaUsuarioLogadoId();
         $ext       = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $caminho   = FCPATH."assets/cache/temp-foto-perfil-pes-$usuLogado.$ext";
+        $caminho   = FCPATH."assets/cache/temp-foto-perfil-$prefix-$usuLogado.$ext";
 
         $ret = move_uploaded_file($_FILES['file']['tmp_name'], $caminho);
         if(!$ret){
@@ -368,22 +371,32 @@ class Json extends CI_Controller
 
         rename($srcImg, $novoPath);
         
-        $UsuarioLog = $_SESSION["usuario_info"] ?? array();
-        $pesId      = $UsuarioLog->id ?? "";
+        $UsuarioLog  = $_SESSION["usuario_info"] ?? array();
+        $ehCliente   = $UsuarioLog->cliente > 0;
+        $idLogado    = $UsuarioLog->id ?? "";
+        $caminhoFoto = str_replace(FCPATH, "", $novoPath);
 
-        require_once(APPPATH."/models/TbPessoa.php");
-        $ret                = pegaPessoa($pesId);
-        $Pessoa             = $this->session->flashdata('Pessoa') ?? $ret["Pessoa"];
-        $Pessoa["pes_foto"] = str_replace(FCPATH, "", $novoPath);
-
-        $retEditar = editaPessoa($Pessoa, false);
+        if($ehCliente){
+          require_once(APPPATH."/models/TbPessoa.php");
+          $ret                = pegaPessoa($idLogado);
+          $Pessoa             = ($ret["erro"]) ? array(): $ret["Pessoa"];
+          $Pessoa["pes_foto"] = $caminhoFoto;
+          $retEditar          = editaPessoa($Pessoa, false);
+        } else {
+          require_once(APPPATH."/models/TbUsuario.php");
+          $ret                 = pegaUsuario($idLogado);
+          $Usuario             = ($ret["erro"]) ? array(): $ret["Usuario"];
+          $Usuario["usu_foto"] = $caminhoFoto;
+          $retEditar           = editaUsuario($Usuario, false);
+        }
+        
         if($retEditar["erro"]){
           $arrRet["msg"]        = $retEditar["msg"];
           $arrRet["msg_titulo"] = "Aviso!";
           $arrRet["msg_tipo"]   = "warning";
         } else {
-          $_SESSION["foto"]         = $Pessoa["pes_foto"];
-          $UsuarioLog->foto         = $Pessoa["pes_foto"];
+          $_SESSION["foto"]         = $caminhoFoto;
+          $UsuarioLog->foto         = $caminhoFoto;
           $_SESSION["usuario_info"] = $UsuarioLog;
           $arrRet["callback"]       = "document.location.href=document.location.href;";
         }

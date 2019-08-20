@@ -57,7 +57,7 @@ if($GRP_ID > 0 && !$ehAdminLogado){
 } else {
   $URL_HOME       = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL . "Dashboard": $BASE_URL . "Sistema";
   $URL_LOGOUT     = ($USUARIO_LOGADO->admin == 1) ? $BASE_URL: $BASE_URL . "Login/sistema";
-  $URL_CONFIG     = "javascript:;";
+  $URL_CONFIG     = "UsuConfig";
   $IMG_SIDEBAR    = ($USUARIO_LOGADO->admin == 1) ? "sidebar-1.jpg": "sidebar-3.jpg";
   $EH_GRUPO       = false;
 }

@@ -2,9 +2,11 @@
 $pesNome  = $pesNome ?? "";
 $pesFoto  = $pesFoto ?? base_url() . FOTO_DEFAULT;
 $pesEmail = $pesEmail ?? "";
+$postUrl  = $postUrl ?? "";
+$voltaUrl = $voltaUrl ?? "";
 ?>
 
-<form method="post" action="<?php echo base_url() ?>GrpConfig/postIndex">
+<form method="post" action="<?php echo $postUrl ?>">
   <div class="row">
     <div class="col-md-8">
       <div class="card">
@@ -77,7 +79,7 @@ $pesEmail = $pesEmail ?? "";
   <div class="row">
     <div class="col-md-8"></div>
     <div class="col-md-4">
-      <a href="<?=base_url()?>SisGrupo" class="btn btn-default pull-right">
+      <a href="<?=$voltaUrl?>" class="btn btn-default pull-right">
         Voltar
         <div class="ripple-container"></div>
       </a>

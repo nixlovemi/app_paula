@@ -177,7 +177,6 @@ function acerta_moeda($strInput)
     return $str;
 }
 
-
 function acerta_data($dt)
 {
   if (!preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $dt)){
