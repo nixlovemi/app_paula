@@ -350,3 +350,15 @@ function apply_filters($tag, $value)
 
   return $filtered;
 }
+
+function base64url_encode($str)
+{
+  $encoded = urlencode(base64_encode($str));
+  return $encoded;
+}
+
+function base64url_decode($encoded)
+{
+  $decoded = base64_decode(urldecode($encoded));
+  return $decoded;
+}

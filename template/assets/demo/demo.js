@@ -468,6 +468,33 @@ function fncItemPostagemDelComentario(grtId)
     }
   });
 }
+
+$('div.content').on('click', '#carregar_mais_postagens a', function(e)
+{
+  var json_string = $(this).parent().find('#hddn_carregar_mais_postagens').val();
+  var formData    = new FormData();
+  formData.append('json', json_string);
+  formData.append('dv_ret', '#carregar_mais_postagens');
+
+  $.ajax({type: 'POST',
+    data: formData,
+    contentType: false,
+    processData: false,
+    url: V_GLOB_URL_BASE + 'Json' + '/' + 'jsonCarregarMaisPostagens',
+    dataType: 'json',
+    beforeSend: function () {
+      $('#carregar_mais_postagens').html('Carregando ...');
+    },
+    success: function (data) {
+      process_mvc_ret(data);
+    }
+  });
+});
+
+function jsonPostCarregarMaisPostagens(html, div)
+{
+  $(div).replaceWith(html);
+}
 /* ========= */
 
 /* foto perfil */

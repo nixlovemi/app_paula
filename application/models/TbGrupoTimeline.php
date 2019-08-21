@@ -165,7 +165,7 @@ function geraHtmlRespostas($arrRespostas)
   return $html;
 }
 
-function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenasFavoritos=false)
+function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenasFavoritos=false, $limit=50, $offset=0, $carregaMais=false)
 {
   $CI            = pega_instancia();
   $GrupoTimeline = $CI->session->flashdata('GrupoTimeline') ?? array();
@@ -174,9 +174,24 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
   $grpId         = ($postagemPropria || $apenasFavoritos) ? $GrupoPessoa["grp_id"]: NULL;
 
   require_once(APPPATH."/models/TbGrupoTimeline.php");
-  $retPost       = pegaPostagensGrupo($gruId, $grpId, $apenasFavoritos);
+  $retPost       = pegaPostagensGrupo($gruId, $grpId, $apenasFavoritos, $limit, $offset);
   $arrPostagens  = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
   $arrSalvos     = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
+
+  // prepara esquema de limit
+  unset($retPost["postagens"]);
+  unset($retPost["salvos"]);
+  unset($retPost["erro"]);
+  unset($retPost["msg"]);
+  
+  $arrInfoLimit                = $retPost;
+  $arrInfoLimit["propria"]     = $postagemPropria;
+  $arrInfoLimit["GrupoPessoa"] = $GrupoPessoa;
+  if(count($arrPostagens) <= 0){
+    $arrInfoLimit["limit"]  = 0;
+    $arrInfoLimit["offset"] = 0;
+  }
+  // ========================
 
   $retResp = pegaRespostasGrupoTimeline($arrPostagens);
   $arrResp = (!$retResp["erro"] && isset($retResp["respostas"])) ? $retResp["respostas"]: array();
@@ -185,6 +200,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
   $retGTA      = pegaArquivos($arrPostagens);
   $arrArquivos = ($retGTA["erro"]) ? array(): $retGTA["arquivos"];
 
+  require_once(APPPATH."/models/TbGrupoPessoa.php");
   $retGpss  = pegaGrupoPessoasGru($gruId, true);
   $arrStaff = ($retGpss["erro"]) ? array(): $retGpss["GruposPessoas"];
   
@@ -234,24 +250,30 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
 
   // view posts
   $htmlPosts = $CI->load->view('TbGrupoTimeline/postagens', array(
-    "vGruDescricao" => $vGruDesc,
-    "arrPostagens"  => $arrPostagens,
-    "arrSalvos"     => $arrSalvos,
-    "arrArquivos"   => $arrArquivos,
-    "arrResp"       => $arrResp,
-  ), true);
+      "vGruDescricao" => $vGruDesc,
+      "arrPostagens"  => $arrPostagens,
+      "arrSalvos"     => $arrSalvos,
+      "arrArquivos"   => $arrArquivos,
+      "arrResp"       => $arrResp,
+      "arrInfoLimit"  => $arrInfoLimit,
+      "carregaMais"   => $carregaMais,
+    ), true);
 
-  $CI->template->load(TEMPLATE_STR, 'SisGrupo/index', array(
-    "titulo"            => gera_titulo_template("Timeline do Grupo $tituloPag"),
-    "arrStaff"          => $arrStaff,
-    "urlStaff"          => $urlStaff,
-    "urlTdsPosts"       => $urlTdsPosts,
-    "urlPostsFavoritos" => $urlPostsFavoritos,
-    "htmlPosts"         => $htmlPosts,
-    "GrupoTimeline"     => $GrupoTimeline,
-    "mostraNovoPost"    => $mostraNovoPost,
-    "urlNovoPostRed"    => $urlNovoPostRed,
-  ));
+  if($carregaMais){
+    return $htmlPosts;
+  } else {
+    $CI->template->load(TEMPLATE_STR, 'SisGrupo/index', array(
+      "titulo"            => gera_titulo_template("Timeline do Grupo $tituloPag"),
+      "arrStaff"          => $arrStaff,
+      "urlStaff"          => $urlStaff,
+      "urlTdsPosts"       => $urlTdsPosts,
+      "urlPostsFavoritos" => $urlPostsFavoritos,
+      "htmlPosts"         => $htmlPosts,
+      "GrupoTimeline"     => $GrupoTimeline,
+      "mostraNovoPost"    => $mostraNovoPost,
+      "urlNovoPostRed"    => $urlNovoPostRed,
+    ));
+  }
 }
 
 function validaInsereGrupoTimeline($GrupoTimeline)
@@ -391,8 +413,10 @@ function pegaPostagensGrupo($gruId, $grpId = NULL, $apenasFavoritos=false, $limi
   $arrRetorno["salvos"]    = [];
   $arrRetorno["gruId"]     = $gruId;
   $arrRetorno["grpId"]     = $grpId;
+  $arrRetorno["favoritos"] = $apenasFavoritos;
   $arrRetorno["limit"]     = $limit;
   $arrRetorno["offset"]    = $offset;
+  $arrRetorno["step"]      = 50;
   $idUsuLogado             = pegaUsuarioLogadoId();
 
   // validacoes

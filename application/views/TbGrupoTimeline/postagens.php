@@ -6,22 +6,28 @@ $arrPostagens  = $arrPostagens ?? array();
 $arrArquivos   = $arrArquivos ?? array();
 $arrSalvos     = $arrSalvos ?? array();
 $arrResp       = $arrResp ?? array();
+$arrInfoLimit  = $arrInfoLimit ?? array();
+$carregaMais   = $carregaMais ?? false;
 $vPesNome      = $vPesNome ?? "";
 
 $strPesNome    = "";
 if($vPesNome != ""){
   $strPesNome = "<h4><b>$vPesNome</b></h4>";
 }
-?>
 
-<h4>Postagens - <?= $vGruDescricao ?></h4>
-<?=$strPesNome?>
-<div class="row">
-  <div class="col-md-12">
-    <?php
+if(!$carregaMais){
+  ?>
+  <h4>Postagens - <?= $vGruDescricao ?></h4>
+  <?=$strPesNome?>
+  <div class="row"> <!-- abre row 1 -->
+    <div class="col-md-12"> <!-- abre row col 12 -->
+  <?php
+}
     if(count($arrPostagens) <= 0){
-      require_once(APPPATH."/helpers/notificacao_helper.php");
-      echo exibe_info("Nenhuma postagem para exibir.");
+      if(!$carregaMais){
+        require_once(APPPATH."/helpers/notificacao_helper.php");
+        echo exibe_info("Nenhuma postagem para exibir.");
+      }
     } else {
       foreach($arrPostagens as $postagem){
         $id       = $postagem["grt_id"] ?? "";
@@ -203,5 +209,27 @@ if($vPesNome != ""){
       }
     }
     ?>
-  </div>
-</div>
+
+    <?php
+    $vLimit  = $arrInfoLimit["limit"] ?? 0;
+    $vOffset = $arrInfoLimit["offset"] ?? 0;
+
+    if($vLimit<>0 && $vOffset>=0){
+      ?>
+      <div id="carregar_mais_postagens" class="text-center">
+        <a style="color:#FFF;" class="btn btn-info btn-lg">
+          <i class="material-icons">autorenew</i>
+          Carregar mais
+        </a>
+        <input type="hidden" id="hddn_carregar_mais_postagens" value="<?=base64url_encode(json_encode($arrInfoLimit))?>" />
+      </div>
+      <?php
+    }
+
+    if(!$carregaMais){
+      ?>
+        </div> <!-- fecha row col 12 -->
+      </div> <!-- fecha row 1 -->
+      <?php
+    }
+    ?>

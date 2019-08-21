@@ -415,4 +415,27 @@ class Json extends CI_Controller
 
     echo json_encode($ret);
   }
+
+  public function jsonCarregarMaisPostagens()
+  {
+    $json         = $_REQUEST["json"] ?? "";
+    $jsonDecoded  = base64url_decode($json);
+    $arrJson      = json_decode($jsonDecoded, true);
+    $dv_ret       = $_REQUEST["dv_ret"] ?? "";
+    
+    $vGrupoPessoa = $arrJson["GrupoPessoa"] ?? array();
+    $vPropria     = $arrJson["propria"] ?? false;
+    $vFavoritos   = $arrJson["favoritos"] ?? false;
+    $vLimit       = $arrJson["limit"] ?? NULL;
+    $vStep        = $arrJson["step"] ?? 0;
+    $vOffset      = (isset($arrJson["offset"])) ? $arrJson["offset"]+$vStep: NULL;
+    
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    $html        = geraHtmlViewGrupoTimeline($vGrupoPessoa, $vPropria, $vFavoritos, $vLimit, $vOffset, true);
+
+    $arrRet = [];
+    $htmlAjustado       = processaJsonHtml($html);
+    $arrRet["callback"] = "jsonPostCarregarMaisPostagens('$htmlAjustado', '$dv_ret')";
+    echo json_encode($arrRet);
+  }
 }
