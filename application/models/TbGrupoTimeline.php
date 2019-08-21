@@ -471,6 +471,25 @@ function pegaPostagensGrupo($gruId, $grpId = NULL, $apenasFavoritos=false, $limi
   }
   // ===============
 
+  // marca tds como lido
+  $grpLogado = pegaGrupoPessoaLogadoId();
+  $CI->db->trans_start();
+  foreach ($arrGrtId as $vGrpId) {
+    if($vGrpId > 0){
+      $item = array(
+        "gts_grt_id" => $vGrpId,
+        "gts_grp_id" => $grpLogado,
+        "gts_data"   => date("Y-m-d H:i:s"),
+      );
+
+      $insert_query2 = $CI->db->insert_string('tb_grupo_timeline_status', $item);
+      $insert_query  = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $insert_query2);
+      $CI->db->query($insert_query);
+    }
+  }
+  $CI->db->trans_complete();
+  // ===================
+
   return $arrRetorno;
 }
 
