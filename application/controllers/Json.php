@@ -438,4 +438,26 @@ class Json extends CI_Controller
     $arrRet["callback"] = "jsonPostCarregarMaisPostagens('$htmlAjustado', '$dv_ret')";
     echo json_encode($arrRet);
   }
+
+  /**
+   * usando jquery inpt-seleciona-modal
+   */
+  public function jsonCidadeSeleciona()
+  {
+    $arrRet = [];
+    $variaveisPost           = processaPost();
+    $texoDig                 = $variaveisPost->text;
+    $htmlSelector            = "#".SELECIONA_MODAL_DIV;
+    $arrRet["html_selector"] = $htmlSelector;
+
+    if(strlen($texoDig) <= 2){
+      $arrRet["html"] = "Digite mais de 2 caracteres para pesquisar";
+    } else {
+      require_once(APPPATH."/models/TbCidade.php");
+      $retHtmlSelecionaCidade = pegaListaSelecionaCidade($texoDig);
+      $arrRet["html"]         = $retHtmlSelecionaCidade;
+    }
+
+    echo json_encode($arrRet);
+  }
 }

@@ -90,8 +90,11 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 |--------------------------------------------------------------------------
 |
 */
-defined('TEMPLATE_STR') OR define('TEMPLATE_STR', 'template/template');
-defined('BASE_URL')     OR define('BASE_URL', 'http://127.0.0.1/app_paula/');
-defined('SALT_KEY')     OR define('SALT_KEY', '201907161102');
-defined('FOTO_DEFAULT') OR define('FOTO_DEFAULT', 'template/assets/img/faces/avatar.png');
-defined('PASTA_UPLOAD') OR define('PASTA_UPLOAD', FCPATH . 'files/');
+defined('TEMPLATE_STR')          OR define('TEMPLATE_STR', 'template/template');
+defined('BASE_URL')              OR define('BASE_URL', 'http://127.0.0.1/app_paula/');
+defined('SALT_KEY')              OR define('SALT_KEY', '201907161102');
+defined('FOTO_DEFAULT')          OR define('FOTO_DEFAULT', 'template/assets/img/faces/avatar.png');
+defined('PASTA_UPLOAD')          OR define('PASTA_UPLOAD', FCPATH . 'files/');
+defined('SELECIONA_MODAL_LISTA') OR define('SELECIONA_MODAL_LISTA', 'ListaSelecionaModal');
+defined('SELECIONA_MODAL_RADIO') OR define('SELECIONA_MODAL_RADIO', 'radio_seleciona_modal');
+defined('SELECIONA_MODAL_DIV')   OR define('SELECIONA_MODAL_DIV', 'dv-ret-inpt-seleciona-modal-icon');

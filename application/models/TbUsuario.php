@@ -16,13 +16,14 @@ function pegaUsuario($usuId, $apenasCamposTabela=false)
   $CI = pega_instancia();
   $CI->load->database();
 
-  $campos = "usu_id, usu_email, usu_senha, usu_nome, usu_foto, usu_ativo, usu_usa_id";
+  $campos = "usu_id, usu_email, usu_senha, usu_nome, usu_foto, usu_sexo, usu_nascimento, usu_telefone, usu_celular, usu_cid_id, usu_ativo, usu_usa_id";
   if(!$apenasCamposTabela){
-    $campos .= ", usa_usuario";
+    $campos .= ",usa_usuario, cid_descricao, est_descricao";
   }
   $CI->db->select($campos);
   $CI->db->from('tb_usuario');
   $CI->db->join('tb_usuario_admin', 'usa_id = usu_usa_id', 'left');
+  $CI->db->join('v_tb_cidade', 'cid_id = usu_cid_id', 'left');
   $CI->db->where('usu_id =', $usuId);
 
   $query = $CI->db->get();
@@ -36,15 +37,22 @@ function pegaUsuario($usuId, $apenasCamposTabela=false)
   }
 
   $Usuario = [];
-  $Usuario["usu_id"]      = $row->usu_id;
-  $Usuario["usu_email"]   = $row->usu_email;
-  $Usuario["usu_senha"]   = $row->usu_senha;
-  $Usuario["usu_nome"]    = $row->usu_nome;
-  $Usuario["usu_foto"]    = $row->usu_foto;
-  $Usuario["usu_ativo"]   = $row->usu_ativo;
-  $Usuario["usu_usa_id"]  = $row->usu_usa_id;
+  $Usuario["usu_id"]         = $row->usu_id;
+  $Usuario["usu_email"]      = $row->usu_email;
+  $Usuario["usu_senha"]      = $row->usu_senha;
+  $Usuario["usu_nome"]       = $row->usu_nome;
+  $Usuario["usu_foto"]       = $row->usu_foto;
+  $Usuario["usu_sexo"]       = $row->usu_sexo;
+  $Usuario["usu_nascimento"] = $row->usu_nascimento;
+  $Usuario["usu_telefone"]   = $row->usu_telefone;
+  $Usuario["usu_celular"]    = $row->usu_celular;
+  $Usuario["usu_cid_id"]     = $row->usu_cid_id;
+  $Usuario["usu_ativo"]      = $row->usu_ativo;
+  $Usuario["usu_usa_id"]     = $row->usu_usa_id;
   if(!$apenasCamposTabela){
-    $Usuario["usa_usuario"] = $row->usa_usuario;
+    $Usuario["usa_usuario"]   = $row->usa_usuario;
+    $Usuario["cid_descricao"] = $row->cid_descricao;
+    $Usuario["est_descricao"] = $row->est_descricao;
   }
 
   $arrRetorno["msg"]      = "Usuário encontrado com sucesso!";
@@ -101,7 +109,7 @@ function validaInsereUsuario($Usuario)
 
   $vEmail = $Usuario["usu_email"] ?? "";
   if(!valida_email($vEmail)){
-    $strValida .= "<br />&nbsp;&nbsp;* Informação um email válido.";
+    $strValida .= "<br />&nbsp;&nbsp;* Informe um email válido.";
   }
 
   $vAtivo = $Usuario["usu_ativo"] ?? "";
@@ -113,6 +121,21 @@ function validaInsereUsuario($Usuario)
   $ret    = valida_senha($vSenha);
   if($ret["erro"]){
     $strValida .= "<br />&nbsp;&nbsp;* " . $ret["msg"];
+  }
+
+  $vSexo = $Usuario["usu_sexo"] ?? "";
+  if($vSexo != "" && $vSexo != "M" && $vSexo != "F"){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'sexo' é inválida.";
+  }
+  
+  $vNascimento = $Usuario["usu_nascimento"] ?? "";
+  if($vNascimento != "" && !isValidDate($vNascimento, 'Y-m-d')){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'nascimento' é inválida.";
+  }
+  
+  $vCidId = $Usuario["usu_cid_id"] ?? "";
+  if(!$vCidId>0){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma cidade válida.";
   }
 
   $vUsaId = $Usuario["usu_usa_id"] ?? "";
@@ -158,21 +181,31 @@ function insereUsuario($Usuario)
     return $arrRetorno;
   }
 
-  $vNome  = $Usuario["usu_nome"] ?? "";
-  $vEmail = $Usuario["usu_email"] ?? "";
-  $vAtivo = $Usuario["usu_ativo"] ?? 1;
-  $vSenha = $Usuario["usu_senha"] ?? "";
-  $vUsaId = $Usuario["usu_usa_id"] ?? "";
+  $vNome       = $Usuario["usu_nome"] ?? "";
+  $vEmail      = $Usuario["usu_email"] ?? "";
+  $vAtivo      = $Usuario["usu_ativo"] ?? 1;
+  $vSenha      = $Usuario["usu_senha"] ?? "";
+  $vNascimento = $Usuario["usu_nascimento"] ?? NULL;
+  $vTelefone   = $Usuario["usu_telefone"] ?? NULL;
+  $vCelular    = $Usuario["usu_celular"] ?? NULL;
+  $vSexo       = $Usuario["usu_sexo"] ?? NULL;
+  $vCidId      = $Usuario["usu_cid_id"] ?? NULL;
+  $vUsaId      = $Usuario["usu_usa_id"] ?? "";
 
   $CI = pega_instancia();
   $CI->load->database();
 
   $data = array(
-    "usu_nome"   => $vNome,
-    "usu_email"  => $vEmail,
-    "usu_ativo"  => $vAtivo,
-    "usu_senha"  => encripta_string($vSenha),
-    "usu_usa_id" => $vUsaId,
+    "usu_nome"       => $vNome,
+    "usu_email"      => $vEmail,
+    "usu_ativo"      => $vAtivo,
+    "usu_senha"      => encripta_string($vSenha),
+    "usu_nascimento" => $vNascimento,
+    "usu_telefone"   => $vTelefone,
+    "usu_celular"    => $vCelular,
+    "usu_sexo"       => $vSexo,
+    "usu_cid_id"     => $vCidId,
+    "usu_usa_id"     => $vUsaId,
   );
   $ret = $CI->db->insert('tb_usuario', $data);
 
@@ -209,6 +242,21 @@ function validaEditaUsuario($Usuario)
   $vEmail = $Usuario["usu_email"] ?? "";
   if(!valida_email($vEmail)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação um email válido.";
+  }
+
+  $vSexo = $Usuario["usu_sexo"] ?? "";
+  if($vSexo != "" && $vSexo != "M" && $vSexo != "F"){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'sexo' é inválida.";
+  }
+
+  $vNascimento = $Usuario["usu_nascimento"] ?? "";
+  if($vNascimento != "" && !isValidDate($vNascimento, 'Y-m-d')){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'nascimento' é inválida.";
+  }
+
+  $vCidId = $Usuario["usu_cid_id"] ?? "";
+  if(!$vCidId>0){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma cidade válida.";
   }
 
   $vAtivo = $Usuario["usu_ativo"] ?? "";

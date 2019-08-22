@@ -189,8 +189,117 @@ function init_components()
       $(this).responsive(true);
     });
     // ===========
+    
+    $('.inpt-celular-ddd').focusout(function ()
+    {
+      var phone, element;
+      element = $(this);
+      element.unmask();
+      phone = element.val().replace(/\D/g, '');
+      if (phone.length > 10) {
+          element.mask("(99)99999-999?9");
+      } else {
+          element.mask("(99)9999-9999?9");
+      }
+    }).trigger('focusout');
+    
+    // esquema de filtrar
+    // exemplo Json->jsonCidadeSeleciona
+    var clInputSelecionaModal  = '.inpt-seleciona-modal';
+    var clSearchSelecionaModal = 'inpt-seleciona-modal-icon';
+    var clClearSelecionaModal  = 'inpt-limpa-modal-icon';
+    var clHddnSelecionaModal   = 'inpt-seleciona-modal-hidden';
+    var clFilterSelecionaModal = 'text_search_seleciona_modal';
+    var clDvRetSelecionaModal  = 'dv-ret-inpt-seleciona-modal-icon';
+    var clRadioSelecionaModal  = 'radio_seleciona_modal';
+    var clListaSelecionaModal  = 'ListaSelecionaModal';
+    
+    $(clInputSelecionaModal).each(function()
+    {
+      var ehDesabilitado = $(this).is(':disabled');
+      var ehReadonly     = $(this).attr('readonly') == "readonly";
+      
+      if(!ehDesabilitado && !ehReadonly){
+        var id        = $(this).data('id');
+        var name      = $(this).attr("name");
+        var htmlIcon  = '<i title="Pesquisar" class="material-icons '+clSearchSelecionaModal+'">search</i>';
+        var htmlClear = '<i title="Limpar" class="material-icons '+clClearSelecionaModal+'">clear</i>';
+        var htmlHddn  = '<input class="'+clHddnSelecionaModal+'" type="hidden" name="'+name+'_id" value="'+id+'" />';
+        $(this).attr('readonly', 'readonly').after(htmlIcon + htmlClear + htmlHddn);
+      }
+    });
+    
+    $(document).on('click','.'+clSearchSelecionaModal , function()
+    {
+      var objText    = $(this).parent().find(clInputSelecionaModal);
+      var titulo     = objText.data('title');
+      var controller = objText.data('controller');
+      var action     = objText.data('action');
+      
+      var html       = '';
+      html           = html + '<h3>'+titulo+'</h3>';
+      html           = html + '<div class="row">';
+      html           = html + '  <div class="col-md-12">';
+      html           = html + '    <div class="form-group bmd-form-group has-info">';
+      html           = html + '      <label class="label-control bmd-label-static text-default">Digite algo para pesquisar:</label>';
+      html           = html + '      <input maxlength="100" name="'+clFilterSelecionaModal+'" type="text" class="form-control '+clFilterSelecionaModal+'" data-controller="'+controller+'" data-action="'+action+'" value="" />';
+      html           = html + '    </div>';
+      html           = html + '  </div>';
+      html           = html + '</div>';
+      html           = html + '<div class="row">';
+      html           = html + '  <div class="col-md-12" id="'+clDvRetSelecionaModal+'">';
+      html           = html + '    ';
+      html           = html + '  </div>';
+      html           = html + '</div>';
+      
+      Swal.fire({
+        html: html,
+        showCloseButton: true,
+        focusConfirm: false,
+        confirmButtonColor: '#00bcd4',
+        confirmButtonText: 'Selecionar',
+        width: '80%'
+      })
+      .then((result) => {
+        if (result.value) {
+          var checkSelected = $('input[name='+clRadioSelecionaModal+']:checked', 'table#'+clListaSelecionaModal);
+          if(checkSelected.length > 0){
+            var value         = checkSelected.val();
+            var text          = checkSelected.closest('tr').find('td:nth-child(2)').html(); //sempre segunda coluna
+
+            objText.val(text);
+            objText.parent().find('.'+clHddnSelecionaModal).val(value);
+          }
+        }
+      });
+    });
+    
+    $(document).on('click','.'+clClearSelecionaModal , function()
+    {
+      var objText = $(this).parent().find(clInputSelecionaModal);
+      objText.val('');
+      
+      objText.parent().find('.'+clHddnSelecionaModal).val('');
+    });
+    
+    var timeout = null;
+    $(document).on('keyup', '.'+clFilterSelecionaModal, function()
+    {
+      var controller = $(this).data('controller');
+      var action     = $(this).data('action');
+      var text       = $(this).val();
+      
+      clearTimeout(timeout);
+      $('#'+clDvRetSelecionaModal).html('Carregando ...');
+
+      // Make a new timeout set to go off in 800ms
+      // esquema com typing delay
+      timeout = setTimeout(function () {
+        mvc_post_ajax_var(controller, action, 'text=' + text);
+      }, 500);
+    });
+    // ==================
   } catch (err) { }
-  
 }
 
 function process_mvc_ret(data)
@@ -561,7 +670,7 @@ function fncShowAlterarFotoPerfilCrop(html)
     focusConfirm: false,
     confirmButtonColor: '#00bcd4',
     confirmButtonText: 'Salvar',
-    width: '50%'
+    width: '99%'
   })
   .then((result) => {
     if (result.value) {

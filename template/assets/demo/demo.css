@@ -271,6 +271,23 @@ img.img-comentario{
   vertical-align: middle;
   display: none;
 }
+label.text-default{
+  color: #AAAAAA !important;
+  font-size: 11px !important;
+}
+.inpt-seleciona-modal{
+  width: calc(100% - 49px);
+  display: inline-table;
+}
+.inpt-seleciona-modal-icon, .inpt-limpa-modal-icon{
+  display: inline-table;
+  position: relative;
+  top: 8px;
+  cursor: pointer;
+}
+#dv-ret-inpt-seleciona-modal-icon{
+  font-size: 14px;
+}
 
 @media (max-width: 720px) 
 {

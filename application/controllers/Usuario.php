@@ -36,12 +36,24 @@ class Usuario extends MY_Controller
     $vNome          = $variaveisPost->nome ?? "";
     $vEmail         = $variaveisPost->email ?? "";
     $vSenha         = $variaveisPost->senha ?? "";
+    $vNascimento    = $variaveisPost->nascimento ?? NULL;
+    $vTelefone      = $variaveisPost->telefone ?? NULL;
+    $vCelular       = $variaveisPost->celular ?? NULL;
+    $vSexo          = $variaveisPost->sexo ?? "";
+    $vCidDesc       = $variaveisPost->cidade ?? "";
+    $vCidId         = $variaveisPost->cidade_id ?? "";
 
     $Usuario = [];
-    $Usuario["usu_nome"]   = $vNome;
-    $Usuario["usu_email"]  = $vEmail;
-    $Usuario["usu_senha"]  = $vSenha;
-    $Usuario["usu_usa_id"] = pegaUsuarioLogadoId();
+    $Usuario["usu_nome"]       = $vNome;
+    $Usuario["usu_email"]      = $vEmail;
+    $Usuario["usu_senha"]      = $vSenha;
+    $Usuario["usu_nascimento"] = acerta_data($vNascimento);
+    $Usuario["usu_telefone"]   = $vTelefone;
+    $Usuario["usu_celular"]    = $vCelular;
+    $Usuario["usu_sexo"]       = $vSexo;
+    $Usuario["usu_cid_id"]     = $vCidId;
+    $Usuario["cid_desc"]       = $vCidDesc; // nao gravo esse campo
+    $Usuario["usu_usa_id"]     = pegaUsuarioLogadoId();
     $this->session->set_flashdata('Usuario', $Usuario);
 
     require_once(APPPATH."/models/TbUsuario.php");
@@ -51,6 +63,7 @@ class Usuario extends MY_Controller
       geraNotificacao("Aviso!", $retInserir["msg"], "warning");
       redirect(BASE_URL . 'Usuario/novo');
     } else {
+      $this->session->unset_userdata('Usuario');
       geraNotificacao("Sucesso!", $retInserir["msg"], "success");
       redirect(BASE_URL . 'Usuario/editar/' . $retInserir["usuId"]);
     }
@@ -65,9 +78,15 @@ class Usuario extends MY_Controller
       geraNotificacao("Aviso!", $ret["msg"], "warning");
       redirect(BASE_URL . 'Usuario');
     } else {
+      $Usuario = $ret["Usuario"] ?? array();
+
+      require_once(APPPATH."/models/TbUsuarioCfg.php");
+      $htmlConfigList = pegaListaUsuarioCfg($Usuario["usu_id"], false, false, false);
+
       $this->template->load(TEMPLATE_STR, 'TbUsuario/visualizar', array(
-        "titulo"  => gera_titulo_template("Usuário - Visualizar"),
-        "Usuario" => $ret["Usuario"],
+        "titulo"         => gera_titulo_template("Usuário - Visualizar"),
+        "Usuario"        => $Usuario,
+        "htmlConfigList" => $htmlConfigList,
       ));
     }
   }
@@ -109,13 +128,25 @@ class Usuario extends MY_Controller
     $vEmail        = $variaveisPost->email ?? "";
     $vAtivo        = $variaveisPost->ativo ?? "";
     $vCadPor       = $variaveisPost->cadastrado_por ?? "";
+    $vNascimento   = $variaveisPost->nascimento ?? NULL;
+    $vTelefone     = $variaveisPost->telefone ?? NULL;
+    $vCelular      = $variaveisPost->celular ?? NULL;
+    $vSexo         = $variaveisPost->sexo ?? "";
+    $vCidDesc      = $variaveisPost->cidade ?? "";
+    $vCidId        = $variaveisPost->cidade_id ?? "";
 
     $Usuario = [];
-    $Usuario["usu_id"]      = $vId;
-    $Usuario["usu_nome"]    = $vNome;
-    $Usuario["usu_email"]   = $vEmail;
-    $Usuario["usu_ativo"]   = (int)$vAtivo;
-    $Usuario["usa_usuario"] = $vCadPor;
+    $Usuario["usu_id"]         = $vId;
+    $Usuario["usu_nome"]       = $vNome;
+    $Usuario["usu_email"]      = $vEmail;
+    $Usuario["usu_ativo"]      = (int)$vAtivo;
+    $Usuario["usa_usuario"]    = $vCadPor;
+    $Usuario["usu_nascimento"] = acerta_data($vNascimento);
+    $Usuario["usu_telefone"]   = $vTelefone;
+    $Usuario["usu_celular"]    = $vCelular;
+    $Usuario["usu_sexo"]       = $vSexo;
+    $Usuario["usu_cid_id"]     = $vCidId;
+    $Usuario["cid_desc"]       = $vCidDesc; // nao gravo esse campo
     
     $this->session->set_flashdata('Usuario', $Usuario);
 
