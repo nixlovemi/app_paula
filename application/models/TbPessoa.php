@@ -2,6 +2,9 @@
 //!! lembrar de exibir apenas pra pessoa logada
 //=============================================
 
+define("CAMPOS_TABELA", "pes_id, pes_usu_id, pes_pet_id, pes_nome, pes_email, pes_senha, pes_foto, pes_sexo, pes_nascimento, pes_telefone, pes_celular, pes_cid_id, pes_ativo");
+define("CAMPOS_N_TABELA", ", usu_nome, pet_descricao, cid_descricao, est_descricao");
+
 function pegaPessoa($pesId, $apenasCamposTabela=false)
 {
   $arrRetorno = [];
@@ -24,15 +27,16 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
   $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
-  $camposTabela = "pes_id, pes_usu_id, pes_pet_id, pes_nome, pes_email, pes_senha, pes_foto, pes_ativo";
+  $camposTabela = CAMPOS_TABELA;
   if(!$apenasCamposTabela){
-    $camposTabela .= ", usu_nome, pet_descricao";
+    $camposTabela .= CAMPOS_N_TABELA;
   }
 
   $CI->db->select($camposTabela);
   $CI->db->from('tb_pessoa');
   $CI->db->join('tb_usuario', 'usu_id = pes_usu_id', 'left');
   $CI->db->join('tb_pessoa_tipo', 'pet_id = pes_pet_id', 'left');
+  $CI->db->join('v_tb_cidade', 'cid_id = usu_cid_id', 'left');
   $CI->db->where('pes_id =', $pesId);
   if($UsuarioLog->admin == 0 && $vGrpId == NULL){
     $CI->db->where('pes_usu_id =', $UsuarioLog->id);
@@ -49,17 +53,24 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
   }
 
   $Pessoa = [];
-  $Pessoa["pes_id"]        = $row->pes_id;
-  $Pessoa["pes_usu_id"]    = $row->pes_usu_id;
-  $Pessoa["pes_pet_id"]    = $row->pes_pet_id;
-  $Pessoa["pes_nome"]      = $row->pes_nome;
-  $Pessoa["pes_email"]     = $row->pes_email;
-  $Pessoa["pes_senha"]     = $row->pes_senha;
-  $Pessoa["pes_foto"]      = $row->pes_foto;
-  $Pessoa["pes_ativo"]     = $row->pes_ativo;
+  $Pessoa["pes_id"]         = $row->pes_id;
+  $Pessoa["pes_usu_id"]     = $row->pes_usu_id;
+  $Pessoa["pes_pet_id"]     = $row->pes_pet_id;
+  $Pessoa["pes_nome"]       = $row->pes_nome;
+  $Pessoa["pes_email"]      = $row->pes_email;
+  $Pessoa["pes_senha"]      = $row->pes_senha;
+  $Pessoa["pes_foto"]       = $row->pes_foto;
+  $Pessoa["pes_sexo"]       = $row->pes_sexo;
+  $Pessoa["pes_nascimento"] = $row->pes_nascimento;
+  $Pessoa["pes_telefone"]   = $row->pes_telefone;
+  $Pessoa["pes_celular"]    = $row->pes_celular;
+  $Pessoa["pes_cid_id"]     = $row->pes_cid_id;
+  $Pessoa["pes_ativo"]      = $row->pes_ativo;
   if(!$apenasCamposTabela){
     $Pessoa["usu_nome"]      = $row->usu_nome;
     $Pessoa["pet_descricao"] = $row->pet_descricao;
+    $Pessoa["cid_descricao"] = $row->cid_descricao;
+    $Pessoa["est_descricao"] = $row->est_descricao;
   }
 
   $arrRetorno["msg"]    = "Pessoa encontrada com sucesso!";
@@ -80,7 +91,7 @@ function pegaTodasPessoas($filtro)
   $CI = pega_instancia();
   $CI->load->database();
 
-  $CI->db->select('pes_id, pes_usu_id, pes_pet_id, pes_nome, pes_email, pes_senha, pes_foto, pes_ativo, usu_nome, pet_descricao');
+  $CI->db->select("pes_id");
   $CI->db->from('tb_pessoa');
   $CI->db->join('tb_usuario', 'usu_id = pes_usu_id', 'left');
   $CI->db->join('tb_pessoa_tipo', 'pet_id = pes_pet_id', 'left');
@@ -98,19 +109,10 @@ function pegaTodasPessoas($filtro)
     $arrRetorno["msg"]  = "Erro ao retornar todos as Pessoas!";
   } else {
     foreach ($query->result() as $row){
-      $Pessoa = [];
-      $Pessoa["pes_id"]        = $row->pes_id;
-      $Pessoa["pes_usu_id"]    = $row->pes_usu_id;
-      $Pessoa["pes_pet_id"]    = $row->pes_pet_id;
-      $Pessoa["pes_nome"]      = $row->pes_nome;
-      $Pessoa["pes_email"]     = $row->pes_email;
-      $Pessoa["pes_email"]     = $row->pes_email;
-      $Pessoa["pes_foto"]      = $row->pes_foto;
-      $Pessoa["pes_ativo"]     = $row->pes_ativo;
-      $Pessoa["usu_nome"]      = $row->usu_nome;
-      $Pessoa["pet_descricao"] = $row->pet_descricao;
-
-      $arrRetorno["arrGrupo"][] = $Pessoa;
+      $retPessoa = pegaPessoa($row->pes_id);
+      if(!$retPessoa["erro"]){
+        $arrRetorno["arrGrupo"][] = $retPessoa["Pessoa"];
+      }
     }
   }
 
@@ -226,6 +228,21 @@ function validaInserePessoa($Pessoa)
     $strValida .= "<br />&nbsp;&nbsp;* " . $ret["msg"];
   }
 
+  $vSexo = $Pessoa["pes_sexo"] ?? "";
+  if($vSexo != "" && $vSexo != "M" && $vSexo != "F"){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'sexo' é inválida.";
+  }
+
+  $vNascimento = $Pessoa["pes_nascimento"] ?? "";
+  if($vNascimento != "" && !isValidDate($vNascimento, 'Y-m-d')){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'nascimento' é inválida.";
+  }
+
+  $vCidId = $Pessoa["pes_cid_id"] ?? "";
+  if(!$vCidId>0){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma cidade válida.";
+  }
+
   $vAtivo = $Pessoa["pes_ativo"] ?? "";
   if(!($vAtivo == 0 || $vAtivo == 1)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'ativo' é inválida.";
@@ -288,25 +305,35 @@ function inserePessoa($Pessoa)
     return $arrRetorno;
   }	 	 	 	 	 	 
 
-  $vUsuId = $Pessoa["pes_usu_id"] ?? NULL;
-  $vPetId = $Pessoa["pes_pet_id"] ?? NULL;
-  $vNome  = $Pessoa["pes_nome"] ?? "";
-  $vEmail = $Pessoa["pes_email"] ?? "";
-  $vSenha = $Pessoa["pes_senha"] ?? "";
-  $vFoto  = $Pessoa["pes_foto"] ?? NULL;
-  $vAtivo = $Pessoa["pes_ativo"] ?? 1;
+  $vUsuId      = $Pessoa["pes_usu_id"] ?? NULL;
+  $vPetId      = $Pessoa["pes_pet_id"] ?? NULL;
+  $vNome       = $Pessoa["pes_nome"] ?? "";
+  $vEmail      = $Pessoa["pes_email"] ?? "";
+  $vSenha      = $Pessoa["pes_senha"] ?? "";
+  $vFoto       = $Pessoa["pes_foto"] ?? NULL;
+  $vNascimento = $Pessoa["pes_nascimento"] ?? NULL;
+  $vTelefone   = $Pessoa["pes_telefone"] ?? NULL;
+  $vCelular    = $Pessoa["pes_celular"] ?? NULL;
+  $vSexo       = $Pessoa["pes_sexo"] ?? NULL;
+  $vCidId      = $Pessoa["pes_cid_id"] ?? NULL;
+  $vAtivo      = $Pessoa["pes_ativo"] ?? 1;
 
   $CI = pega_instancia();
   $CI->load->database();
 
   $data = array(
-    "pes_usu_id" => $vUsuId,
-    "pes_pet_id" => $vPetId,
-    "pes_nome"   => $vNome,
-    "pes_email"  => $vEmail,
-    "pes_senha"  => encripta_string($vSenha),
-    "pes_foto"   => $vFoto,
-    "pes_ativo"  => $vAtivo,
+    "pes_usu_id"     => $vUsuId,
+    "pes_pet_id"     => $vPetId,
+    "pes_nome"       => $vNome,
+    "pes_email"      => $vEmail,
+    "pes_senha"      => encripta_string($vSenha),
+    "pes_foto"       => $vFoto,
+    "pes_nascimento" => $vNascimento,
+    "pes_telefone"   => $vTelefone,
+    "pes_celular"    => $vCelular,
+    "pes_sexo"       => $vSexo,
+    "pes_cid_id"     => $vCidId,
+    "pes_ativo"      => $vAtivo,
   );
   $ret = $CI->db->insert('tb_pessoa', $data);
 
@@ -353,6 +380,21 @@ function validaEditaPessoa($Pessoa, $adminAlterando=true)
   $vEmail = $Pessoa["pes_email"] ?? "";
   if(!valida_email($vEmail)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação um email válido.";
+  }
+
+  $vSexo = $Pessoa["pes_sexo"] ?? "";
+  if($vSexo != "" && $vSexo != "M" && $vSexo != "F"){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'sexo' é inválida.";
+  }
+
+  $vNascimento = $Pessoa["pes_nascimento"] ?? "";
+  if($vNascimento != "" && !isValidDate($vNascimento, 'Y-m-d')){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'nascimento' é inválida.";
+  }
+
+  $vCidId = $Pessoa["pes_cid_id"] ?? "";
+  if(!$vCidId>0){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma cidade válida.";
   }
 
   $vAtivo = $Pessoa["pes_ativo"] ?? "";

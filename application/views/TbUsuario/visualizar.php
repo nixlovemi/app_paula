@@ -14,11 +14,7 @@ $usuSexo     = $Usuario["usu_sexo"] ?? "";
 $usuCidId    = $Usuario["usu_cid_id"] ?? "";
 $cidDesc     = $Usuario["cid_descricao"] ?? "";
 $estDesc     = $Usuario["est_descricao"] ?? "";
-if(isset($Usuario["cid_desc"])){
-  $usuCidDesc = $Usuario["cid_desc"] ?? "";
-} else {
-  $usuCidDesc = ($cidDesc != "" && $estDesc != "") ? "$cidDesc - $estDesc": "";
-}
+$usuCidDesc  = ($cidDesc != "" && $estDesc != "") ? "$cidDesc - $estDesc": "";
 
 $strAtivo = "";
 if($vUsuAtivo != ""){

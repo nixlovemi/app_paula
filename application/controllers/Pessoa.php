@@ -46,13 +46,25 @@ class Pessoa extends MY_Controller
     $vNome         = $variaveisPost->nome ?? "";
     $vEmail        = $variaveisPost->email ?? "";
     $vSenha        = $variaveisPost->senha ?? "";
+    $vNascimento   = $variaveisPost->nascimento ?? NULL;
+    $vTelefone     = $variaveisPost->telefone ?? NULL;
+    $vCelular      = $variaveisPost->celular ?? NULL;
+    $vSexo         = $variaveisPost->sexo ?? "";
+    $vCidDesc      = $variaveisPost->cidade ?? "";
+    $vCidId        = $variaveisPost->cidade_id ?? "";
 
     $Pessoa = [];
-    $Pessoa["pes_pet_id"] = $vTipo;
-    $Pessoa["pes_nome"]   = $vNome;
-    $Pessoa["pes_email"]  = $vEmail;
-    $Pessoa["pes_senha"]  = $vSenha;
-    $Pessoa["pes_usu_id"] = pegaUsuarioLogadoId();
+    $Pessoa["pes_pet_id"]     = $vTipo;
+    $Pessoa["pes_nome"]       = $vNome;
+    $Pessoa["pes_email"]      = $vEmail;
+    $Pessoa["pes_senha"]      = $vSenha;
+    $Pessoa["pes_nascimento"] = acerta_data($vNascimento);
+    $Pessoa["pes_telefone"]   = $vTelefone;
+    $Pessoa["pes_celular"]    = $vCelular;
+    $Pessoa["pes_sexo"]       = $vSexo;
+    $Pessoa["pes_cid_id"]     = $vCidId;
+    $Pessoa["cid_desc"]       = $vCidDesc; // nao gravo esse campo
+    $Pessoa["pes_pes_id"]     = pegaUsuarioLogadoId();
     $this->session->set_flashdata('Pessoa', $Pessoa);
 
     require_once(APPPATH."/models/TbPessoa.php");
@@ -62,6 +74,7 @@ class Pessoa extends MY_Controller
       geraNotificacao("Aviso!", $retInserir["msg"], "warning");
       redirect(BASE_URL . 'Pessoa/novo');
     } else {
+      $this->session->unset_userdata('Pessoa');
       geraNotificacao("Sucesso!", $retInserir["msg"], "success");
       redirect(BASE_URL . 'Pessoa/editar/' . $retInserir["pesId"]);
     }
@@ -98,13 +111,25 @@ class Pessoa extends MY_Controller
     $vNome         = $variaveisPost->nome ?? "";
     $vEmail        = $variaveisPost->email ?? "";
     $vAtivo        = $variaveisPost->ativo ?? "";
+    $vNascimento   = $variaveisPost->nascimento ?? NULL;
+    $vTelefone     = $variaveisPost->telefone ?? NULL;
+    $vCelular      = $variaveisPost->celular ?? NULL;
+    $vSexo         = $variaveisPost->sexo ?? "";
+    $vCidDesc      = $variaveisPost->cidade ?? "";
+    $vCidId        = $variaveisPost->cidade_id ?? "";
 
     $Pessoa = [];
-    $Pessoa["pes_id"]     = $vId;
-    $Pessoa["pes_pet_id"] = $vTipo;
-    $Pessoa["pes_nome"]   = $vNome;
-    $Pessoa["pes_email"]  = $vEmail;
-    $Pessoa["pes_ativo"]  = (int)$vAtivo;
+    $Pessoa["pes_id"]         = $vId;
+    $Pessoa["pes_pet_id"]     = $vTipo;
+    $Pessoa["pes_nome"]       = $vNome;
+    $Pessoa["pes_email"]      = $vEmail;
+    $Pessoa["pes_ativo"]      = (int)$vAtivo;
+    $Pessoa["pes_nascimento"] = acerta_data($vNascimento);
+    $Pessoa["pes_telefone"]   = $vTelefone;
+    $Pessoa["pes_celular"]    = $vCelular;
+    $Pessoa["pes_sexo"]       = $vSexo;
+    $Pessoa["pes_cid_id"]     = $vCidId;
+    $Pessoa["cid_desc"]       = $vCidDesc; // nao gravo esse campo
     $this->session->set_flashdata('Pessoa', $Pessoa);
 
     require_once(APPPATH."/models/TbPessoa.php");

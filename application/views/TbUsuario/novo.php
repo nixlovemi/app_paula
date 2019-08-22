@@ -1,7 +1,7 @@
 <?php
-$Usuario  = $Usuario ?? array();
-$usuNome  = $Usuario["usu_nome"] ?? "";
-$usuEmail = $Usuario["usu_email"] ?? "";
+$Usuario    = $Usuario ?? array();
+$usuNome    = $Usuario["usu_nome"] ?? "";
+$usuEmail   = $Usuario["usu_email"] ?? "";
 $usuNasc    = $Usuario["usu_nascimento"] ?? "";
 $usuTel     = $Usuario["usu_telefone"] ?? "";
 $usuCel     = $Usuario["usu_celular"] ?? "";
