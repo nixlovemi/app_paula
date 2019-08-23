@@ -220,6 +220,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
   $urlStaff          = "SisGrupo/indexInfo";
   $urlTdsPosts       = "SisGrupo";
   $urlPostsFavoritos = "SisGrupo/favoritos/$vGrpLogado";
+  $urlMeusPosts      = "SisGrupo/indexInfo/$vGrpLogado";
 
   $tituloPag         = "";
   if($postagemPropria){
@@ -242,10 +243,12 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
     $urlStaff          = "Grupo/indexInfo";
     $urlTdsPosts       = "Grupo/timeline/$gruId";
     $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
+    $urlMeusPosts      = "Grupo/indexInfo/$vGrpLogado";
   } else if($ControllerAction["controller"] == "Grupo" && $ControllerAction["action"] == "favoritos"){
     $urlStaff          = "Grupo/indexInfo";
     $urlTdsPosts       = "Grupo/timeline/$gruId";
     $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
+    $urlMeusPosts      = "Grupo/indexInfo/$vGrpLogado";
   }
 
   // view posts
@@ -268,6 +271,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
       "urlStaff"          => $urlStaff,
       "urlTdsPosts"       => $urlTdsPosts,
       "urlPostsFavoritos" => $urlPostsFavoritos,
+      "urlMeusPosts"      => $urlMeusPosts,
       "htmlPosts"         => $htmlPosts,
       "GrupoTimeline"     => $GrupoTimeline,
       "mostraNovoPost"    => $mostraNovoPost,

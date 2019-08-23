@@ -4,6 +4,7 @@ $arrStaff          = $arrStaff ?? array();
 $ulrStaff          = $urlStaff ?? "SisGrupo/indexInfo";
 $urlTdsPosts       = $urlTdsPosts ?? "";
 $urlPostsFavoritos = $urlPostsFavoritos ?? "";
+$urlMeusPosts      = $urlMeusPosts ?? "";
 $vGruDescricao     = $vGruDescricao ?? "";
 $htmlPosts         = $htmlPosts ?? "";
 $mostraNovoPost    = $mostraNovoPost ?? false;
@@ -142,6 +143,9 @@ if(!$grpIdLogado > 0){
           </ul>
           <a style="width:100%;" class="btn" href="<?=base_url() . $urlTdsPosts?>">
             Todas postagens do grupo
+          </a>
+          <a style="width:100%;" class="btn" href="<?=base_url() . $urlMeusPosts?>">
+            Minhas Postagens
           </a>
           <a style="width:100%;" class="btn" href="<?=base_url() . $urlPostsFavoritos?>">
             <i class="material-icons">favorite</i>
