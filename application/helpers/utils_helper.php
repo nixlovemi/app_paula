@@ -363,6 +363,9 @@ function base64url_decode($encoded)
   return $decoded;
 }
 
+/**
+ * peso em KG
+ */
 function calcula_imc($altura, $peso)
 {
   $arrIMC              = [];
@@ -392,4 +395,13 @@ function calcula_imc($altura, $peso)
   }
 
   return $arrIMC;
+}
+
+function calcula_agua_dia($peso_kg)
+{
+  if(!$peso_kg > 0){
+    return NULL;
+  } else {
+    return ($peso_kg * 35) / 1000; #retorna litros
+  }
 }

@@ -27,6 +27,7 @@ $infoPeso    = $GrupoPessoaInfoGrp["peso"] ?? NULL;
 $arrIMC      = calcula_imc($infoAltura, $infoPeso);
 $vImc        = $arrIMC["imc"] ?? NULL;
 $vImcResult  = $arrIMC["resultado"] ?? "";
+$vAguaDia    = calcula_agua_dia($infoPeso);
 
 $vGpiIdIni   = $infoInicial["gpi_id"] ?? "";
 $strDtIni    = ($gruDtIni != "") ? date("d/m/Y", strtotime($gruDtIni)): "";
@@ -53,15 +54,18 @@ if($vLabel != "" && $vSerie != ""){
 }
 
 $arrLoop = array_merge($arrLoopChart, $infoDemais);
+$i = 1;
 foreach($arrLoop as $info){
   $vLabel = ($info["gpi_data"] != "") ? date("d/m", strtotime($info["gpi_data"])): "";
   $vSerie = $info["gpi_peso"] ?? "";
 
   if($vLabel != "" && $vSerie != ""){
-    $arrLabel[] = "'$vLabel'";
+    #$arrLabel[] = "'$vLabel'";
+    $arrLabel[] = "'$i'";
     $arrSerie[] = $vSerie;
 
     $lastPeso = $vSerie;
+    $i++;
   }
 }
 
@@ -215,10 +219,13 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
           <p class="card-category">
             <span class="text-info">
               Você está com <?php echo $difAtual; ?>% do objetivo concluído.
-              <br />
+              <hr style="margin:5px 0; padding:0;" />
               <?php
               if($vImc > 0){
                 echo "<b>IMC:</b> " . number_format($vImc, 2, ",", "") . " - <small>" . $vImcResult . "</small>";
+              }
+              if($vAguaDia > 0){
+                echo "<br /><b>Água/dia:</b> " . number_format($vAguaDia, 2, ",", "") . "L";
               }
               ?>
             </span>
