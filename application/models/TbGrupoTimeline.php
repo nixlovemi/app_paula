@@ -165,8 +165,17 @@ function geraHtmlRespostas($arrRespostas)
   return $html;
 }
 
-function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenasFavoritos=false, $limit=50, $offset=0, $carregaMais=false)
+function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
 {
+  // variaveis =============
+  $postagemPropria  = $arrParam["postagem_propria"] ?? false;
+  $apenasFavoritos  = $arrParam["apenas_favoritos"] ?? false;
+  $limit            = $arrParam["limit"] ?? 50;
+  $offset           = $arrParam["offset"] ?? 0;
+  $carregaMais      = $arrParam["carrega_mais"] ?? false;
+  $apenasProgramado = $arrParam["apenas_programado"] ?? false;
+  // =======================
+
   $CI            = pega_instancia();
   $GrupoTimeline = $CI->session->flashdata('GrupoTimeline') ?? array();
   $vGruDesc      = $GrupoPessoa["gru_descricao"] ?? NULL;
@@ -174,19 +183,21 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
   $grpId         = ($postagemPropria || $apenasFavoritos) ? $GrupoPessoa["grp_id"]: NULL;
 
   require_once(APPPATH."/models/TbGrupoTimeline.php");
-  $retPost       = pegaPostagensGrupo($gruId, $grpId, $apenasFavoritos, $limit, $offset);
+  $retPost       = pegaPostagensGrupo(array(
+    "gru_id"            => $gruId,
+    "grp_id"            => $grpId,
+    "apenas_favoritos"  => $apenasFavoritos,
+    "limit"             => $limit,
+    "offset"            => $offset,
+    "apenas_programado" => $apenasProgramado
+  ));
   $arrPostagens  = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
   $arrSalvos     = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
 
   // prepara esquema de limit
-  unset($retPost["postagens"]);
-  unset($retPost["salvos"]);
-  unset($retPost["erro"]);
-  unset($retPost["msg"]);
-  
-  $arrInfoLimit                = $retPost;
-  $arrInfoLimit["propria"]     = $postagemPropria;
+  $arrInfoLimit                = $retPost["arrParam"] ?? array();
   $arrInfoLimit["GrupoPessoa"] = $GrupoPessoa;
+  $arrInfoLimit["propria"]     = $postagemPropria;
   if(count($arrPostagens) <= 0){
     $arrInfoLimit["limit"]  = 0;
     $arrInfoLimit["offset"] = 0;
@@ -221,10 +232,15 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
   $urlTdsPosts       = "SisGrupo";
   $urlPostsFavoritos = "SisGrupo/favoritos/$vGrpLogado";
   $urlMeusPosts      = "SisGrupo/indexInfo/$vGrpLogado";
+  $urlProgramados    = "SisGrupo/indexInfo/$vGrpLogado/1";
 
   $tituloPag         = "";
   if($postagemPropria){
-    $tituloPag = " - " . ($GrupoPessoa["pes_nome"] ?? "");
+    if($apenasProgramado){
+      $tituloPag = " - Programadas";
+    } else {
+      $tituloPag = " - " . ($GrupoPessoa["pes_nome"] ?? "");
+    }
   } else if($apenasFavoritos){
     $tituloPag = " - Favoritos";
   }
@@ -244,11 +260,13 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
     $urlTdsPosts       = "Grupo/timeline/$gruId";
     $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
     $urlMeusPosts      = "Grupo/indexInfo/$vGrpLogado";
+    $urlProgramados    = "Grupo/indexInfo/$vGrpLogado/1";
   } else if($ControllerAction["controller"] == "Grupo" && $ControllerAction["action"] == "favoritos"){
     $urlStaff          = "Grupo/indexInfo";
     $urlTdsPosts       = "Grupo/timeline/$gruId";
     $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
     $urlMeusPosts      = "Grupo/indexInfo/$vGrpLogado";
+    $urlProgramados    = "Grupo/indexInfo/$vGrpLogado/1";
   }
 
   // view posts
@@ -272,6 +290,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $postagemPropria=false, $apenas
       "urlTdsPosts"       => $urlTdsPosts,
       "urlPostsFavoritos" => $urlPostsFavoritos,
       "urlMeusPosts"      => $urlMeusPosts,
+      "urlProgramados"    => $urlProgramados,
       "htmlPosts"         => $htmlPosts,
       "GrupoTimeline"     => $GrupoTimeline,
       "mostraNovoPost"    => $mostraNovoPost,
@@ -315,6 +334,11 @@ function validaInsereGrupoTimeline($GrupoTimeline)
     $vRespId = $GrupoTimeline["grt_resposta_id"] ?? NULL;
     if ($vRespId != NULL && $vRespId < 0) {
         $strValida .= "<br />&nbsp;&nbsp;* Informação 'ID do Resposta' é inválida.";
+    }
+
+    $vProgramado = $GrupoTimeline["grt_dt_programado"] ?? "";
+    if ($vProgramado <> "" && !isValidDate($vProgramado, "Y-m-d H:i")) {
+        $strValida .= "<br />&nbsp;&nbsp;* Informe uma data programada válida.";
     }
     // ===========================
     // valida grupo
@@ -368,29 +392,29 @@ function insereGrupoTimeline($GrupoTimeline)
         return $arrRetorno;
     }
 
-    # grt_id 	[grt_gru_id] 	[grt_grp_id] 	[grt_data] 	[grt_titulo] 	[grt_texto] 	[grt_publico] 	[grt_ativo] 	[grt_resposta_id]
-
-    $vGruId   = $GrupoTimeline["grt_gru_id"] ?? NULL;
-    $vGrpId   = $GrupoTimeline["grt_grp_id"] ?? NULL;
-    $vData    = $GrupoTimeline["grt_data"] ?? NULL;
-    $vTitulo  = $GrupoTimeline["grt_titulo"] ?? NULL;
-    $vTexto   = $GrupoTimeline["grt_texto"] ?? NULL;
-    $vPublico = $GrupoTimeline["grt_publico"] ?? 1;
-    $vAtivo   = $GrupoTimeline["grt_ativo"] ?? 1;
-    $vRespId  = $GrupoTimeline["grt_resposta_id"] ?? NULL;
+    $vGruId      = $GrupoTimeline["grt_gru_id"] ?? NULL;
+    $vGrpId      = $GrupoTimeline["grt_grp_id"] ?? NULL;
+    $vData       = $GrupoTimeline["grt_data"] ?? NULL;
+    $vTitulo     = $GrupoTimeline["grt_titulo"] ?? NULL;
+    $vTexto      = $GrupoTimeline["grt_texto"] ?? NULL;
+    $vPublico    = $GrupoTimeline["grt_publico"] ?? 1;
+    $vAtivo      = $GrupoTimeline["grt_ativo"] ?? 1;
+    $vRespId     = $GrupoTimeline["grt_resposta_id"] ?? NULL;
+    $vProgramado = $GrupoTimeline["grt_dt_programado"] ?? NULL;
 
     $CI = pega_instancia();
     $CI->load->database();
 
     $data = array(
-        "grt_gru_id" => $vGruId,
-        "grt_grp_id" => $vGrpId,
-        "grt_data" => $vData,
-        "grt_titulo" => $vTitulo,
-        "grt_texto" => $vTexto,
-        "grt_publico" => $vPublico,
-        "grt_ativo" => $vAtivo,
-        "grt_resposta_id" => $vRespId,
+      "grt_gru_id" => $vGruId,
+      "grt_grp_id" => $vGrpId,
+      "grt_data" => $vData,
+      "grt_titulo" => $vTitulo,
+      "grt_texto" => $vTexto,
+      "grt_publico" => $vPublico,
+      "grt_ativo" => $vAtivo,
+      "grt_resposta_id" => $vRespId,
+      "grt_dt_programado" => $vProgramado,
     );
     $ret  = $CI->db->insert('tb_grupo_timeline', $data);
 
@@ -408,19 +432,23 @@ function insereGrupoTimeline($GrupoTimeline)
     return $arrRetorno;
 }
 
-function pegaPostagensGrupo($gruId, $grpId = NULL, $apenasFavoritos=false, $limit = 50, $offset = 0)
+function pegaPostagensGrupo($arrParam)
 {
+  // variaveis =================
+  $gruId            = $arrParam["gru_id"] ?? NULL;
+  $grpId            = $arrParam["grp_id"] ?? NULL;
+  $apenasFavoritos  = $arrParam["apenas_favoritos"] ?? false;
+  $limit            = $arrParam["limit"] ?? 50;
+  $offset           = $arrParam["offset"] ?? 0;
+  $apenasProgramado = $arrParam["apenas_programado"] ?? false;
+  // ===========================
+
   $arrRetorno              = [];
   $arrRetorno["erro"]      = false;
   $arrRetorno["msg"]       = "";
   $arrRetorno["postagens"] = [];
   $arrRetorno["salvos"]    = [];
-  $arrRetorno["gruId"]     = $gruId;
-  $arrRetorno["grpId"]     = $grpId;
-  $arrRetorno["favoritos"] = $apenasFavoritos;
-  $arrRetorno["limit"]     = $limit;
-  $arrRetorno["offset"]    = $offset;
-  $arrRetorno["step"]      = 50;
+  $arrRetorno["arrParam"]  = $arrParam;
   $idUsuLogado             = pegaUsuarioLogadoId();
 
   // validacoes
@@ -454,6 +482,11 @@ function pegaPostagensGrupo($gruId, $grpId = NULL, $apenasFavoritos=false, $limi
   $CI->db->where('grt_publico =', 1);
   $CI->db->where('grt_ativo =', 1);
   $CI->db->where('grt_resposta_id IS NULL');
+  if($apenasProgramado){
+    $CI->db->where('(grt_dt_programado IS NOT NULL AND grt_dt_programado > NOW())');
+  } else {
+    $CI->db->where('(grt_dt_programado IS NULL OR grt_dt_programado <= NOW())');
+  }
   if(!$apenasFavoritos){
     if($grpId > 0){
       $CI->db->where('grp_id =', $grpId);
@@ -461,7 +494,7 @@ function pegaPostagensGrupo($gruId, $grpId = NULL, $apenasFavoritos=false, $limi
       $CI->db->where('pet_cliente =', 1);
     }
   }
-  $CI->db->order_by('grt_data', 'DESC');
+  $CI->db->order_by('dt_postagem', 'DESC');
   $CI->db->limit($limit, $offset);
   $query = $CI->db->get();
 

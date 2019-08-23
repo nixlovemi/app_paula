@@ -55,7 +55,7 @@ class SisGrupo extends MY_Controller
     echo json_encode($arrRet);
   }
 
-  public function indexInfo($grpId)
+  public function indexInfo($grpId, $programado=0)
   {
     $vGrpId = $grpId ?? "";
     
@@ -65,6 +65,13 @@ class SisGrupo extends MY_Controller
     $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
     $vGruLogado  = pegaGrupoLogadoId();
 
+    $vGrpLogado  = pegaGrupoPessoaLogadoId();
+    $ehGrp       = ($grpId == $vGrpLogado);
+    $ehStaff     = ehStaffGrupo($vGrpLogado);
+    if(!$ehStaff || !$ehGrp){
+      $programado = 0;
+    }
+
     // valida grupo logado
     if($vGruId != $vGruLogado){
       geraNotificacao("Aviso!", "Esse conteúdo não faz parte do seu grupo!", "warning");
@@ -73,7 +80,10 @@ class SisGrupo extends MY_Controller
     }
 
     require_once(APPPATH."/models/TbGrupoTimeline.php");
-    geraHtmlViewGrupoTimeline($GrupoPessoa, true);
+    geraHtmlViewGrupoTimeline($GrupoPessoa, array(
+      "postagem_propria"  => true,
+      "apenas_programado" => ($programado == 1)
+    ));
   }
 
   public function favoritos($grpId)
@@ -94,6 +104,9 @@ class SisGrupo extends MY_Controller
     }
 
     require_once(APPPATH."/models/TbGrupoTimeline.php");
-    geraHtmlViewGrupoTimeline($GrupoPessoa, false, true);
+    geraHtmlViewGrupoTimeline($GrupoPessoa, array(
+      "postagem_propria" => false,
+      "apenas_favoritos" => true,
+    ));
   }
 }

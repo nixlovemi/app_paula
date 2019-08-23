@@ -30,20 +30,25 @@ if(!$carregaMais){
       }
     } else {
       foreach($arrPostagens as $postagem){
-        $id       = $postagem["grt_id"] ?? "";
-        $gruId    = $postagem["grt_gru_id"] ?? "";
-        $pesId    = $postagem["grp_pes_id"] ?? "";
-        $titulo   = $postagem["grt_titulo"] ?? "";
-        $pessoa   = $postagem["pes_nome"] ?? "";
-        $data     = $postagem["grt_data"] ?? "";
-        $texto    = $postagem["grt_texto"] ?? "";
-        $foto     = $postagem["pes_foto"] ?? FOTO_DEFAULT;
+        $id         = $postagem["grt_id"] ?? "";
+        $gruId      = $postagem["grt_gru_id"] ?? "";
+        $pesId      = $postagem["grp_pes_id"] ?? "";
+        $titulo     = $postagem["grt_titulo"] ?? "";
+        $pessoa     = $postagem["pes_nome"] ?? "";
+        $data       = $postagem["grt_data"] ?? "";
+        $programado = $postagem["grt_dt_programado"] ?? "";
+        $texto      = $postagem["grt_texto"] ?? "";
+        $foto       = $postagem["pes_foto"] ?? FOTO_DEFAULT;
 
         $idUsuLogado       = pegaUsuarioLogadoId() ?? 0;
         $grpPessoaLogado   = pegaGrupoPessoaLogadoId() ?? -1;
         $ehAdminLogado     = ehAdminGrupo($gruId);
         $ehPostagemPropria = ($idUsuLogado == $pesId);
-        $strData           = ($data != "") ? date("d/m H:m", strtotime($data)): "";
+        if($programado != ""){
+          $strData         = ($programado != "") ? date("d/m H:m", strtotime($programado)): "";
+        } else {
+          $strData         = ($data != "") ? date("d/m H:m", strtotime($data)): "";
+        }
         $strDataF          = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
         $strTexto          = nl2br($texto);
         $ehFavoritado      = isset($arrSalvos[$id][$grpPessoaLogado]);

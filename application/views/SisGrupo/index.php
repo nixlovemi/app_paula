@@ -5,6 +5,7 @@ $ulrStaff          = $urlStaff ?? "SisGrupo/indexInfo";
 $urlTdsPosts       = $urlTdsPosts ?? "";
 $urlPostsFavoritos = $urlPostsFavoritos ?? "";
 $urlMeusPosts      = $urlMeusPosts ?? "";
+$urlProgramados    = $urlProgramados ?? "";
 $vGruDescricao     = $vGruDescricao ?? "";
 $htmlPosts         = $htmlPosts ?? "";
 $mostraNovoPost    = $mostraNovoPost ?? false;
@@ -13,11 +14,21 @@ $urlNovoPostRed    = $urlNovoPostRed ?? BASE_URL . "SisGrupo";
 $titulo         = $GrupoTimeline["grt_titulo"] ?? "";
 $descricao      = $GrupoTimeline["grt_texto"] ?? "";
 $publico        = $GrupoTimeline["grt_publico"] ?? 1;
+$programado     = $GrupoTimeline["grt_dt_programado"] ?? "";
 
 $strPublico     = ($publico == 1) ? "checked=''": "";
 $grpIdLogado    = pegaGrupoPessoaLogadoId();
 if(!$grpIdLogado > 0){
   $grpIdLogado  = $vGrpLogado ?? "";
+}
+$strProgramado  = ($programado <> "") ? date("d/m/Y H:i", strtotime($programado)): "";
+
+$ehStaff =  false;
+foreach($arrStaff as $staff){
+  if($staff["grp_id"] == $grpIdLogado){
+    $ehStaff = true;
+    break;
+  }
 }
 ?>
 
@@ -49,6 +60,20 @@ if(!$grpIdLogado > 0){
                   </div>
                 </div>
               </div>
+              <?php
+              if($ehStaff){
+                ?>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group bmd-form-group has-info" style="">
+                      <label class="label-control bmd-label-static text-default">Programar</label>
+                      <input name="programar" type="text" class="form-control datepicker_time" value="<?=$strProgramado?>" />
+                    </div>
+                  </div>
+                </div>
+                <?php
+              }
+              ?>
 
               <div class="row">
                 <div class="col-md-4">
@@ -147,6 +172,17 @@ if(!$grpIdLogado > 0){
           <a style="width:100%;" class="btn" href="<?=base_url() . $urlMeusPosts?>">
             Minhas Postagens
           </a>
+          <?php
+          if($ehStaff){
+            ?>
+            <a style="width:100%;" class="btn" href="<?=base_url() . $urlProgramados?>">
+              <i class="material-icons">alarm</i>
+              &nbsp;
+              Postagens Programadas
+            </a>
+            <?php
+          }
+          ?>
           <a style="width:100%;" class="btn" href="<?=base_url() . $urlPostsFavoritos?>">
             <i class="material-icons">favorite</i>
             &nbsp;

@@ -189,6 +189,7 @@ class Json extends CI_Controller
 
     $titulo         = $_REQUEST["titulo"] ?? NULL;
     $descricao      = $_REQUEST["descricao"] ?? "";
+    $programar      = $_REQUEST["programar"] ?? NULL;
     $urlNovoPostRed = $_REQUEST["urlNovoPostRed"] ?? BASE_URL . "SisGrupo";
     $publico        = (isset($_REQUEST["publico"]) && $_REQUEST["publico"] == "on") ? 1 : 0;
     $vGrpId         = $this->session->grp_id ?? NULL;
@@ -197,12 +198,13 @@ class Json extends CI_Controller
     }
 
     // preenche os dados
-    $GrupoTimeline                = [];
-    $GrupoTimeline["grt_data"]    = date("Y-m-d H:i:s");
-    $GrupoTimeline["grt_titulo"]  = $titulo;
-    $GrupoTimeline["grt_texto"]   = $descricao;
-    $GrupoTimeline["grt_publico"] = (int) $publico;
-    $GrupoTimeline["grt_grp_id"]  = $vGrpId;
+    $GrupoTimeline = [];
+    $GrupoTimeline["grt_data"]          = date("Y-m-d H:i:s");
+    $GrupoTimeline["grt_titulo"]        = $titulo;
+    $GrupoTimeline["grt_dt_programado"] = ($programar != NULL) ? acerta_data_hora($programar): NULL;
+    $GrupoTimeline["grt_texto"]         = $descricao;
+    $GrupoTimeline["grt_publico"]       = (int) $publico;
+    $GrupoTimeline["grt_grp_id"]        = $vGrpId;
 
     require_once(APPPATH."/models/TbGrupoPessoa.php");
     $retGP       = pegaGrupoPessoa($vGrpId);
@@ -425,13 +427,19 @@ class Json extends CI_Controller
     
     $vGrupoPessoa = $arrJson["GrupoPessoa"] ?? array();
     $vPropria     = $arrJson["propria"] ?? false;
-    $vFavoritos   = $arrJson["favoritos"] ?? false;
+    $vFavoritos   = $arrJson["apenas_favoritos"] ?? false;
     $vLimit       = $arrJson["limit"] ?? NULL;
-    $vStep        = $arrJson["step"] ?? 0;
+    $vStep        = $arrJson["step"] ?? 50;
     $vOffset      = (isset($arrJson["offset"])) ? $arrJson["offset"]+$vStep: NULL;
     
     require_once(APPPATH."/models/TbGrupoTimeline.php");
-    $html        = geraHtmlViewGrupoTimeline($vGrupoPessoa, $vPropria, $vFavoritos, $vLimit, $vOffset, true);
+    $html        = geraHtmlViewGrupoTimeline($vGrupoPessoa, array(
+      "postagem_propria" => $vPropria,
+      "apenas_favoritos" => $vFavoritos,
+      "limit"            => $vLimit,
+      "offset"           => $vOffset,
+      "carrega_mais"     => true,
+    ));
 
     $arrRet = [];
     $htmlAjustado       = processaJsonHtml($html);

@@ -222,7 +222,7 @@ class Grupo extends MY_Controller
     }
   }
 
-  public function indexInfo($grpId)
+  public function indexInfo($grpId, $programado=0)
   {
     $vGrpId = $grpId ?? "";
 
@@ -232,12 +232,22 @@ class Grupo extends MY_Controller
     $vGruUsuId   = $GrupoPessoa["gru_usu_id"] ?? "";
     $vUsuLogado  = pegaUsuarioLogadoId();
 
+    $vGrpLogado  = pegaGrupoPessoaLogadoId();
+    $ehGrp       = ($grpId == $vGrpLogado);
+    $ehStaff     = ehStaffGrupo($vGrpLogado);
+    if(!$ehStaff || !$ehGrp){
+      $programado = 0;
+    }
+
     if($vGruUsuId != $vUsuLogado){
       geraNotificacao("Aviso!", "Esse grupo não pertence a você!", "warning");
       redirect(BASE_URL . 'Grupo');
     } else {
       require_once(APPPATH."/models/TbGrupoTimeline.php");
-      geraHtmlViewGrupoTimeline($GrupoPessoa, true);
+      geraHtmlViewGrupoTimeline($GrupoPessoa, array(
+        "postagem_propria"  => true,
+        "apenas_programado" => ($programado == 1)
+      ));
     }
   }
 
@@ -256,7 +266,10 @@ class Grupo extends MY_Controller
       redirect(BASE_URL . 'Grupo');
     } else {
       require_once(APPPATH."/models/TbGrupoTimeline.php");
-      geraHtmlViewGrupoTimeline($GrupoPessoa, false, true);
+      geraHtmlViewGrupoTimeline($GrupoPessoa, array(
+        "postagem_propria" => false,
+        "apenas_favoritos" => true,
+      ));
     }
   }
 }

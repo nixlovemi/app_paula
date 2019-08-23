@@ -159,6 +159,20 @@ function ehAdminGrupo($gruId)
   return ($vGruUsuId == $usuLogado) && ($cliente == 0);
 }
 
+function ehStaffGrupo($grpId)
+{
+  require_once(APPPATH . "/models/TbGrupoPessoa.php");
+  $retGRP = pegaGrupoPessoa($grpId);
+  if($retGRP["erro"]){
+    return false;
+  } else {
+    $GrupoPessoa = $retGRP["GrupoPessoa"] ?? array();
+    $ehCliente   = $GrupoPessoa["pet_cliente"] ?? 1;
+
+    return ($ehCliente == 0);
+  }
+}
+
 function acerta_moeda($strInput)
 {
     $str = trim($strInput);
