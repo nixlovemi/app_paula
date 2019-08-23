@@ -362,3 +362,34 @@ function base64url_decode($encoded)
   $decoded = base64_decode(urldecode($encoded));
   return $decoded;
 }
+
+function calcula_imc($altura, $peso)
+{
+  $arrIMC              = [];
+  $arrIMC["imc"]       = NULL;
+  $arrIMC["resultado"] = NULL;
+  $tdPreenchido        = ($altura>0 && $peso);
+
+  if($tdPreenchido){
+    $altura_m      = $altura/100;
+    $altura_q      = ($altura_m*$altura_m);
+    $imc           = number_format($peso/$altura_q, 2, ".", "");
+    $arrIMC["imc"] = $imc;
+
+    if($imc < 18.5){
+      $arrIMC["resultado"] = "Abaixo do peso";
+    } else if($imc < 24.9){
+      $arrIMC["resultado"] = "Peso normal";
+    } else if($imc < 29.9){
+      $arrIMC["resultado"] = "Sobrepeso";
+    } else if($imc < 34.9){
+      $arrIMC["resultado"] = "Obesidade grau 1";
+    } else if($imc < 39.9){
+      $arrIMC["resultado"] = "Obesidade grau 2";
+    } else {
+      $arrIMC["resultado"] = "Obesidade grau 3";
+    }
+  }
+
+  return $arrIMC;
+}

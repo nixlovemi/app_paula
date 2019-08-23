@@ -194,12 +194,17 @@ function pegaGrupoPessoaInfoId($gpiId, $apenasCamposTabela=false)
  */
 function agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo)
 {
+  $alturaAtual = NULL;
+  $pesoAtual   = NULL;
+
   $arrRetorno = [];
   $arrRetorno["erro"]                           = false;
   $arrRetorno["msg"]                            = "";
   $arrRetorno["GrupoPessoaInfoGrp"]             = [];
   $arrRetorno["GrupoPessoaInfoGrp"]["primeira"] = []; #uma info apenas
   $arrRetorno["GrupoPessoaInfoGrp"]["demais"]   = []; #array de info
+  $arrRetorno["GrupoPessoaInfoGrp"]["altura"]   = NULL;
+  $arrRetorno["GrupoPessoaInfoGrp"]["peso"]     = NULL;
 
   foreach($GrupoPessoaInfo as $gpInfo){
     $vInicial   = $gpInfo["gpi_inicial"] ?? 0;
@@ -207,11 +212,16 @@ function agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo)
 
     if($ehPrimeira){
       $arrRetorno["GrupoPessoaInfoGrp"]["primeira"] = $gpInfo;
+      $alturaAtual                                  = $gpInfo["gpi_altura"] ?? NULL;
     } else {
       $arrRetorno["GrupoPessoaInfoGrp"]["demais"][] = $gpInfo;
     }
+
+    $pesoAtual = $gpInfo["gpi_peso"] ?? NULL;
   }
 
+  $arrRetorno["GrupoPessoaInfoGrp"]["altura"] = $alturaAtual;
+  $arrRetorno["GrupoPessoaInfoGrp"]["peso"]   = $pesoAtual;
   return $arrRetorno;
 }
 

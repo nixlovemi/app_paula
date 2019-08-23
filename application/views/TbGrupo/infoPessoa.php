@@ -22,6 +22,11 @@ $gruDtIni    = $Grupo["gru_dt_inicio"] ?? "";
 $gruDtFim    = $Grupo["gru_dt_termino"] ?? "";
 $infoInicial = $GrupoPessoaInfoGrp["primeira"] ?? array();
 $infoDemais  = $GrupoPessoaInfoGrp["demais"] ?? array();
+$infoAltura  = $GrupoPessoaInfoGrp["altura"] ?? NULL;
+$infoPeso    = $GrupoPessoaInfoGrp["peso"] ?? NULL;
+$arrIMC      = calcula_imc($infoAltura, $infoPeso);
+$vImc        = $arrIMC["imc"] ?? NULL;
+$vImcResult  = $arrIMC["resultado"] ?? "";
 
 $vGpiIdIni   = $infoInicial["gpi_id"] ?? "";
 $strDtIni    = ($gruDtIni != "") ? date("d/m/Y", strtotime($gruDtIni)): "";
@@ -210,6 +215,13 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo
           <p class="card-category">
             <span class="text-info">
               Você está com <?php echo $difAtual; ?>% do objetivo concluído.
+              <br />
+              <?php
+              if($vImc > 0){
+                echo "<b>IMC:</b> " . number_format($vImc, 2, ",", "") . " - <small>" . $vImcResult . "</small>";
+              }
+              ?>
+            </span>
           </p>
         </div>
       </div>
