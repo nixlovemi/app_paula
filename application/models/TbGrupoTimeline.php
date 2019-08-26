@@ -168,12 +168,14 @@ function geraHtmlRespostas($arrRespostas)
 function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
 {
   // variaveis =============
+  // alterar tb no carrega mais > jsonCarregarMaisPostagens
   $postagemPropria  = $arrParam["postagem_propria"] ?? false;
   $apenasFavoritos  = $arrParam["apenas_favoritos"] ?? false;
   $limit            = $arrParam["limit"] ?? 50;
   $offset           = $arrParam["offset"] ?? 0;
   $carregaMais      = $arrParam["carrega_mais"] ?? false;
   $apenasProgramado = $arrParam["apenas_programado"] ?? false;
+  $apenasPrivado    = $arrParam["apenas_privado"] ?? false;
   // =======================
 
   $CI            = pega_instancia();
@@ -189,7 +191,8 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
     "apenas_favoritos"  => $apenasFavoritos,
     "limit"             => $limit,
     "offset"            => $offset,
-    "apenas_programado" => $apenasProgramado
+    "apenas_programado" => $apenasProgramado,
+    "apenas_privado"    => $apenasPrivado
   ));
   $arrPostagens  = (!$retPost["erro"] && isset($retPost["postagens"])) ? $retPost["postagens"]: array();
   $arrSalvos     = (!$retPost["erro"] && isset($retPost["salvos"])) ? $retPost["salvos"]: array();
@@ -233,6 +236,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
   $urlPostsFavoritos = "SisGrupo/favoritos/$vGrpLogado";
   $urlMeusPosts      = "SisGrupo/indexInfo/$vGrpLogado";
   $urlProgramados    = "SisGrupo/indexInfo/$vGrpLogado/1";
+  $urlPrivada        = "SisGrupo/privada";
 
   $tituloPag         = "";
   if($postagemPropria){
@@ -243,6 +247,8 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
     }
   } else if($apenasFavoritos){
     $tituloPag = " - Favoritos";
+  } else if($apenasPrivado){
+    $tituloPag = " - Privadas";
   }
 
   $ControllerAction = pegaControllerAction();
@@ -253,7 +259,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
   } else if($ControllerAction["controller"] == "SisGrupo" && $ControllerAction["action"] == "indexInfo"){
     $mostraNovoPost    = ($ehStaff) && ($urlVarGrpId == $vGrpLogado);
     $urlNovoPostRed    = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"] . "/" . $grpId;
-  } else if($ControllerAction["controller"] == "Grupo" && ($ControllerAction["action"] == "timeline" || $ControllerAction["action"] == "indexInfo")){
+  } else if($ControllerAction["controller"] == "Grupo" && ($ControllerAction["action"] == "timeline" || $ControllerAction["action"] == "indexInfo" || $ControllerAction["action"] == "privada")){
     $mostraNovoPost    = ($ehStaff) && ($urlVarGrpId == $vGrpLogado);
     $urlNovoPostRed    = BASE_URL . $ControllerAction["controller"] . "/" . $ControllerAction["action"] . "/" . $grpId;
     $urlStaff          = "Grupo/indexInfo";
@@ -261,12 +267,14 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
     $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
     $urlMeusPosts      = "Grupo/indexInfo/$vGrpLogado";
     $urlProgramados    = "Grupo/indexInfo/$vGrpLogado/1";
+    $urlPrivada        = "Grupo/privada";
   } else if($ControllerAction["controller"] == "Grupo" && $ControllerAction["action"] == "favoritos"){
     $urlStaff          = "Grupo/indexInfo";
     $urlTdsPosts       = "Grupo/timeline/$gruId";
     $urlPostsFavoritos = "Grupo/favoritos/$vGrpLogado";
     $urlMeusPosts      = "Grupo/indexInfo/$vGrpLogado";
     $urlProgramados    = "Grupo/indexInfo/$vGrpLogado/1";
+    $urlPrivada        = "Grupo/privada";
   }
 
   // view posts
@@ -291,6 +299,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
       "urlPostsFavoritos" => $urlPostsFavoritos,
       "urlMeusPosts"      => $urlMeusPosts,
       "urlProgramados"    => $urlProgramados,
+      "urlPrivada"        => $urlPrivada,
       "htmlPosts"         => $htmlPosts,
       "GrupoTimeline"     => $GrupoTimeline,
       "mostraNovoPost"    => $mostraNovoPost,
@@ -441,6 +450,7 @@ function pegaPostagensGrupo($arrParam)
   $limit            = $arrParam["limit"] ?? 50;
   $offset           = $arrParam["offset"] ?? 0;
   $apenasProgramado = $arrParam["apenas_programado"] ?? false;
+  $apenasPrivado    = $arrParam["apenas_privado"] ?? false;
   // ===========================
 
   $arrRetorno              = [];
@@ -479,7 +489,16 @@ function pegaPostagensGrupo($arrParam)
     $CI->db->where("gts.gts_grp_id = $grpId");
   }
   $CI->db->where('grt_gru_id =', $gruId);
-  $CI->db->where('grt_publico =', 1);
+  if($apenasPrivado){
+    $CI->db->where('grt_publico =', 0);
+  } else {
+    $vGrpLogado = pegaGrupoPessoaLogadoId();
+    if(!($vGrpLogado == $grpId)){
+      // se esta exibindo da pessoa logada, mostra td
+      // se nao, mostra apenas publicos
+      $CI->db->where('grt_publico =', 1);
+    }
+  }
   $CI->db->where('grt_ativo =', 1);
   $CI->db->where('grt_resposta_id IS NULL');
   if($apenasProgramado){

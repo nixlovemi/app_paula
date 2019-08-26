@@ -272,4 +272,25 @@ class Grupo extends MY_Controller
       ));
     }
   }
+
+  public function privada()
+  {
+    $vGrpLogado = pegaGrupoPessoaLogadoId();
+    $ehStaff    = ehStaffGrupo($vGrpLogado);
+
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGP       = pegaGrupoPessoa($vGrpLogado);
+    $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
+
+    if(!$ehStaff){
+      geraNotificacao("Aviso!", "Esse conteúdo não pode ser acessado!", "warning");
+      redirect(BASE_URL . 'Grupo');
+      return;
+    }
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    geraHtmlViewGrupoTimeline($GrupoPessoa, array(
+      "apenas_privado" => true
+    ));
+  }
 }

@@ -6,6 +6,7 @@ $urlTdsPosts       = $urlTdsPosts ?? "";
 $urlPostsFavoritos = $urlPostsFavoritos ?? "";
 $urlMeusPosts      = $urlMeusPosts ?? "";
 $urlProgramados    = $urlProgramados ?? "";
+$urlPrivada        = $urlPrivada ?? "";
 $vGruDescricao     = $vGruDescricao ?? "";
 $htmlPosts         = $htmlPosts ?? "";
 $mostraNovoPost    = $mostraNovoPost ?? false;
@@ -77,14 +78,24 @@ foreach($arrStaff as $staff){
 
               <div class="row">
                 <div class="col-md-4">
-                  <div class="togglebutton" style="position:relative; top:8px;">
-                    <label>
-                      <input type="checkbox" <?= $strPublico; ?> name="publico" />
-                      <span class="toggle"></span>
-                      Público
-                    </label>
-                  </div>
-                  <div class="ripple-container"></div>
+                  <?php
+                  if($ehStaff){
+                    ?>
+                    <input type="hidden" name="publico" value="on" />
+                    <?php
+                  } else {
+                    ?>
+                    <div class="togglebutton" style="position:relative; top:8px;">
+                      <label>
+                        <input type="checkbox" <?= $strPublico; ?> name="publico" />
+                        <span class="toggle"></span>
+                        Público
+                      </label>
+                    </div>
+                    <div class="ripple-container"></div>
+                    <?php
+                  }
+                  ?>
                 </div>
                 <div class="col-md-8">
                   <button type="button" onclick="$('#frmNovaPostagem').submit()" class="btn btn-info btn-sm pull-right">Publicar</button>
@@ -179,6 +190,11 @@ foreach($arrStaff as $staff){
               <i class="material-icons">alarm</i>
               &nbsp;
               Postagens Programadas
+            </a>
+            <a style="width:100%;" class="btn" href="<?=base_url() . $urlPrivada?>">
+              <i class="material-icons">visibility_off</i>
+              &nbsp;
+              Postagens Privadas
             </a>
             <?php
           }

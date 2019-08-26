@@ -101,6 +101,12 @@ ul.pagination .item-info {
   border-bottom: solid 1px #e0e0e0;
   box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.14);
 }
+.item-postagem .postagem-inner .icon-postagem-privada{
+  font-size: 14px;
+  position: relative;
+  top: 2px;
+  color: #808080;
+}
 .item-postagem .titulo{
   font-weight: bold;
   font-size: 16px;

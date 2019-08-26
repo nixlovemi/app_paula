@@ -39,6 +39,7 @@ if(!$carregaMais){
         $programado = $postagem["grt_dt_programado"] ?? "";
         $texto      = $postagem["grt_texto"] ?? "";
         $foto       = $postagem["pes_foto"] ?? FOTO_DEFAULT;
+        $ehPrivada  = (isset($postagem["grt_publico"])) ? $postagem["grt_publico"] == "0": false;
 
         $idUsuLogado       = pegaUsuarioLogadoId() ?? 0;
         $grpPessoaLogado   = pegaGrupoPessoaLogadoId() ?? -1;
@@ -76,7 +77,10 @@ if(!$carregaMais){
                 <?=$titulo?>
               </span>
               <br />
-              <span title="<?=$strDataF?>" class="autor"><?=$pessoa?> | <?=$strData?></span>
+              <?php
+              $iconPrivada = ($ehPrivada) ? '<i class="material-icons icon-postagem-privada">visibility_off</i>': '';
+              ?>
+              <span title="<?=$strDataF?>" class="autor"><?=$pessoa?> | <?=$strData?> &nbsp; <?=$iconPrivada?></span>
 
               <ul class="ul-top-sis-grupo-postagem navbar-nav pull-right">
                 <li class="dropdown nav-item">

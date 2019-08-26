@@ -36,6 +36,11 @@ $TITULO           = $titulo ?? "";
 $ARR_NOTIFICACAO  = $this->session->flashdata('geraNotificacao') ?? array();
 $ARR_REC_LISTA_CI = $this->session->recarregaListaCi ?? array();
 $USUARIO_LOGADO   = $this->session->usuario_info ?? array();
+$NOME_LOGADO      = $USUARIO_LOGADO->usuario ?? "";
+$NOME_ADM_LOGADO  = $USUARIO_LOGADO->nome ?? "";
+if($NOME_ADM_LOGADO != ""){
+  $NOME_LOGADO = $NOME_ADM_LOGADO;
+}
 $GRP_ID           = $this->session->grp_id ?? NULL;
 
 // pega grupo pela pessoa
@@ -221,6 +226,8 @@ if($GRP_ID > 0 && !$ehAdminLogado){
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
                   <?php #<a class="dropdown-item dropdown-item-info" href="#">Perfil</a> ?>
+                  <strong class="dropdown-item dropdown-item-info"><?="Olá, " . $NOME_LOGADO?></strong>
+                  <div class="dropdown-divider"></div>
                   <a class="dropdown-item dropdown-item-info" href="<?=$URL_CONFIG?>">Configurações</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item dropdown-item-info" href="<?php echo $URL_LOGOUT; ?>">Sair</a>

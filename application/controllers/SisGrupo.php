@@ -95,10 +95,16 @@ class SisGrupo extends MY_Controller
     $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
     $vGruId      = $GrupoPessoa["grp_gru_id"] ?? "";
     $vGruLogado  = pegaGrupoLogadoId();
+    $vGrpLogado  = pegaGrupoPessoaLogadoId();
 
     // valida grupo logado
     if($vGruId != $vGruLogado){
       geraNotificacao("Aviso!", "Esse conteúdo não faz parte do seu grupo!", "warning");
+      redirect(BASE_URL . 'SisGrupo');
+      return;
+    }
+    if($grpId <> $vGrpLogado){
+      geraNotificacao("Aviso!", "Esse conteúdo não pode ser acessado!", "warning");
       redirect(BASE_URL . 'SisGrupo');
       return;
     }
@@ -107,6 +113,27 @@ class SisGrupo extends MY_Controller
     geraHtmlViewGrupoTimeline($GrupoPessoa, array(
       "postagem_propria" => false,
       "apenas_favoritos" => true,
+    ));
+  }
+
+  public function privada()
+  {
+    $vGrpLogado = pegaGrupoPessoaLogadoId();
+    $ehStaff    = ehStaffGrupo($vGrpLogado);
+
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGP       = pegaGrupoPessoa($vGrpLogado);
+    $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
+
+    if(!$ehStaff){
+      geraNotificacao("Aviso!", "Esse conteúdo não pode ser acessado!", "warning");
+      redirect(BASE_URL . 'SisGrupo');
+      return;
+    }
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    geraHtmlViewGrupoTimeline($GrupoPessoa, array(
+      "apenas_privado" => true
     ));
   }
 }

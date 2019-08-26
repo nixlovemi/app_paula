@@ -428,6 +428,7 @@ class Json extends CI_Controller
     $vGrupoPessoa = $arrJson["GrupoPessoa"] ?? array();
     $vPropria     = $arrJson["propria"] ?? false;
     $vFavoritos   = $arrJson["apenas_favoritos"] ?? false;
+    $vPrivada     = $arrJson["apenas_privado"] ?? false;
     $vLimit       = $arrJson["limit"] ?? NULL;
     $vStep        = $arrJson["step"] ?? 50;
     $vOffset      = (isset($arrJson["offset"])) ? $arrJson["offset"]+$vStep: NULL;
@@ -439,6 +440,7 @@ class Json extends CI_Controller
       "limit"            => $vLimit,
       "offset"           => $vOffset,
       "carrega_mais"     => true,
+      "apenas_privado"   => $vPrivada,
     ));
 
     $arrRet = [];
