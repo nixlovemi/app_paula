@@ -18,7 +18,7 @@ function pegaGrupoTimeline($vGrtId, $apenasCamposTabela = false)
     $CI = pega_instancia();
     $CI->load->database();
 
-    $camposTabela = "grt_id, grt_gru_id, grt_grp_id, grt_data, grt_titulo, grt_texto, grt_publico, grt_ativo, grt_resposta_id";
+    $camposTabela = "grt_id, grt_gru_id, grt_grp_id, grt_data, grt_titulo, grt_texto, grt_publico, grt_ativo, grt_resposta_id, grt_avaliacao";
     if (!$apenasCamposTabela) {
         $camposTabela .= ", gru_id, gru_dt_inicio, gru_dt_termino, gru_ativo, grupo_ativo, usu_nome, str_dt_inicio, str_dt_termino, grp_id, grp_gru_id, grp_pes_id, grp_ativo, grupo_pessoa_ativo, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
     }
@@ -47,6 +47,7 @@ function pegaGrupoTimeline($vGrtId, $apenasCamposTabela = false)
     $GrupoTimeline["grt_publico"]     = $row->grt_publico;
     $GrupoTimeline["grt_ativo"]       = $row->grt_ativo;
     $GrupoTimeline["grt_resposta_id"] = $row->grt_resposta_id;
+    $GrupoTimeline["grt_avaliacao"]   = $row->grt_avaliacao;
     if (!$apenasCamposTabela) {
         $GrupoTimeline["gru_id"]             = $row->gru_id;
         $GrupoTimeline["gru_dt_inicio"]      = $row->gru_dt_inicio;
@@ -627,4 +628,54 @@ function deletaGrupoTimeline($vGrtId)
     }
 
     return $arrRetorno;
+}
+
+/**
+ * avaliacao = 0 | 1 | NULL
+ */
+function avaliaGrupoTimeline($GrupoTimeline, $avaliacao)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+
+  // carrega info do BD
+  $vId = $GrupoTimeline["grt_id"] ?? "";
+  $retP = pegaGrupoTimeline($vId, true);
+  if($retP["erro"]){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = $retP["msg"];
+    return $arrRetorno;
+  }
+  $data = $retP["GrupoTimeline"];
+  foreach($GrupoTimeline as $field_name => $field_value){
+    if(array_key_exists($field_name, $data)){
+      $data[$field_name] = $field_value;
+    }
+  }
+  // ==================
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  if( $avaliacao == NULL || $avaliacao == "" || !($avaliacao>=0 && $avaliacao<=1) ){
+    $avaliacao = NULL;
+  } else {
+    $avaliacao = (int) $avaliacao;
+  }
+  $data["grt_avaliacao"] = $avaliacao;
+  $CI->db->where('grt_id', $vId);
+  $ret = $CI->db->update('tb_grupo_timeline', $data);
+
+  if(!$ret){
+    $error = $CI->db->error();
+
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao avaliar Postagem. Mensagem: " . $error["message"];
+  } else {
+    $arrRetorno["erro"]  = false;
+    $arrRetorno["msg"]   = "Postagem avaliada com sucesso.";
+  }
+
+  return $arrRetorno;
 }

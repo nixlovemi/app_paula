@@ -470,4 +470,67 @@ class Json extends CI_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function jsonAvaliarPost()
+  {
+    $variaveisPost = processaPost();
+    $vGrtId        = $variaveisPost->id ?? "";
+    $arrRet        = [];
+
+    //@todo validar se pode avaliar esse grt_id
+    require_once(APPPATH . '/models/TbGrupoTimeline.php');
+    $retGRT = pegaGrupoTimeline($vGrtId, true);
+    if($retGRT["erro"]){
+      $arrRet["msg"] = $retGRT["msg"];
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"] = "warning";
+    } else {
+      $GrupoTimeline  = $retGRT["GrupoTimeline"] ?? array();
+      $avaliacaoAtual = $GrupoTimeline["grt_avaliacao"] ?? NULL;
+
+      $arrRet["callback"] = "jsonEscolheAvaliacaoPostModal($vGrtId, $avaliacaoAtual)";
+    }
+    
+    echo json_encode($arrRet);
+  }
+
+  public function jsonAvaliarPostSalvar()
+  {
+    $variaveisPost = processaPost();
+    $vGrtId        = $variaveisPost->id ?? "";
+    $vAvaliacao    = $variaveisPost->avaliacao ?? NULL;
+    $arrRet        = [];
+
+    //@todo validar se pode avaliar esse grt_id
+    require_once(APPPATH . '/models/TbGrupoTimeline.php');
+    $retGRT = pegaGrupoTimeline($vGrtId, true);
+    if($retGRT["erro"]){
+      $arrRet["msg"] = $retGRT["msg"];
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"] = "warning";
+    } else {
+      $GrupoTimeline = $retGRT["GrupoTimeline"] ?? array();
+      $avaliacao     = ($vAvaliacao != "" && $vAvaliacao != NULL) ? $vAvaliacao: NULL;
+      $retAvalia = avaliaGrupoTimeline($GrupoTimeline, $avaliacao);
+      if($retAvalia["erro"]){
+        $arrRet["msg"] = $retAvalia["msg"];
+        $arrRet["msg_titulo"] = "Aviso!";
+        $arrRet["msg_tipo"] = "warning";
+      } else {
+        
+        if($avaliacao == NULL || $avaliacao == ""){
+          $html = '&nbsp;';
+        } else if($avaliacao == 0){
+          $html = '<i class="material-icons text-danger">thumb_down</i>';
+        } else if($avaliacao == 1) {
+          $html = '<i class="material-icons text-success">thumb_up</i>';
+        }
+
+        $arrRet["html_selector"] = "#item-postagem-$vGrtId .mais_info_post .mip_bom_ruim";
+        $arrRet["html"]          = processaJsonHtml($html);
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }

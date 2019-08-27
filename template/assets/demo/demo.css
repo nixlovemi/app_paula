@@ -107,6 +107,33 @@ ul.pagination .item-info {
   top: 2px;
   color: #808080;
 }
+.item-postagem div.mais_info_post{
+  position: absolute;
+  right: 15px;
+  z-index: 1;
+  top: 0;
+}
+.item-postagem div.mais_info_post ul{
+  margin: 0;
+  padding: 0;
+}
+.item-postagem div.mais_info_post ul li{
+  display: inline-table;
+  list-style: none;
+}
+.item-postagem div.mais_info_post ul li.mip_menu div.dropdown{
+  position: relative;
+  top: -6px;
+  right: 2px;
+}
+.item-postagem div.mais_info_post ul li.mip_favorito i{
+  position: relative;
+  top: 2px;
+}
+.item-postagem div.mais_info_post ul li.mip_bom_ruim i{
+  position: relative;
+  top: 2px;
+}
 .item-postagem .titulo{
   font-weight: bold;
   font-size: 16px;

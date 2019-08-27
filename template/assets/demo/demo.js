@@ -331,17 +331,22 @@ function process_mvc_ret(data)
     }
   }
 
-  if(typeof data.html !== 'undefined' && typeof data.html_selector !== 'undefined'){
+  if(typeof data.html_selector !== 'undefined'){
     var append = false;
     if(data.html_append !== 'undefined'){
       append = data.html_append;
     }
 
-    if(data.html !== "" && data.html_selector !== ""){
+    if(data.html_selector !== ""){
+      var vHtml = "";
+      if(typeof data.html !== "undefined"){
+        vHtml = data.html;
+      }
+      
       if(append){
-        $(data.html_selector).append(data.html);
+        $(data.html_selector).append(vHtml);
       } else {
-        $(data.html_selector).html(data.html);
+        $(data.html_selector).html(vHtml);
       }
     }
   }
@@ -560,7 +565,7 @@ function favoritarPostagem(id)
 
 function jqueryMostraFavoritado(id)
 {
-  $('div#item-postagem-' + id + ' .li-favoritado').show();
+  $('div#item-postagem-' + id + ' .mais_info_post .mip_favorito').html('<i class="material-icons text-success">favorite</i>');
 }
 
 $('.item-postagem .dv-area-comentario').on('keypress','textarea' , function(e)
@@ -618,6 +623,46 @@ $('div.content').on('click', '#carregar_mais_postagens a', function(e)
 function jsonPostCarregarMaisPostagens(html, div)
 {
   $(div).replaceWith(html);
+}
+
+function jsonEscolheAvaliacaoPost(id)
+{
+  mvc_post_ajax_var("Json", "jsonAvaliarPost", "id=" + id);
+}
+
+function jsonEscolheAvaliacaoPostModal(id, avaliacaoAtual){
+  var temAvaliacao = (avaliacaoAtual == 0 || avaliacaoAtual == 1);
+  var positivo     = "";
+  var negativo     = "";
+  if(avaliacaoAtual == 0){
+    negativo = " selected ";
+  } else if(avaliacaoAtual == 1){
+    positivo = " selected ";
+  }
+  
+  var html = '';
+  html     = html + '<select id="cbJsonEscolheAvaliacaoPostModal" class="form-control" size="">';
+  if(temAvaliacao){
+    html   = html + '  <option value="">Remover avaliação atual</option>';
+  }
+  html     = html + '  <option '+positivo+' value="1">Avaliação Positiva</option>';
+  html     = html + '  <option '+negativo+' value="0">Avaliação Negativa</option>';
+  html     = html + '</select>';
+  
+  Swal.fire({
+    title: 'Avaliar postagem',
+    html: html,
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Gravar Avaliação',
+    cancelButtonText: 'Voltar ...'
+  }).then((result) => {
+    if (result.value) {
+      var avaliacao = $('#cbJsonEscolheAvaliacaoPostModal').val();
+      mvc_post_ajax_var("Json", "jsonAvaliarPostSalvar", "id=" + id + "&avaliacao=" + avaliacao);
+    }
+  })
 }
 /* ========= */
 

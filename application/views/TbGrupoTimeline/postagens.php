@@ -1,5 +1,7 @@
 <?php
 //@todo melhorar CSS inline
+$vGrpLogado    = pegaGrupoPessoaLogadoId();
+$vEhStaff      = ehStaffGrupo($vGrpLogado);
 
 $vGruDescricao = $vGruDescricao ?? "";
 $arrPostagens  = $arrPostagens ?? array();
@@ -39,6 +41,7 @@ if(!$carregaMais){
         $programado = $postagem["grt_dt_programado"] ?? "";
         $texto      = $postagem["grt_texto"] ?? "";
         $foto       = $postagem["pes_foto"] ?? FOTO_DEFAULT;
+        $avaliacao  = $postagem["grt_avaliacao"] ?? NULL;
         $ehPrivada  = (isset($postagem["grt_publico"])) ? $postagem["grt_publico"] == "0": false;
 
         $idUsuLogado       = pegaUsuarioLogadoId() ?? 0;
@@ -53,7 +56,6 @@ if(!$carregaMais){
         $strDataF          = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
         $strTexto          = nl2br($texto);
         $ehFavoritado      = isset($arrSalvos[$id][$grpPessoaLogado]);
-        $strFavoritado     = ($ehFavoritado) ? "display:block;": "display:none;";
 
         // anexos
         $arquivosPost    = $arrArquivos[$id] ?? array();
@@ -81,38 +83,54 @@ if(!$carregaMais){
               $iconPrivada = ($ehPrivada) ? '<i class="material-icons icon-postagem-privada">visibility_off</i>': '';
               ?>
               <span title="<?=$strDataF?>" class="autor"><?=$pessoa?> | <?=$strData?> &nbsp; <?=$iconPrivada?></span>
-
-              <ul class="ul-top-sis-grupo-postagem navbar-nav pull-right">
-                <li class="dropdown nav-item">
-                  <a href="javascript:;" class="dropdown-toggle nav-link text-info" data-toggle="dropdown" aria-expanded="false">
-                    <i class="material-icons">more_horiz</i>
-                  </a>
-                  <div class="dropdown-menu">
-                    <h6 class="dropdown-header">Ações</h6>
+              
+              <div class="mais_info_post">
+                <ul>
+                  <li class="mip_bom_ruim">
                     <?php
-                    if($ehAdminLogado){
+                    if($avaliacao != NULL){
+                      $strAvaliacao      = ($avaliacao == 0) ? "thumb_down": "thumb_up";
+                      $strAvaliacaoClass = ($avaliacao == 0) ? "danger": "success";
                       ?>
-                      <a href="javascript:;" onclick="favoritarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
-                      <a href="javascript:;" onclick="deletarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Excluir</a>
+                      <i class="material-icons text-<?=$strAvaliacaoClass?>"><?=$strAvaliacao?></i>
                       <?php
-                    } else {
-                      if($ehPostagemPropria){
-                        ?>
-                        <a href="javascript:;" onclick="deletarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Excluir</a>
-                        <?php
-                      } else {
-                        ?>
-                        <a href="javascript:;" onclick="favoritarPostagem(<?= $id ?>)" class="dropdown-item dropdown-item-info">Salvar Favorito</a>
-                        <?php
-                      }
                     }
                     ?>
-                  </div>
-                </li>
-                <li class="nav-item li-favoritado" style="<?=$strFavoritado?>">
-                  <i class="material-icons text-success">favorite</i>
-                </li>
-              </ul>
+                  </li>
+
+                  <li class="mip_favorito">
+                    <?php
+                    if($ehFavoritado){
+                      ?> <i class="material-icons text-success">favorite</i> <?php
+                    } else {
+                      echo "&nbsp;";
+                    }
+                    ?>
+                  </li>
+
+                  <li class="mip_menu">
+                    <div class="dropdown nav-item">
+                      <a href="javascript:;" class="dropdown-toggle text-info" data-toggle="dropdown" aria-expanded="false">
+                        <i class="material-icons">more_horiz</i>
+                      </a>
+                      <div class="dropdown-menu">
+                        <h6 class="dropdown-header">Ações</h6>
+                        <?php
+                        $arrLinks   = [];
+                        $arrLinks[] = '<a href="javascript:;" onclick="favoritarPostagem('.$id.')" class="dropdown-item dropdown-item-info">Salvar Favorito</a>';
+                        if($vEhStaff){
+                          $arrLinks[] = '<a href="javascript:;" onclick="jsonEscolheAvaliacaoPost('.$id.')" class="dropdown-item dropdown-item-info">Avaliar Postagem</a>';
+                        }
+                        if($ehPostagemPropria || $ehAdminLogado){
+                          $arrLinks[] = '<a href="javascript:;" onclick="deletarPostagem('.$id.')" class="dropdown-item dropdown-item-info">Excluir</a>';
+                        }
+                        echo implode("", $arrLinks);
+                        ?>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           <div class="col-md-12">
