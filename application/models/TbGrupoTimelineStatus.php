@@ -22,7 +22,7 @@ function pegaInfoStaffNotificacao($grpId)
 
     $CI->db->select('grt_grp_id, COUNT(*) AS cnt');
     $CI->db->from('v_tb_grupo_timeline');
-    $CI->db->join('tb_grupo_timeline_status gts', 'gts.gts_grt_id = grt_id', 'left');
+    $CI->db->join('tb_grupo_timeline_status gts', '(gts.gts_grt_id = grt_id AND gts.gts_grp_id = '.$grpId.')', 'left');
     $CI->db->where('gts_id IS NULL');
     $CI->db->where('grt_gru_id = ', $vGruId);
     $CI->db->where('grt_publico = ', 1);
