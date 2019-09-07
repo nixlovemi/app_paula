@@ -38,7 +38,7 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
   $CI->db->join('tb_pessoa_tipo', 'pet_id = pes_pet_id', 'left');
   $CI->db->join('v_tb_cidade', 'cid_id = usu_cid_id', 'left');
   $CI->db->where('pes_id =', $pesId);
-  if($UsuarioLog->admin == 0 && $vGrpId == NULL){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
     $CI->db->where('pes_usu_id =', $UsuarioLog->id);
   }
 
@@ -149,7 +149,7 @@ function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false)
   }
   $Lista_CI->addFrom("v_tb_pessoa");
   
-  if($UsuarioLog->admin == 0){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
     $Lista_CI->addWhere("pes_usu_id = " . $UsuarioLog->id);
   }
   $Lista_CI->changeOrderCol(2);
@@ -187,7 +187,7 @@ function validaPessoa($id, $idUsuLogado)
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Esta pessoa não está ativa.";
     }
-    if($Pessoa["pes_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
+    if(isset($UsuarioLog->admin) && $Pessoa["pes_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Esta pessoa não faz parte do seu cadastro.";
     }

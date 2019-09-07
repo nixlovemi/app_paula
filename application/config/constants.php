@@ -98,3 +98,4 @@ defined('PASTA_UPLOAD')          OR define('PASTA_UPLOAD', FCPATH . 'files/');
 defined('SELECIONA_MODAL_LISTA') OR define('SELECIONA_MODAL_LISTA', 'ListaSelecionaModal');
 defined('SELECIONA_MODAL_RADIO') OR define('SELECIONA_MODAL_RADIO', 'radio_seleciona_modal');
 defined('SELECIONA_MODAL_DIV')   OR define('SELECIONA_MODAL_DIV', 'dv-ret-inpt-seleciona-modal-icon');
+defined('APP_KEY')               OR define('APP_KEY', '1e7c1e6e95502517a3607266a720aab0');

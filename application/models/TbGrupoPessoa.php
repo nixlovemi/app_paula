@@ -32,7 +32,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa');
   $CI->db->where('grp_id =', $id);
-  if($UsuarioLog->admin == 0 && $vGrpId == NULL){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
     $CI->db->where('gru_usu_id =', $UsuarioLog->id);
   }
 
@@ -182,12 +182,13 @@ function pegaGrupoPessoasGru($gru_id, $apenas_staff=false)
       $CI->db->select('grp_id');
       $CI->db->from('v_tb_grupo_pessoa');
       $CI->db->where('grp_gru_id =', $gru_id);
-      if($UsuarioLog->admin == 0 && $vGrpId == NULL){
+      if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
         $CI->db->where('gru_usu_id =', $UsuarioLog->id);
       }
       if($apenas_staff){
         $CI->db->where('pet_cliente =', 0);
       }
+      $CI->db->order_by('grp_usu_id', 'DESC');
       $query = $CI->db->get();
 
       if(!$query){
@@ -248,7 +249,7 @@ function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao
   $Lista_CI->addFrom("v_tb_grupo_pessoa");
 
   $Lista_CI->addWhere("grp_gru_id = " . $vGruId);
-  if($UsuarioLog->admin == 0){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
     $Lista_CI->addWhere("gru_usu_id = " . $UsuarioLog->id);
   }
   $Lista_CI->changeOrderCol(1);

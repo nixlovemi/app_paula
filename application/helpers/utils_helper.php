@@ -55,6 +55,47 @@ function processaPost()
   return (object) $jsonVars;
 }
 
+function proccessPostRest()
+{
+  $postdata = file_get_contents("php://input");
+  if($postdata != ""){
+    $_SESSION["postData"] = $postdata;
+    $jsonVars             = json_decode($postdata);
+  } else {
+    $jsonStr              = json_encode($_REQUEST);
+    $_SESSION["postData"] = $jsonStr;
+    $jsonVars             = json_decode($jsonStr);
+  }
+
+  if(!isset($jsonVars->appkey) || $jsonVars->appkey != APP_KEY){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "Key de acesso inválida!" ;
+    echo json_encode($arrRet);
+    die();
+  } else {
+    return $jsonVars;
+  }
+}
+
+/**
+* executa o retorno padrão do WS
+* $arrRet = array com as informações de retorno
+*/
+function printaRetornoRest($arrRet)
+{
+  if(!is_array($arrRet)){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "Variável do retorno deve ser um array";
+    echo json_encode($arrRet);
+    return;
+  } else {
+    echo json_encode($arrRet, JSON_FORCE_OBJECT);
+    return;
+  }
+}
+
 function processaJsonHtml($html)
 {
   $htmlAjustado  = str_replace("'", "\'", $html);

@@ -31,7 +31,7 @@ function pegaListaGrupo($detalhes=false, $edicao=false, $exclusao=false)
   }
   $Lista_CI->addFrom("v_tb_grupo");
 
-  if($UsuarioLog->admin == 0){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
     $Lista_CI->addWhere("gru_usu_id = " . $UsuarioLog->id);
   }
   $Lista_CI->changeOrderCol(2);
@@ -76,7 +76,7 @@ function pegaGrupo($gruId, $apenasCamposTabela=false)
   $CI->db->from('tb_grupo');
   $CI->db->join('tb_usuario', 'usu_id = gru_usu_id', 'left');
   $CI->db->where('gru_id =', $gruId);
-  if($UsuarioLog->admin == 0 && $vGrpId == NULL){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
     $CI->db->where('gru_usu_id =', $UsuarioLog->id);
   }
 
@@ -134,7 +134,7 @@ function validaGrupo($id, $idUsuLogado)
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Este grupo já está terminado.";
     }
-    if($Grupo["gru_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
+    if(isset($UsuarioLog->admin) && $Grupo["gru_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Este grupo não faz parte do seu cadastro.";
     }
