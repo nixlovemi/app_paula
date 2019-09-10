@@ -58,6 +58,7 @@ function processaPost()
 function proccessPostRest()
 {
   $postdata = file_get_contents("php://input");
+
   if($postdata != ""){
     $_SESSION["postData"] = $postdata;
     $jsonVars             = json_decode($postdata);
@@ -74,6 +75,7 @@ function proccessPostRest()
     echo json_encode($arrRet);
     die();
   } else {
+    $_SESSION["grp_id"] = $jsonVars->grp_id ?? 0;
     return $jsonVars;
   }
 }
