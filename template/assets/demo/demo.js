@@ -111,7 +111,7 @@ function atualizaNotificacaoStaff()
     url: V_GLOB_URL_BASE + 'Json' + '/' + 'jsonAtualizaNotificacaoStaff',
     dataType: 'json',
     success: function (data) {
-      if(!data.erro){
+      if(data != null && !data.erro){
         $(".grupo-staff-notificacao").each(function() {
           var spanId         = $(this).data("id");
           var cntNotificacao = data.notificacao[spanId];
@@ -513,7 +513,7 @@ function deletaAnexo(element)
 function fncAnexarArqPostagem()
 {
   var idAnexo = $('#lista-anexos .anexo').length + 1;
-  mvc_post_ajax_var('SisGrupo', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo);
+  mvc_post_ajax_var('Json', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo);
 }
 
 async function fncAnexarArqPostagemYt()
@@ -531,7 +531,7 @@ async function fncAnexarArqPostagemYt()
   });
 
   if (linkYt) {
-    mvc_post_ajax_var('SisGrupo', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo + '&linkYt=' + linkYt);
+    mvc_post_ajax_var('Json', 'jsonPegaHtmlAnexo', 'linhaHtml=#lista-anexos&idForm=#frmNovaPostagem&idAnexo=' + idAnexo + '&linkYt=' + linkYt);
   }
 }
 
