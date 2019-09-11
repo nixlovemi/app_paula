@@ -79,6 +79,29 @@ class Rest extends CI_Controller
     printaRetornoRest($arrRet);
   }
 
+  public function pegaGrupoPessoa()
+  {
+    $arrRet = [];
+    $arrRet["erro"]        = false;
+    $arrRet["msg"]         = "";
+    $arrRet["GrupoPessoa"] = [];
+
+    $variaveisPost = proccessPostRest();
+    $vGrpId        = $variaveisPost->grp_id ?? "";
+    $vApenasCmpTb  = $variaveisPost->campos_tabela ?? false;
+
+    require_once(APPPATH . '/models/TbGrupoPessoa.php');
+    $retGrupoPessoa = pegaGrupoPessoa($vGrpId, $vApenasCmpTb);
+    if($retGrupoPessoa["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $retGrupoPessoa["msg"];
+    } else {
+      $arrRet["GrupoPessoa"] = $retGrupoPessoa["GrupoPessoa"];
+    }
+
+    printaRetornoRest($arrRet);
+  }
+
   public function pegaPostagensGrupo()
   {
     // qdo alterar o geraHtmlViewGrupoTimeline, tem q atualizar aqui
@@ -94,10 +117,18 @@ class Rest extends CI_Controller
 
     $variaveisPost = proccessPostRest();
     $vGruId        = $variaveisPost->gru_id ?? "";
+    $vGrpPostagem  = (isset($variaveisPost->grp_postagem) && $variaveisPost->grp_postagem > 0) ? $variaveisPost->grp_postagem: NULL;
+    $vFavoritos    = $variaveisPost->apenas_favoritos ?? false;
+    $vProgramado   = $variaveisPost->apenas_programado ?? false;
+    $vPrivado      = $variaveisPost->apenas_privado ?? false;
 
     require_once(APPPATH . 'models/TbGrupoTimeline.php');
     $retPostagens = pegaPostagensGrupo(array(
-      "gru_id" => $vGruId,
+      "gru_id"            => $vGruId,
+      "grp_id"            => $vGrpPostagem,
+      "apenas_favoritos"  => $vFavoritos,
+      "apenas_programado" => $vProgramado,
+      "apenas_privado"    => $vPrivado,
     ));
 
     if($retPostagens["erro"]){
