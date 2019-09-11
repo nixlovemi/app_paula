@@ -100,9 +100,9 @@ function pegaGrupoPessoaInfo($grpId, $apenasCamposTabela=false)
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa_info');
   $CI->db->where('gpi_grp_id =', $grpId);
-  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
+  /*if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
     $CI->db->where('gru_usu_id =', $UsuarioLog->id);
-  }
+  }*/
   $CI->db->order_by('gpi_data', 'ASC');
 
   $query = $CI->db->get();
@@ -226,7 +226,7 @@ function agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo)
 }
 
 function validaInsereGrupoPessoaInfo($GrupoPessoaInfo)
-{	
+{  
   require_once(APPPATH."/helpers/utils_helper.php");
   $strValida   = "";
   $idUsuLogado = pegaUsuarioLogadoId();
