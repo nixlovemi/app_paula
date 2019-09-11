@@ -64,7 +64,7 @@ class Pessoa extends MY_Controller
     $Pessoa["pes_sexo"]       = $vSexo;
     $Pessoa["pes_cid_id"]     = $vCidId;
     $Pessoa["cid_desc"]       = $vCidDesc; // nao gravo esse campo
-    $Pessoa["pes_pes_id"]     = pegaUsuarioLogadoId();
+    $Pessoa["pes_usu_id"]     = pegaUsuarioLogadoId();
     $this->session->set_flashdata('Pessoa', $Pessoa);
 
     require_once(APPPATH."/models/TbPessoa.php");
