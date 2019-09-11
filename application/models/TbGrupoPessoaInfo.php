@@ -63,9 +63,9 @@ function pegaListaGrupoPessoaInfo($grpId, $detalhes=false, $edicao=false, $exclu
   $Lista_CI->addWhere("gpi_inicial = 0");
   $Lista_CI->addWhere("grp_id = $grpId");
 
-  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
+  /*if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
     $Lista_CI->addWhere("gru_usu_id = " . $UsuarioLog->id);
-  }
+  }*/
   $Lista_CI->changeOrderCol(1);
 
   return $Lista_CI->getHtml();
