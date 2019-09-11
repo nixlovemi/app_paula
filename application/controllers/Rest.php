@@ -151,4 +151,53 @@ class Rest extends CI_Controller
 
     printaRetornoRest($arrRet);
   }
+
+  public function salvaComentario()
+  {
+    $arrRet = [];
+    $arrRet["erro"]        = false;
+    $arrRet["msg"]         = "";
+    $arrRet["Comentarios"] = [];
+
+    $variaveisPost = proccessPostRest();
+    $vGrtId        = $variaveisPost->grt_id ?? ""; #grupo timeline
+    $vTexto        = $variaveisPost->comentario ?? "";
+    $vGrpId        = $variaveisPost->grp_id ?? "";
+
+    // preenche os dados
+    $GrupoTimeline                    = [];
+    $GrupoTimeline["grt_data"]        = date("Y-m-d H:i:s");
+    $GrupoTimeline["grt_titulo"]      = NULL;
+    $GrupoTimeline["grt_texto"]       = $vTexto;
+    $GrupoTimeline["grt_publico"]     = (int) 1;
+    $GrupoTimeline["grt_grp_id"]      = $vGrpId;
+    $GrupoTimeline["grt_resposta_id"] = $vGrtId;
+
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGP       = pegaGrupoPessoa($vGrpId);
+    $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"] : array();
+    $vGruId      = $GrupoPessoa["grp_gru_id"] ?? NULL;
+    $GrupoTimeline["grt_gru_id"] = $vGruId;
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    $retInserir = insereGrupoTimeline($GrupoTimeline);
+
+    if ($retInserir["erro"]) {
+      $arrRet["msg"]  = $retInserir["msg"];
+      $arrRet["erro"] = true;
+    } else {
+      $arrPostagens   = [];
+      $arrPostagens[] = array(
+        "grt_id" => $vGrtId
+      );
+
+      $retHtmlPost = pegaRespostasGrupoTimeline($arrPostagens);
+      if(!$retHtmlPost["erro"]){
+        $arrRespostas          = $retHtmlPost["respostas"];
+        $arrRet["Comentarios"] = $arrRespostas[$vGrtId];
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }
