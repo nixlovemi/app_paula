@@ -200,4 +200,37 @@ class Rest extends CI_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function deletaComentario()
+  {
+    $arrRet = [];
+    $arrRet["erro"]        = false;
+    $arrRet["msg"]         = "";
+    $arrRet["Comentarios"] = [];
+
+    $variaveisPost = proccessPostRest();
+    $vGrtId        = $variaveisPost->grt_id ?? "";
+    $vGrtIdPai     = $variaveisPost->grt_id_pai ?? "";
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    $retDel = deletaGrupoTimeline($vGrtId);
+
+    if($retDel["erro"]){
+      $arrRet["msg"]  = $retDel["msg"];
+      $arrRet["erro"] = true;
+    } else {
+      $arrPostagens   = [];
+      $arrPostagens[] = array(
+        "grt_id" => $vGrtIdPai
+      );
+
+      $retHtmlPost = pegaRespostasGrupoTimeline($arrPostagens);
+      if(!$retHtmlPost["erro"]){
+        $arrRespostas          = $retHtmlPost["respostas"];
+        $arrRet["Comentarios"] = $arrRespostas[$vGrtIdPai];
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }
