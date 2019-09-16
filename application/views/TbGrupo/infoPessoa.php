@@ -24,6 +24,7 @@ $infoInicial = $GrupoPessoaInfoGrp["primeira"] ?? array();
 $infoDemais  = $GrupoPessoaInfoGrp["demais"] ?? array();
 $infoAltura  = $GrupoPessoaInfoGrp["altura"] ?? NULL;
 $infoPeso    = $GrupoPessoaInfoGrp["peso"] ?? NULL;
+$infoDif     = $infoInicial["gpi_peso"] - $infoInicial["gpi_peso_objetivo"];
 $arrIMC      = calcula_imc($infoAltura, $infoPeso);
 $vImc        = $arrIMC["imc"] ?? NULL;
 $vImcResult  = $arrIMC["resultado"] ?? "";
@@ -36,7 +37,7 @@ $strData     = (isset($infoInicial["gpi_data"]) && $infoInicial["gpi_data"] != "
 $strAltura   = (isset($infoInicial["gpi_altura"]) && $infoInicial["gpi_altura"] != "") ? $infoInicial["gpi_altura"] . "cm": "";
 $strPeso     = (isset($infoInicial["gpi_peso"]) && $infoInicial["gpi_peso"] != "") ? number_format($infoInicial["gpi_peso"], 3, ",", ".") . "kg": "";
 $strPesoObj  = (isset($infoInicial["gpi_peso_objetivo"]) && $infoInicial["gpi_peso_objetivo"] != "") ? number_format($infoInicial["gpi_peso_objetivo"], 3, ",", ".") . "kg": "";
-$strDif      = ($strPesoObj != "" && $strPeso != "") ? number_format($infoInicial["gpi_peso"] - $infoInicial["gpi_peso_objetivo"], 3, ",", ".") . "kg": "";
+$strDif      = ($strPesoObj != "" && $strPeso != "") ? number_format($infoDif, 3, ",", ".") . "kg": "";
 
 // info do grafico #chartProgressaoMedidas
 // @todo refatorar essa parte!!!!!!!!!!!!!
@@ -69,7 +70,7 @@ foreach($arrLoop as $info){
   }
 }
 
-$difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso_objetivo"] / $lastPeso) * 100, 3, ",", "."): "?";
+$difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso"] - $infoPeso) / $infoDif * 100, 3, ",", "."): "?";
 // =======================================
 ?>
 
