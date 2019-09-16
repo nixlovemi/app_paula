@@ -1,4 +1,6 @@
 <?php
+require_once(APPPATH."/helpers/notificacao_helper.php");
+
 $Grupo      = $Grupo ?? array();
 $arrPessoas = $arrPessoas ?? array();
 
@@ -51,8 +53,44 @@ $strDtFim   = ($vTermino != "") ? date("d/m/Y", strtotime($vTermino)): "";
           <h4 class="card-title">Participantes</h4>
         </div>
         <div class="card-body">
+          <div id="selec-participantes" class="row">
+            <?php
+            $htmlGray  = "";
+            $htmlGray .= "Participantes selecionados: <strong id='spn-count-participantes'>0</strong>";
+            $htmlGray .= "&nbsp;&nbsp;";
+            $htmlGray .= "<div class='form-group bmd-form-group has-info'>";
+            $htmlGray .= "  <input maxlength='80' placeholder='Filtrar Participante' id='filtra_participante' type='text' class='form-control' value='' />";
+            $htmlGray .= "</div>";
+
+            echo "<div class='col-md-12'>";
+            echo exibe_gray($htmlGray, false);
+            echo "</div>";
+
+            foreach($arrPessoas as $Pessoa){
+              $pesId    = $Pessoa["pes_id"] ?? "";
+              $pesNome  = $Pessoa["pes_nome"] ?? "";
+              $petDesc  = $Pessoa["pet_descricao"] ?? "";
+              $pesEmail = $Pessoa["pes_email"] ?? "";
+
+              echo "<div class='col-md-4 dv-participante'>";
+              echo "  <div class='form-check'>";
+              echo "    <label class='form-check-label'>";
+              echo "      <input name='participantes[]' class='form-check-input checkbox-participante' type='checkbox' value='$pesId' /> $pesNome [$petDesc]";
+              echo "      <span class='form-check-sign'>";
+              echo "        <span class='check'></span>";
+              echo "      </span>";
+              echo "    </label>";
+              echo "    <br />";
+              echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$pesEmail";
+              echo "  </div>";
+              echo "</div>";
+            }
+            ?>
+          </div>
+
+
           <?php
-          $arrLoop = array_chunk($arrPessoas, 3);
+          /*$arrLoop = array_chunk($arrPessoas, 3);
           foreach($arrLoop as $Pessoas){
             echo "<div class='row'>";
             foreach($Pessoas as $Pessoa){
@@ -72,7 +110,7 @@ $strDtFim   = ($vTermino != "") ? date("d/m/Y", strtotime($vTermino)): "";
               echo "</div>";
             }
             echo "</div>";
-          }
+          }*/
           ?>
         </div>
       </div>

@@ -494,6 +494,35 @@ function jsonSaveEditarGrupoPessoaInfo(strVars)
 }
 /* ================= */
 
+/* Grupo */
+var timeout = null;
+$('#selec-participantes').on('keyup', '#filtra_participante', function()
+{
+  var text = $(this).val().toLowerCase();
+
+  clearTimeout(timeout);
+
+  // Make a new timeout set to go off in 800ms
+  // esquema com typing delay
+  timeout = setTimeout(function () {
+    $("#selec-participantes .dv-participante").show();
+    
+    $("#selec-participantes .dv-participante").each(function() {
+      var achouTexto = $(this).text().toLowerCase().indexOf(text) >= 0;
+      if(!achouTexto){
+        $(this).hide();
+      }
+    });
+  }, 500);
+});
+
+$('#selec-participantes').on('click', '.checkbox-participante', function()
+{
+  var count = $('input.checkbox-participante:checked').length;
+  $('#selec-participantes #spn-count-participantes').html(count);
+});
+/* ===== */
+
 /* Sis Grupo */
 $('form#frmNovaPostagem').on('change','.anexo' , function()
 {
