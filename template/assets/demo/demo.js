@@ -58,6 +58,40 @@ function mostraNotificacao(titulo, mensagem, tipo)
   setTimeout(funcao, 650);
 }
 
+// no sis grupo, joga info primeiro qdo tela pequena
+var windowsize = $(window).width();
+ajustaColunasSisGrupo();
+
+$(window).resize(function() {
+  if( $('#dv-sisgrupo').length > 0 ){
+    ajustaColunasSisGrupo();
+  }
+});
+
+function ajustaColunasSisGrupo()
+{
+  var primeiraDiv = $('#dv-sisgrupo').children(":first");
+  var idPrimDiv   = primeiraDiv.attr("id");
+
+  var sisGrupo    = $('#dv-sisgrupo');
+  var Postagens   = $('#dv-sisgrupo #dv-sisgrupo-postagens');
+  var Info        = $('#dv-sisgrupo #dv-sisgrupo-info');
+
+  windowsize = $(window).width();
+  if (windowsize <= 752) {
+    if(idPrimDiv == "dv-sisgrupo-postagens"){
+      sisGrupo.html();
+      sisGrupo.prepend(Info).append(Postagens);
+    }
+  } else {
+    if(idPrimDiv == "dv-sisgrupo-info"){
+      sisGrupo.html();
+      sisGrupo.prepend(Postagens).append(Info);
+    }
+  }
+}
+// =================================================
+
 $( document ).ready(function()
 {
   if( $('#dvMostraNotificacao').length > 0 ){

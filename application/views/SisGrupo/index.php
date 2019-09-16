@@ -33,8 +33,8 @@ foreach($arrStaff as $staff){
 }
 ?>
 
-<div class="row">
-  <div class="col-md-8">
+<div class="row" id="dv-sisgrupo">
+  <div class="col-md-8" id="dv-sisgrupo-postagens">
     <?php
     if($mostraNovoPost){
       ?>
@@ -129,7 +129,7 @@ foreach($arrStaff as $staff){
     echo $htmlPosts;
     ?>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-4" id="dv-sisgrupo-info">
     <div class="card">
       <div class="card-header card-header-info">
         <h4 class="card-title">Informação</h4>
