@@ -428,3 +428,36 @@ function insereGrupoPessoaDono($gru_id, $usu_id)
 
   return $arrRetorno;
 }
+
+function pegaProgressoGrp($grp_id)
+{
+  $arrRet = [];
+
+  require_once(APPPATH . '/models/TbGrupoPessoaInfo.php');
+  $retGPI             = pegaGrupoPessoaInfo($grp_id);
+  $GrupoPessoaInfo    = $retGPI["GrupoPessoaInfo"] ?? array();
+  $retGrp             = agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo);
+  $GrupoPessoaInfoGrp = $retGrp["GrupoPessoaInfoGrp"] ?? array();
+  
+  $primPesagem        = $GrupoPessoaInfoGrp["primeira"] ?? array();
+  $ultPesagem         = $GrupoPessoaInfoGrp["demais"][count($GrupoPessoaInfoGrp["demais"]) - 1] ?? array();
+
+  $primPeso           = $primPesagem["gpi_peso"] ?? 0;
+  $objetivoPeso       = $primPesagem["gpi_peso_objetivo"] ?? 0;
+  $pesoAtual          = $ultPesagem["gpi_peso"] ?? 0;
+  if($pesoAtual == 0){
+    $pesoAtual = $primPeso;
+  }
+  $difObjetivo        = ($primPeso - $objetivoPeso);
+  $difAtual           = $pesoAtual - $objetivoPeso;
+  $progresso          = $difAtual / $difObjetivo * 100;
+
+  $arrRet["peso_primeiro"] = $primPeso;
+  $arrRet["peso_objetivo"] = $objetivoPeso;
+  $arrRet["peso_atual"]    = $pesoAtual;
+  $arrRet["dif_objetivo"]  = $difObjetivo;
+  $arrRet["dif_atual"]     = $difAtual;
+  $arrRet["progresso"]     = $progresso;
+
+  return $arrRet;
+}

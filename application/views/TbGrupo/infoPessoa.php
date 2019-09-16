@@ -70,7 +70,9 @@ foreach($arrLoop as $info){
   }
 }
 
-$difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso"] - $infoPeso) / $infoDif * 100, 3, ",", "."): "?";
+// @todo esse calculo tem no metodo pegaProgressoGrp
+$pesoDifAtual = ($infoInicial["gpi_peso"] - $infoPeso);
+$difAtual     = ($strPesoObj != "") ? number_format($pesoDifAtual / $infoDif * 100, 3, ",", "."): "?";
 // =======================================
 ?>
 
@@ -219,7 +221,7 @@ $difAtual = ($strPesoObj != "") ? number_format(($infoInicial["gpi_peso"] - $inf
           <h4 class="card-title">Progressão das Medidas</h4>
           <p class="card-category">
             <span class="text-info">
-              Você está com <?php echo $difAtual; ?>% do objetivo concluído.
+              Você está com <?php echo $difAtual; ?>% do objetivo concluído. Faltam apenas <?=number_format($pesoDifAtual, 3, ",", ".")?>KG
               <hr style="margin:5px 0; padding:0;" />
               <?php
               if($vImc > 0){

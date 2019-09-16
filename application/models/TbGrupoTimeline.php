@@ -292,6 +292,11 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
   if($carregaMais){
     return $htmlPosts;
   } else {
+    // info dos lancamentos
+    require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
+    $retProgresso = pegaProgressoGrp($vGrpLogado);
+    // ====================
+
     $CI->template->load(TEMPLATE_STR, 'SisGrupo/index', array(
       "titulo"            => gera_titulo_template("Timeline do Grupo $tituloPag"),
       "arrStaff"          => $arrStaff,
@@ -305,6 +310,7 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
       "GrupoTimeline"     => $GrupoTimeline,
       "mostraNovoPost"    => $mostraNovoPost,
       "urlNovoPostRed"    => $urlNovoPostRed,
+      "retProgresso"      => $retProgresso,
     ));
   }
 }

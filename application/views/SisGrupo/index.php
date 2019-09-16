@@ -11,6 +11,7 @@ $vGruDescricao     = $vGruDescricao ?? "";
 $htmlPosts         = $htmlPosts ?? "";
 $mostraNovoPost    = $mostraNovoPost ?? false;
 $urlNovoPostRed    = $urlNovoPostRed ?? BASE_URL . "SisGrupo";
+$retProgresso      = $retProgresso ?? array();
 
 $titulo         = $GrupoTimeline["grt_titulo"] ?? "";
 $descricao      = $GrupoTimeline["grt_texto"] ?? "";
@@ -136,6 +137,12 @@ foreach($arrStaff as $staff){
       </div>
       <div class="card-body" style="padding-bottom:5px;">
         <?php
+        $progresso = $retProgresso["progresso"] ?? NULL;
+        $difAtual  = $retProgresso["dif_atual"] ?? 0;
+        if($progresso != NULL){
+          echo "<p class='text-info'>Você está com ".number_format($progresso, 3, ",", ".")."% do objetivo concluído. Faltam apenas ".number_format($difAtual, 3, ",", ".")."KG.</p>";
+        }
+
         $arrLoopStaff = [];
         $arrLoopStaff["dono"]  = [];
         $arrLoopStaff["staff"] = [];
