@@ -242,6 +242,16 @@ img.img-comentario{
   width: 28px;
   height: 28px;
 }
+.postagem-inner .dv-area-btn-post{
+  width: 24px;
+  height: auto;
+  flex: none;
+  max-width: none;
+  padding:0;
+}
+.postagem-inner .dv-area-btn-post img{
+  width: 24px;
+}
 .postagem-inner .dv-img-comentario{
   width: 40px;
   flex: none;
@@ -252,7 +262,7 @@ img.img-comentario{
   margin-left: 6px;
 }
 .postagem-inner .dv-area-comentario{
-  width: calc(100% - 41px);
+  width: calc(100% - 64px);
   flex: none;
   max-width: none;
   padding-left:0;

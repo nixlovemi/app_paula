@@ -626,18 +626,6 @@ function jqueryMostraFavoritado(id)
   $('div#item-postagem-' + id + ' .mais_info_post .mip_favorito').html('<i class="material-icons text-success">favorite</i>');
 }
 
-$('.item-postagem .dv-area-comentario').on('keypress','textarea' , function(e)
-{
-  if(e.which == 13 && !e.shiftKey) {
-    e.preventDefault();
-    
-    var grtId = $(this).data('id');
-    var text  = $(this).val();
-    
-    mvc_post_ajax_var("Json", "jsonAddComentario", "grtId=" + grtId + "&texto=" + text);
-  }
-});
-
 function fncItemPostagemDelComentario(grtId)
 {
   Swal.fire({
@@ -721,6 +709,12 @@ function jsonEscolheAvaliacaoPostModal(id, avaliacaoAtual){
       mvc_post_ajax_var("Json", "jsonAvaliarPostSalvar", "id=" + id + "&avaliacao=" + avaliacao);
     }
   })
+}
+
+function gravaComentario(id)
+{
+  var texto = $('#item-postagem-' + id + ' .postagem-inner-bot .dv-area-comentario textarea').val();
+  mvc_post_ajax_var("Json", "jsonAddComentario", "grtId=" + id + "&texto=" + texto);
 }
 /* ========= */
 

@@ -223,10 +223,15 @@ if(!$carregaMais){
                     <img src="<?=$foto2?>" alt="Circle Image" class="rounded-circle img-fluid img-comentario">
                   </a>
                 </div>
-                <div class="col-md-11 dv-area-comentario">
+                <div class="col-md-10 dv-area-comentario">
                   <div class="form-group bmd-form-group has-info" style="margin-top:0; padding-bottom:0;">
-                    <textarea data-id="<?=$id?>" style="padding-top:0; padding-bottom:0;" placeholder="Escreva um comentário" class="form-control" rows="1" name="comentario"></textarea>
+                    <textarea style="padding-top:0; padding-bottom:0;" placeholder="Escreva um comentário" class="form-control" rows="1" name="comentario"></textarea>
                   </div>
+                </div>
+                <div class="col-md-1 dv-area-btn-post">
+                  <a href="javascript:;" onClick="gravaComentario(<?=$id?>)">
+                    <img src="<?=base_url()?>/template/assets/img/post-comment.png" />
+                  </a>
                 </div>
               </div>
             </div>
