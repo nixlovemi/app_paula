@@ -63,9 +63,9 @@ function pegaListaGrupoPessoaInfo($grpId, $detalhes=false, $edicao=false, $exclu
   $Lista_CI->addWhere("gpi_inicial = 0");
   $Lista_CI->addWhere("grp_id = $grpId");
 
-  /*if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
-    $Lista_CI->addWhere("gru_usu_id = " . $UsuarioLog->id);
-  }*/
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
+    $Lista_CI->addWhere("grp_id = " . pegaGrupoPessoaLogadoId());
+  }
   $Lista_CI->changeOrderCol(1);
 
   return $Lista_CI->getHtml();
@@ -100,9 +100,9 @@ function pegaGrupoPessoaInfo($grpId, $apenasCamposTabela=false)
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa_info');
   $CI->db->where('gpi_grp_id =', $grpId);
-  /*if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
-    $CI->db->where('gru_usu_id =', $UsuarioLog->id);
-  }*/
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
+    $CI->db->where('grp_id =', pegaGrupoPessoaLogadoId());
+  }
   $CI->db->order_by('gpi_data', 'ASC');
 
   $query = $CI->db->get();
