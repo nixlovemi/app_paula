@@ -194,6 +194,19 @@ function init_components()
     });
     // =====
     
+    // input password
+    $("input[type='password']").each(function() {
+      var objVerPass = $(this).next('.password_show_text');
+      if( objVerPass.length <= 0 ){
+        var paiMB = $(this).css('margin-bottom');
+        
+        $(this).after('<span class="password_show_text"><a href="javascript:;" class="text-info">Exibir senha</a></span>');
+        var objVerPass = $(this).next('.password_show_text');
+        objVerPass.css({'position':'relative', 'top':'-'+paiMB, 'font-size':'11.5px'});
+      }
+    });
+    // ==============
+    
     // audio video
     $(function () {
       //$('audio, video').stylise();
@@ -317,6 +330,19 @@ function init_components()
   } catch (err) { }
 }
 
+$(document).on('click','.password_show_text', function()
+{
+  var objPass = $(this).prev();
+
+  if (objPass.attr("type") === "password") {
+    objPass.attr("type", "text");
+    $(this).find('a').html('Esconder senha');
+  } else {
+    objPass.attr("type", "password");
+    $(this).find('a').html('Exibir senha');
+  }
+});
+
 function process_mvc_ret(data)
 {
   if(typeof data.callback !== 'undefined'){
@@ -421,6 +447,9 @@ async function jsonAlteraSenha(controller, action, id)
       maxlength: 25,
       autocapitalize: 'off',
       autocorrect: 'off'
+    },
+    onOpen: function(){
+      setTimeout("init_components()", 300);
     }
   });
 
