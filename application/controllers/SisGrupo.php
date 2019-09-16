@@ -24,37 +24,6 @@ class SisGrupo extends MY_Controller
     geraHtmlViewGrupoTimeline($GrupoPessoa);
   }
 
-  public function jsonPegaHtmlAnexo()
-  {
-    $arrRet = [];
-
-    $variaveisPost = processaPost();
-    $vLinhaHtml    = $variaveisPost->linhaHtml ?? "";
-    $vidForm       = $variaveisPost->idForm ?? "";
-    $vidAnexo      = $variaveisPost->idAnexo ?? "";
-    $vLinkYt       = $variaveisPost->linkYt ?? "";
-
-    // valida se é link do YT
-    if($vLinkYt != "" && !eh_link_youtube($vLinkYt)){
-      $arrRet["msg"]        = "Informe um link válido do Youtube!";
-      $arrRet["msg_titulo"] = "Alerta!";
-      $arrRet["msg_tipo"]   = "warning";
-    } else {
-      $html = $this->load->view('SisGrupo/novoAnexo', array(
-        "frmId"   => $vidForm,
-        "idAnexo" => $vidAnexo,
-        "linkYt"  => $vLinkYt,
-      ), true);
-
-      $arrRet["html"]          = $html;
-      $arrRet["html_selector"] = $vLinhaHtml;
-      $arrRet["html_append"]   = true;
-      $arrRet["callback"]      = " $('$vidForm #anexo$vidAnexo').click(); ";
-    }
-
-    echo json_encode($arrRet);
-  }
-
   public function indexInfo($grpId, $programado=0)
   {
     $vGrpId = $grpId ?? "";
