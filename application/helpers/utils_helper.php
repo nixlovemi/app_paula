@@ -367,6 +367,20 @@ function sanitize_file_name($filename)
   return apply_filters('sanitize_file_name', $filename, $filename_raw);
 }
 
+function diferenca_dias_datas($data1, $data2)
+{
+  if($data1 > $data2){
+    return false;
+  }
+
+  // Calulating the difference in timestamps
+  $diff = strtotime($data2) - strtotime($data1);
+
+  // 1 day = 24 hours
+  // 24 * 60 * 60 = 86400 seconds
+  return abs(round($diff / 86400));
+}
+
 /**
  * é função do WP
  */

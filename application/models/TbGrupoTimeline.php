@@ -296,6 +296,14 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
     require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
     $retProgresso = pegaProgressoGrp($vGrpLogado);
     // ====================
+    
+    // tempo do grupo
+    require_once(APPPATH."/models/TbGrupo.php");
+    $retTempoGrupo = pegaInfoTempoGrupo($gruId);
+    $diasGrupo     = (!$retTempoGrupo["erro"]) ? $retTempoGrupo["diasGrupo"]: "";
+    $totDiasGrupo  = (!$retTempoGrupo["erro"]) ? $retTempoGrupo["totalDiasGrupo"]: "";
+    $percDiasGrupo = (!$retTempoGrupo["erro"]) ? $retTempoGrupo["percGrupo"]: "";
+    // ==============
 
     $CI->template->load(TEMPLATE_STR, 'SisGrupo/index', array(
       "titulo"            => gera_titulo_template("Timeline do Grupo $tituloPag"),
@@ -311,6 +319,9 @@ function geraHtmlViewGrupoTimeline($GrupoPessoa, $arrParam=[])
       "mostraNovoPost"    => $mostraNovoPost,
       "urlNovoPostRed"    => $urlNovoPostRed,
       "retProgresso"      => $retProgresso,
+      "diasGrupo"         => $diasGrupo,
+      "totDiasGrupo"      => $totDiasGrupo,
+      "percDiasGrupo"     => $percDiasGrupo,
     ));
   }
 }

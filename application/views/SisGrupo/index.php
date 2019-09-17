@@ -17,6 +17,10 @@ $descricao      = $GrupoTimeline["grt_texto"] ?? "";
 $publico        = $GrupoTimeline["grt_publico"] ?? 1;
 $programado     = $GrupoTimeline["grt_dt_programado"] ?? "";
 
+$diasGrupo     = $diasGrupo ?? "";
+$totDiasGrupo  = $totDiasGrupo ?? "";
+$percDiasGrupo = $percDiasGrupo ?? "";
+
 $strPublico     = ($publico == 1) ? "checked=''": "";
 $grpIdLogado    = pegaGrupoPessoaLogadoId();
 if(!$grpIdLogado > 0){
@@ -128,11 +132,25 @@ foreach($arrStaff as $staff){
       </div>
       <div class="card-body" style="padding-bottom:5px;">
         <?php
+        // progresso
         $progresso = $retProgresso["progresso"] ?? NULL;
         $difAtual  = $retProgresso["dif_atual"] ?? 0;
         if($progresso != NULL){
+          echo "<h5 class='htitle'>Seu Progresso:</h5>";
           echo "<p class='text-info'>Você está com ".number_format($progresso, 3, ",", ".")."% do objetivo concluído. Faltam apenas ".number_format($difAtual, 3, ",", ".")."KG.</p>";
         }
+        // =========
+
+        // tempo no grupo
+        if($diasGrupo != "" && $totDiasGrupo != "" && $percDiasGrupo != ""){
+          echo "<h5 class='htitle'>Tempo no grupo:</h5>";
+          echo '<div class="progress progress-line-info">';
+          echo '  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="3.33" aria-valuemin="0" aria-valuemax="100" style="width: '.$percDiasGrupo.'%;">';
+          echo '  </div>';
+          echo '</div>';
+          echo "<span style='position:relative; top:-20px; font-size: 12px;'>$diasGrupo de $totDiasGrupo dias (".number_format($percDiasGrupo, 2, ",", ".")."%)</span>";
+        }
+        // ==============
 
         $arrLoopStaff = [];
         $arrLoopStaff["dono"]  = [];
@@ -148,6 +166,7 @@ foreach($arrStaff as $staff){
 
         if(count($arrLoopStaff) > 0){
           ?>
+          <h5 class='htitle'>Staff:</h5>
           <ul class="informacao-grupo-side">
             <?php
             $arrLoop = array_merge($arrLoopStaff["dono"], $arrLoopStaff["staff"]);

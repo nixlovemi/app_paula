@@ -369,3 +369,56 @@ function editaGrupo($Grupo)
 
   return $arrRetorno;
 }
+
+function pegaInfoTempoGrupo($gruId)
+{
+  $arrRetorno = [];
+  $arrRetorno["erro"]           = false;
+  $arrRetorno["msg"]            = "";
+  $arrRetorno["diasGrupo"]      = NULL;
+  $arrRetorno["totalDiasGrupo"] = NULL;
+  $arrRetorno["percGrupo"]      = NULL;
+
+  if(!is_numeric($gruId)){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "ID inválido para pegar tempo do Grupo!";
+
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  // so exibe de quem cadastrou
+  $UsuarioLog = $CI->session->usuario_info ?? array();
+  $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
+  // ==========================
+
+  $CI->db->select("gru_dt_inicio, gru_dt_termino");
+  $CI->db->from('tb_grupo');
+  $CI->db->join('tb_usuario', 'usu_id = gru_usu_id', 'left');
+  $CI->db->where('gru_id =', $gruId);
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
+    $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+  }
+
+  $query = $CI->db->get();
+  $row   = $query->row();
+
+  if (!isset($row)) {
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "Erro ao encontrar Grupo!";
+
+    return $arrRetorno;
+  }
+
+  require_once(APPPATH.'/helpers/utils_helper.php');
+  $hj = date("Y-m-d");
+  $arrRetorno["diasGrupo"]      = diferenca_dias_datas($row->gru_dt_inicio, $hj);
+  $arrRetorno["totalDiasGrupo"] = diferenca_dias_datas($row->gru_dt_inicio, $row->gru_dt_termino);
+  if($arrRetorno["diasGrupo"] >= 0 && $arrRetorno["totalDiasGrupo"] > 0){
+    $arrRetorno["percGrupo"]    = ($arrRetorno["diasGrupo"] / $arrRetorno["totalDiasGrupo"]) * 100;
+  }
+
+  return $arrRetorno;
+}

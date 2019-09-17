@@ -334,6 +334,34 @@ label.text-default{
 #dv-ret-inpt-seleciona-modal-icon{
   font-size: 14px;
 }
+.progress.progress-line-info {
+  background: rgba(0,188,212,.2);
+}
+.progress, .progress .progress-bar {
+  box-shadow: none;
+}
+.progress {
+  height: 4px;
+  border-radius: 0;
+  margin-bottom: 20px;
+  display: flex;
+  overflow: hidden;
+  font-size: .75rem;
+}
+.progress .progress-bar.progress-bar-info {
+  background: #00bcd4;
+}
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  transition: width .6s ease;
+}
+#dv-sisgrupo-info .htitle{
+  margin-bottom: 5px;
+}
 
 @media (max-width: 720px) 
 {
