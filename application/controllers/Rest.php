@@ -121,6 +121,8 @@ class Rest extends CI_Controller
     $vFavoritos    = $variaveisPost->apenas_favoritos ?? false;
     $vProgramado   = $variaveisPost->apenas_programado ?? false;
     $vPrivado      = $variaveisPost->apenas_privado ?? false;
+    $vLimit        = $variaveisPost->limit ?? 25;
+    $vOffset       = $variaveisPost->offset ?? 0;
 
     require_once(APPPATH . 'models/TbGrupoTimeline.php');
     $retPostagens = pegaPostagensGrupo(array(
@@ -129,6 +131,8 @@ class Rest extends CI_Controller
       "apenas_favoritos"  => $vFavoritos,
       "apenas_programado" => $vProgramado,
       "apenas_privado"    => $vPrivado,
+      "limit"             => $vLimit,
+      "offset"            => $vOffset,
     ));
 
     if($retPostagens["erro"]){

@@ -49,11 +49,11 @@ if(!$carregaMais){
         $ehAdminLogado     = ehAdminGrupo($gruId);
         $ehPostagemPropria = ($idUsuLogado == $pesId);
         if($programado != ""){
-          $strData         = ($programado != "") ? date("d/m H:m", strtotime($programado)): "";
+          $strData         = ($programado != "") ? date("d/m H:i", strtotime($programado)): "";
         } else {
-          $strData         = ($data != "") ? date("d/m H:m", strtotime($data)): "";
+          $strData         = ($data != "") ? date("d/m H:i", strtotime($data)): "";
         }
-        $strDataF          = ($data != "") ? date("d/m/Y H:m:i", strtotime($data)): "";
+        $strDataF          = ($data != "") ? date("d/m/Y H:i:s", strtotime($data)): "";
         $strTexto          = nl2br($texto);
         $ehFavoritado      = isset($arrSalvos[$id][$grpPessoaLogado]);
 
