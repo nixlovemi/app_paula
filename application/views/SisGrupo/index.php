@@ -13,7 +13,6 @@ $mostraNovoPost    = $mostraNovoPost ?? false;
 $urlNovoPostRed    = $urlNovoPostRed ?? BASE_URL . "SisGrupo";
 $retProgresso      = $retProgresso ?? array();
 
-$titulo         = $GrupoTimeline["grt_titulo"] ?? "";
 $descricao      = $GrupoTimeline["grt_texto"] ?? "";
 $publico        = $GrupoTimeline["grt_publico"] ?? 1;
 $programado     = $GrupoTimeline["grt_dt_programado"] ?? "";
@@ -46,14 +45,6 @@ foreach($arrStaff as $staff){
         <div class="card-body" style="padding-bottom:5px;">
           <form id="frmNovaPostagem" action="<?php echo base_url() ?>Json/postNovoTimelineGrupo" method="post" enctype="multipart/form-data">
             <div class="" style="margin-bottom:0; padding-bottom:0;">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group bmd-form-group has-info" style="">
-                    <label class="bmd-label-floating">Título (opcional)</label>
-                    <input maxlength="100" name="titulo" type="text" class="form-control" value="<?= $titulo; ?>" />
-                  </div>
-                </div>
-              </div>
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group bmd-form-group has-info" style="">

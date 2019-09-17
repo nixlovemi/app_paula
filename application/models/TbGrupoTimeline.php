@@ -337,11 +337,6 @@ function validaInsereGrupoTimeline($GrupoTimeline)
         $strValida .= "<br />&nbsp;&nbsp;* Informe uma data válida.";
     }
 
-    $vTexto = $GrupoTimeline["grt_texto"] ?? "";
-    if (strlen($vTexto) < 2) {
-        $strValida .= "<br />&nbsp;&nbsp;* Informação um texto com pelo menos 3 caracteres.";
-    }
-
     $vPublico = $GrupoTimeline["grt_publico"] ?? "";
     if (!($vPublico == 0 || $vPublico == 1)) {
         $strValida .= "<br />&nbsp;&nbsp;* Informação 'público' é inválida.";

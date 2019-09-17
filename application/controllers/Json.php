@@ -218,7 +218,6 @@ class Json extends CI_Controller
     # nao vou usar por causa do FILE
     # $variaveisPost = processaPost();
 
-    $titulo         = $_REQUEST["titulo"] ?? NULL;
     $descricao      = $_REQUEST["descricao"] ?? "";
     $programar      = $_REQUEST["programar"] ?? NULL;
     $urlNovoPostRed = $_REQUEST["urlNovoPostRed"] ?? BASE_URL . "SisGrupo";
@@ -231,7 +230,6 @@ class Json extends CI_Controller
     // preenche os dados
     $GrupoTimeline = [];
     $GrupoTimeline["grt_data"]          = date("Y-m-d H:i:s");
-    $GrupoTimeline["grt_titulo"]        = $titulo;
     $GrupoTimeline["grt_dt_programado"] = ($programar != NULL) ? acerta_data_hora($programar): NULL;
     $GrupoTimeline["grt_texto"]         = $descricao;
     $GrupoTimeline["grt_publico"]       = (int) $publico;

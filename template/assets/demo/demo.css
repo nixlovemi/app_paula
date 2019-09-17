@@ -89,7 +89,7 @@ ul.pagination .item-info {
   margin-bottom: 0;
 }
 .item-postagem .postagem-inner{
-  padding: 10px 20px;
+  padding: 15px 20px;
   background-color: #FFF;
   border-left: solid 1px #e0e0e0;
   border-right: solid 1px #e0e0e0;
@@ -144,7 +144,7 @@ ul.pagination .item-info {
 }
 .item-postagem .autor{
   position: relative;
-  top: -3px;
+  top: 7px;
   font-size: 12px;
   color: #808080;
 }
@@ -160,7 +160,7 @@ ul.pagination .item-info {
   background-color: #00bcd4;
 }
 .fcbkGrid{
-  margin-top: 20px;
+  /*margin-top: 20px;*/
 }
 .item-postagem a.btn-info{
   border: solid 1px;

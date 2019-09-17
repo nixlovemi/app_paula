@@ -75,14 +75,12 @@ if(!$carregaMais){
               <div style="margin-right:10px;" class="profile-photo-small pull-left">
                 <img src="<?= base_url() . $foto ?>" alt="Circle Image" class="rounded-circle img-fluid" />
               </div>
-              <span class="titulo">
-                <?=$titulo?>
-              </span>
-              <br />
               <?php
               $iconPrivada = ($ehPrivada) ? '<i class="material-icons icon-postagem-privada">visibility_off</i>': '';
               ?>
-              <span title="<?=$strDataF?>" class="autor"><?=$pessoa?> | <?=$strData?> &nbsp; <?=$iconPrivada?></span>
+              <span title="<?=$strDataF?>" class="autor">
+                <strong><?=$pessoa?></strong> | <?=$strData?> &nbsp; <?=$iconPrivada?>
+              </span>
               
               <div class="mais_info_post">
                 <ul>
