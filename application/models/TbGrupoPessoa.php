@@ -451,11 +451,10 @@ function pegaProgressoGrp($grp_id)
   $difObjetivo        = ($primPeso - $objetivoPeso);
   $difAtual           = $pesoAtual - $objetivoPeso;
   if($difObjetivo > 0){
-    $progresso        = $difAtual / $difObjetivo * 100;
+    $progresso        = ($primPeso - $pesoAtual) / $difObjetivo * 100;
   } else {
     $progresso        = 0;
   }
-  
 
   $arrRet["peso_primeiro"] = $primPeso;
   $arrRet["peso_objetivo"] = $objetivoPeso;
