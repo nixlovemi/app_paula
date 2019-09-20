@@ -68,11 +68,6 @@ function preConfereArquivos($vFiles, $grtId)
       $nomeNovo         = sanitize_file_name($nomeOriginal);
       $caminhoNovo      = PASTA_UPLOAD . $grtId . "/" . $nomeNovo;
 
-      /*$myfile = fopen("log.txt", "w") or die("Unable to open file!");
-      $txt = "$extensaoArquivo | $nomeNovo | $caminhoNovo\n";
-      fwrite($myfile, $txt);
-      fclose($myfile);*/
-
       if(!$vOrigemApp){
         $ret = move_uploaded_file($pathTemporario, $caminhoNovo);
       } else {
