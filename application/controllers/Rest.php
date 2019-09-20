@@ -314,4 +314,27 @@ class Rest extends CI_Controller
 
     printaRetornoRest($arrRet);
   }
+
+  public function postDeletaPostagem()
+  {
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+
+    $variaveisPost = proccessPostRest();
+    $vGrtId        = $variaveisPost->id ?? "";
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    $retDel = deletaGrupoTimeline($vGrtId);
+
+    if($retDel["erro"]){
+        $arrRet["msg"]  = $retDel["msg"];
+        $arrRet["erro"] = true;
+    } else {
+        $arrRet["msg"]  = $retDel["msg"];
+        $arrRet["erro"] = false;
+    }
+
+    echo json_encode($arrRet);
+  }
 }
