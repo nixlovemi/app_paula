@@ -42,9 +42,11 @@ function preConfereArquivos($vFiles, $grtId)
 
   // @todo talvez fazer a validacao dos tipos de arquivo aqui tb (pode vir links tbm)
   $qtItens = count($vFiles["arquivos"]["name"]);
+
   for($i=0; $i<$qtItens; $i++){
     $nomeOriginal     = $vFiles["arquivos"]["name"][$i] ?? "";
     $pathTemporario   = $vFiles["arquivos"]["tmp_name"][$i] ?? "";
+    $vOrigemApp       = $vFiles["arquivos"]["app"][$i] ?? false;
     #$tipoArquivo      = $vFiles["arquivos"]["type"][$i];
     #$tamanhoKbArquivo = $vFiles["arquivos"]["size"][$i] / 1000;
 
@@ -66,7 +68,17 @@ function preConfereArquivos($vFiles, $grtId)
       $nomeNovo         = sanitize_file_name($nomeOriginal);
       $caminhoNovo      = PASTA_UPLOAD . $grtId . "/" . $nomeNovo;
 
-      $ret = move_uploaded_file($pathTemporario, $caminhoNovo);
+      /*$myfile = fopen("log.txt", "w") or die("Unable to open file!");
+      $txt = "$extensaoArquivo | $nomeNovo | $caminhoNovo\n";
+      fwrite($myfile, $txt);
+      fclose($myfile);*/
+
+      if(!$vOrigemApp){
+        $ret = move_uploaded_file($pathTemporario, $caminhoNovo);
+      } else {
+        $ret = rename($pathTemporario, $caminhoNovo);
+      }
+
       if($ret){
         if($extensaoArquivo == "jpg"){
           compressImage($caminhoNovo);

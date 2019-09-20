@@ -202,7 +202,7 @@ class Rest extends CI_Controller
       }
     }
 
-    echo json_encode($arrRet);
+    printaRetornoRest($arrRet);
   }
 
   public function deletaComentario()
@@ -235,6 +235,83 @@ class Rest extends CI_Controller
       }
     }
 
-    echo json_encode($arrRet);
+    printaRetornoRest($arrRet);
+  }
+
+  public function postNovoTimelineGrupo()
+  {
+    # nao vou usar por causa do FILE
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+    $variaveisPost  = proccessPostRest();
+
+    $descricao      = $variaveisPost->descricao ?? "";
+    $programar      = $variaveisPost->programar ?? NULL;
+    $publico        = (isset($variaveisPost->publico) && $variaveisPost->publico) ? 1 : 0;
+    $vGrpId         = $variaveisPost->grpLogado ?? NULL;
+    $vImagens       = $variaveisPost->imagens ?? array();
+
+    // preenche os dados
+    $GrupoTimeline = [];
+    $GrupoTimeline["grt_data"]          = date("Y-m-d H:i:s");
+    $GrupoTimeline["grt_dt_programado"] = ($programar != NULL) ? acerta_data_hora($programar): NULL;
+    $GrupoTimeline["grt_texto"]         = $descricao;
+    $GrupoTimeline["grt_publico"]       = (int) $publico;
+    $GrupoTimeline["grt_grp_id"]        = $vGrpId;
+
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGP       = pegaGrupoPessoa($vGrpId);
+    $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"] : array();
+    $vGruId      = $GrupoPessoa["grp_gru_id"] ?? NULL;
+
+    $GrupoTimeline["grt_gru_id"] = $vGruId;
+    // =================
+
+    require_once(APPPATH."/models/TbGrupoTimeline.php");
+    $retInserir = insereGrupoTimeline($GrupoTimeline);
+    if ($retInserir["erro"]) {
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $retInserir["msg"];
+    } else {
+      $grtId         = $retInserir["grtId"] ?? "";
+      $arrRet["msg"] = $retInserir["msg"];
+
+      $vFiles                         = [];
+      $vFiles["arquivos"]             = [];
+      $vFiles["arquivos"]["name"]     = [];
+      $vFiles["arquivos"]["tmp_name"] = [];
+      $vFiles["arquivos"]["app"]      = [];
+      
+      $i       = 1;
+      $idxFile = 0;
+      foreach($vImagens as $base64Img){
+        // $baseFromJavascript = "data:image/png;base64,BBBFBfj42Pj4";
+
+        // remove the part that we don't need from the provided image and decode it
+        $data     = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Img));
+        $filename = "img-id$grtId-$i.jpg";
+        $filepath = APPPATH . "cache/$filename";
+
+        // Save the image in a defined path
+        file_put_contents($filepath,$data);
+        $i++;
+
+        $vFiles["arquivos"]["name"][$idxFile]     = $filename;
+        $vFiles["arquivos"]["tmp_name"][$idxFile] = $filepath;
+        $vFiles["arquivos"]["app"][$idxFile]      = true;
+        $idxFile++;
+      }
+
+      if (count($vFiles) > 0) {
+        require_once(APPPATH."/models/TbGrupoTimelineArquivos.php");
+        $arrFiles = preConfereArquivos($vFiles, $grtId);
+
+        $retGTA   = insereArquivos($grtId, $arrFiles["arquivos"] ?? array());
+        // @todo talvez tratar o retorno
+      }
+    }
+
+    printaRetornoRest($arrRet);
   }
 }
