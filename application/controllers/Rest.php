@@ -337,4 +337,33 @@ class Rest extends CI_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function postFavoritarPostagem()
+  {
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+
+    $variaveisPost      = proccessPostRest();
+    $vGrtId             = $variaveisPost->id ?? "";
+    $vGrpId             = $variaveisPost->grpLogado ?? "";
+    $_SESSION["grp_id"] = $vGrpId;
+
+    $GrupoTimelineSalvo = [];
+    $GrupoTimelineSalvo["gts_grt_id"] = $vGrtId;
+    $GrupoTimelineSalvo["gts_grp_id"] = $vGrpId;
+
+    require_once(APPPATH . "/models/TbGrupoTimelineSalvo.php");
+    $retAdd = insereGrupoTimelineSalvo($GrupoTimelineSalvo);
+
+    if ($retAdd["erro"]) {
+      $arrRet["msg"]  = $retAdd["msg"];
+      $arrRet["erro"] = true;
+    } else {
+      $arrRet["msg"]  = $retAdd["msg"];
+      $arrRet["erro"] = false;
+    }
+
+    echo json_encode($arrRet);
+  }
 }
