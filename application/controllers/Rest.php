@@ -366,4 +366,37 @@ class Rest extends CI_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function postAvaliarPostagem()
+  {
+    $arrRet = [];
+    $arrRet["erro"]      = false;
+    $arrRet["msg"]       = "";
+    $arrRet["avaliacao"] = NULL;
+
+    $variaveisPost = proccessPostRest();
+    $vGrtId        = $variaveisPost->id ?? "";
+    $vAvaliacao    = $variaveisPost->avaliacao ?? NULL;
+
+    //@todo validar se pode avaliar esse grt_id
+    require_once(APPPATH . '/models/TbGrupoTimeline.php');
+    $retGRT = pegaGrupoTimeline($vGrtId, true);
+    if($retGRT["erro"]){
+      $arrRet["msg"] = $retGRT["msg"];
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"] = "warning";
+    } else {
+      $GrupoTimeline = $retGRT["GrupoTimeline"] ?? array();
+      $avaliacao     = ($vAvaliacao != "" && $vAvaliacao != NULL) ? $vAvaliacao: NULL;
+      $retAvalia = avaliaGrupoTimeline($GrupoTimeline, $avaliacao);
+      if($retAvalia["erro"]){
+        $arrRet["msg"]  = $retAvalia["msg"];
+        $arrRet["erro"] = true;
+      } else {
+        $arrRet["avaliacao"] = $avaliacao;
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }
