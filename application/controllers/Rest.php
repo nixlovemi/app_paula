@@ -231,7 +231,7 @@ class Rest extends CI_Controller
       $retHtmlPost = pegaRespostasGrupoTimeline($arrPostagens);
       if(!$retHtmlPost["erro"]){
         $arrRespostas          = $retHtmlPost["respostas"];
-        $arrRet["Comentarios"] = $arrRespostas[$vGrtIdPai];
+        $arrRet["Comentarios"] = $arrRespostas[$vGrtIdPai] ?? array();
       }
     }
 
@@ -397,6 +397,39 @@ class Rest extends CI_Controller
       }
     }
 
+    echo json_encode($arrRet);
+  }
+
+  public function meuPerfil()
+  {
+    $arrRet = [];
+    $arrRet["erro"]      = false;
+    $arrRet["msg"]       = "";
+    $arrRet["medidas"]   = [];
+    $arrRet["progresso"] = [];
+    $arrRet["imc"]       = [];
+    $arrRet["calc_agua"] = [];
+
+    $variaveisPost = proccessPostRest();
+    $grpId         = $variaveisPost->grp_id;
+
+    // info dos lancamentos
+    require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
+    $retGPI = pegaGrupoPessoaInfo($grpId);
+    $GrupoPessoaInfo    = $retGPI["GrupoPessoaInfo"] ?? array();
+    $retGrp             = agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo);
+    $GrupoPessoaInfoGrp = $retGrp["GrupoPessoaInfoGrp"] ?? array();
+    $arrRet["medidas"]  = $GrupoPessoaInfoGrp;
+    
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retProgresso = pegaProgressoGrp($grpId);
+    $arrRet["progresso"] = $retProgresso;
+    
+    $alturaAtual         = $arrRet["medidas"]["altura"];
+    $pesoAtual           = $arrRet["progresso"]["peso_atual"];
+    $arrRet["imc"]       = calcula_imc($alturaAtual, $pesoAtual);
+    $arrRet["calc_agua"] = calcula_agua_dia($pesoAtual);
+    
     echo json_encode($arrRet);
   }
 }

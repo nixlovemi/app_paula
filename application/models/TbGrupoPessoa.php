@@ -26,7 +26,7 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
 
   $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_usu_id, grp_ativo";
   if(!$apenasCamposTabela){
-    $camposTabela .= ", ativo, gru_usu_id, gru_descricao, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
+    $camposTabela .= ", ativo, gru_usu_id, gru_descricao, gru_dt_inicio, gru_dt_termino, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
   }
 
   $CI->db->select($camposTabela);
@@ -53,14 +53,16 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $Grupo["grp_usu_id"]      = $row->grp_usu_id;
   $Grupo["grp_ativo"]       = $row->grp_ativo;
   if(!$apenasCamposTabela){
-    $Grupo["ativo"]         = $row->ativo;
-    $Grupo["gru_usu_id"]    = $row->gru_usu_id;
-    $Grupo["gru_descricao"] = $row->gru_descricao;
-    $Grupo["pes_nome"]      = $row->pes_nome;
-    $Grupo["pes_email"]     = $row->pes_email;
-    $Grupo["pes_foto"]      = $row->pes_foto;
-    $Grupo["pet_descricao"] = $row->pet_descricao;
-    $Grupo["pet_cliente"]   = $row->pet_cliente;
+    $Grupo["ativo"]          = $row->ativo;
+    $Grupo["gru_usu_id"]     = $row->gru_usu_id;
+    $Grupo["gru_descricao"]  = $row->gru_descricao;
+    $Grupo["gru_dt_inicio"]  = $row->gru_dt_inicio;
+    $Grupo["gru_dt_termino"] = $row->gru_dt_termino;
+    $Grupo["pes_nome"]       = $row->pes_nome;
+    $Grupo["pes_email"]      = $row->pes_email;
+    $Grupo["pes_foto"]       = $row->pes_foto;
+    $Grupo["pet_descricao"]  = $row->pet_descricao;
+    $Grupo["pet_cliente"]    = $row->pet_cliente;
   }
 
   $arrRetorno["msg"]         = "Participante do grupo encontrado com sucesso!";
