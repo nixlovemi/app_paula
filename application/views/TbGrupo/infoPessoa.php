@@ -24,7 +24,7 @@ $infoInicial = $GrupoPessoaInfoGrp["primeira"] ?? array();
 $infoDemais  = $GrupoPessoaInfoGrp["demais"] ?? array();
 $infoAltura  = $GrupoPessoaInfoGrp["altura"] ?? NULL;
 $infoPeso    = $GrupoPessoaInfoGrp["peso"] ?? NULL;
-$infoDif     = $infoInicial["gpi_peso"] - $infoInicial["gpi_peso_objetivo"];
+$infoDif     = (isset($infoInicial["gpi_peso"]) && isset($infoInicial["gpi_peso_objetivo"])) ? $infoInicial["gpi_peso"] - $infoInicial["gpi_peso_objetivo"]: "";
 $arrIMC      = calcula_imc($infoAltura, $infoPeso);
 $vImc        = $arrIMC["imc"] ?? NULL;
 $vImcResult  = $arrIMC["resultado"] ?? "";
@@ -71,7 +71,7 @@ foreach($arrLoop as $info){
 }
 
 // @todo esse calculo tem no metodo pegaProgressoGrp
-$pesoDifAtual = ($infoInicial["gpi_peso"] - $infoPeso);
+$pesoDifAtual = (isset($infoInicial["gpi_peso"])) ? ($infoInicial["gpi_peso"] - $infoPeso): 0;
 $difAtual     = ($strPesoObj != "") ? number_format($pesoDifAtual / $infoDif * 100, 3, ",", "."): "?";
 // =======================================
 ?>

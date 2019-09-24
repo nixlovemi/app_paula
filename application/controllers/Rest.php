@@ -432,4 +432,51 @@ class Rest extends CI_Controller
     
     echo json_encode($arrRet);
   }
+
+  public function postAddGpi()
+  {
+    $arrRet         = [];
+    $arrRet["msg"]  = "";
+    $arrRet["erro"] = false;
+    $variaveisPost  = proccessPostRest();
+
+    $vData     = $variaveisPost->data ?? "";
+    $vAltura   = $variaveisPost->altura_cm ?? NULL;
+    $vPeso     = $variaveisPost->peso_kg ?? "";
+    $vPesoObj  = $variaveisPost->peso_kg_obj ?? NULL;
+    $vPrimeira = $variaveisPost->primeira ?? true;
+    $vPesId    = $variaveisPost->pessoa ?? "";
+    $vGruId    = $variaveisPost->grupo ?? "";
+
+    // valida grupo pessoa
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retGP = pegaGrupoPessoaPesGru($vPesId, $vGruId);
+    if($retGP["erro"]){
+      $arrRet["msg"]  = $retGP["msg"];
+      $arrRet["erro"] = true;
+    } else {
+      $GrupoPessoa = $retGP["GrupoPessoa"] ?? array();
+      $vGrpId      = $GrupoPessoa["grp_id"] ?? "";
+
+      $GrupoPessoaInfo = [];
+      $GrupoPessoaInfo["gpi_grp_id"]        = $vGrpId;
+      $GrupoPessoaInfo["gpi_data"]          = $vData;
+      $GrupoPessoaInfo["gpi_altura"]        = $vAltura;
+      $GrupoPessoaInfo["gpi_peso"]          = $vPeso;
+      $GrupoPessoaInfo["gpi_peso_objetivo"] = $vPesoObj;
+      $GrupoPessoaInfo["gpi_inicial"]       = (int)$vPrimeira;
+
+      require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
+      $ret = insereGrupoPessoaInfo($GrupoPessoaInfo);
+      if($ret["erro"]){
+        $arrRet["msg"]  = $ret["msg"];
+        $arrRet["erro"] = true;
+      } else {
+        $arrRet["msg"]  = $ret["msg"];
+        $arrRet["erro"] = false;
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }
