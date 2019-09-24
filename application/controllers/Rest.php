@@ -335,7 +335,7 @@ class Rest extends CI_Controller
         $arrRet["erro"] = false;
     }
 
-    echo json_encode($arrRet);
+    printaRetornoRest($arrRet);
   }
 
   public function postFavoritarPostagem()
@@ -364,7 +364,7 @@ class Rest extends CI_Controller
       $arrRet["erro"] = false;
     }
 
-    echo json_encode($arrRet);
+    printaRetornoRest($arrRet);
   }
 
   public function postAvaliarPostagem()
@@ -397,7 +397,7 @@ class Rest extends CI_Controller
       }
     }
 
-    echo json_encode($arrRet);
+    printaRetornoRest($arrRet);
   }
 
   public function meuPerfil()
@@ -430,7 +430,7 @@ class Rest extends CI_Controller
     $arrRet["imc"]       = calcula_imc($alturaAtual, $pesoAtual);
     $arrRet["calc_agua"] = calcula_agua_dia($pesoAtual);
     
-    echo json_encode($arrRet);
+    printaRetornoRest($arrRet);
   }
 
   public function postAddGpi()
@@ -477,6 +477,32 @@ class Rest extends CI_Controller
       }
     }
 
-    echo json_encode($arrRet);
+    printaRetornoRest($arrRet);
+  }
+
+  public function pegaProgresso()
+  {
+    $arrRet = [];
+    $arrRet["erro"]            = false;
+    $arrRet["msg"]             = "";
+    $arrRet["Progresso"]       = [];
+    $arrRet["Progresso_Grupo"] = [];
+    $variaveisPost             = proccessPostRest();
+    $grpId                     = $variaveisPost->grp_id;
+    $gruId                     = $variaveisPost->gru_id;
+
+    require_once(APPPATH."/models/TbGrupoPessoa.php");
+    $retProgresso        = pegaProgressoGrp($grpId);
+    $arrRet["Progresso"] = $retProgresso;
+    
+    require_once(APPPATH."/models/TbGrupo.php");
+    $retGrupo                  = pegaInfoTempoGrupo($gruId);
+    $arrRet["Progresso_Grupo"] = array(
+      "diasGrupo"      => $retGrupo["diasGrupo"] ?? 0,
+      "totalDiasGrupo" => $retGrupo["totalDiasGrupo"] ?? 0,
+      "percGrupo"      => $retGrupo["percGrupo"] ?? 0,
+    );
+
+    printaRetornoRest($arrRet);
   }
 }
