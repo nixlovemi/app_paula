@@ -319,6 +319,7 @@ class Json extends CI_Controller
     $UsuarioLog = $_SESSION["usuario_info"] ?? array();
     $ehCliente  = $UsuarioLog->cliente > 0;
     $prefix     = ($ehCliente) ? "pes": "usu";
+    $rand       = date("YmdHis");
 
     # fazer o upload, carregar nova janela e "ligar" o plugin
     if(!isset($_FILES["file"])){
@@ -343,7 +344,7 @@ class Json extends CI_Controller
       } else {
         $usuLogado = pegaUsuarioLogadoId();
         $ext       = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $caminho   = FCPATH."assets/cache/temp-foto-perfil-$prefix-$usuLogado.$ext";
+        $caminho   = FCPATH."assets/cache/temp-foto-perfil-$prefix-$usuLogado-$rand.$ext";
 
         $ret = move_uploaded_file($_FILES['file']['tmp_name'], $caminho);
         if(!$ret){

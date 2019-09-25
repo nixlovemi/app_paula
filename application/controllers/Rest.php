@@ -505,4 +505,47 @@ class Rest extends CI_Controller
 
     printaRetornoRest($arrRet);
   }
+
+  public function atualizaFotoPerfil()
+  {
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+    $arrRet["foto"] = "";
+
+    $variaveisPost = proccessPostRest();
+    $pesId         = $variaveisPost->pes_id;
+    $foto64        = $variaveisPost->foto;
+
+    // tenta salvar a img
+    $data     = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $foto64));
+    $rand     = date("YmdHis");
+    $filename = "temp-foto-perfil-pes-$pesId-$rand.jpg";
+    $novoPath = FCPATH . "template/assets/img/pessoas/$filename";
+    @unlink($novoPath);
+    $retImg   = file_put_contents($novoPath, $data);
+    // ==================
+
+    if(!$retImg){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao salvar a foto. Tente novamente mais tarde!";
+    } else {
+      $caminhoFoto = str_replace(FCPATH, "", $novoPath);
+      
+      require_once(APPPATH."/models/TbPessoa.php");
+      $ret                = pegaPessoa($pesId);
+      $Pessoa             = ($ret["erro"]) ? array(): $ret["Pessoa"];
+      $Pessoa["pes_foto"] = $caminhoFoto;
+      $retEditar          = editaPessoa($Pessoa, false);
+
+      if($retEditar["erro"]){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = $retEditar["msg"];
+      } else {
+        $arrRet["foto"] = $caminhoFoto;
+      }
+    }
+
+    printaRetornoRest($arrRet);
+  }
 }
