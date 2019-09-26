@@ -415,6 +415,9 @@ function pegaInfoTempoGrupo($gruId)
   require_once(APPPATH.'/helpers/utils_helper.php');
   $hj = date("Y-m-d");
   $arrRetorno["diasGrupo"]      = diferenca_dias_datas($row->gru_dt_inicio, $hj);
+  if($arrRetorno["diasGrupo"] === false){
+    $arrRetorno["diasGrupo"] = 1;
+  }
   $arrRetorno["totalDiasGrupo"] = diferenca_dias_datas($row->gru_dt_inicio, $row->gru_dt_termino);
   if($arrRetorno["diasGrupo"] >= 0 && $arrRetorno["totalDiasGrupo"] > 0){
     $arrRetorno["percGrupo"]    = ($arrRetorno["diasGrupo"] / $arrRetorno["totalDiasGrupo"]) * 100;

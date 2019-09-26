@@ -801,14 +801,21 @@ function fncShowAlterarFotoPerfil(html)
 function fncShowAlterarFotoPerfilCrop(html)
 {
   setTimeout(function(){
+    var imgW = $('.imagem-perfil-crop #img-foto-perfil-crop').width();
+    var imgH = $('.imagem-perfil-crop #img-foto-perfil-crop').height();
+    
     V_CROPPIE = $('#img-foto-perfil-crop').croppie({
       viewport: {
         width: 300,
         height: 300
       },
+      boundary: {
+        width: imgW,
+        height: imgH
+      },
       mouseWheelZoom: false,
     });
-  }, 400);
+  }, 500);
   
   Swal.fire({
     html: html,
