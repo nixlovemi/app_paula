@@ -1,15 +1,15 @@
 <?php
-$UsuarioCfgTipo = $UsuarioCfgTipo ?? array();
-$uctId          = $UsuarioCfgTipo["uct_id"] ?? "";
-$uctDescricao   = $UsuarioCfgTipo["uct_descricao"] ?? "";
-$uctAtivo       = $UsuarioCfgTipo["uct_ativo"] ?? "";
+$PessoaCfgTipo = $PessoaCfgTipo ?? array();
+$pctId          = $PessoaCfgTipo["pct_id"] ?? "";
+$pctDescricao   = $PessoaCfgTipo["pct_descricao"] ?? "";
+$pctAtivo       = $PessoaCfgTipo["pct_ativo"] ?? "";
 
 $arrAtivo       = array(
   "0" => "Ativo: Não",
   "1" => "Ativo: Sim",
 );
 ?>
-<form method="post" action="<?php echo base_url() ?>UsuarioCfgTipo/postEditar">
+<form method="post" action="<?php echo base_url() ?>PessoaCfgTipo/postEditar">
   <div class="row">
     <div class="col-md-12">
       <div class="card">
@@ -22,13 +22,13 @@ $arrAtivo       = array(
             <div class="col-md-2">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">ID</label>
-                <input readonly="" maxlength="80" name="id" type="text" class="form-control" value="<?php echo $uctId; ?>" />
+                <input readonly="" maxlength="80" name="id" type="text" class="form-control" value="<?php echo $pctId; ?>" />
               </div>
             </div>
             <div class="col-md-8">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Descrição</label>
-                <input maxlength="80" name="descricao" type="text" class="form-control" value="<?php echo $uctDescricao; ?>" />
+                <input maxlength="80" name="descricao" type="text" class="form-control" value="<?php echo $pctDescricao; ?>" />
               </div>
             </div>
             <div class="col-md-2">
@@ -36,7 +36,7 @@ $arrAtivo       = array(
                 <select name="ativo" class="form-control" size="">
                   <?php
                   foreach($arrAtivo as $id => $text){
-                    $selected = ($id == $uctAtivo) ? "selected": "";
+                    $selected = ($id == $pctAtivo) ? "selected": "";
                     echo "<option value='$id' $selected>$text</option>";
                   }
                   ?>
@@ -49,7 +49,7 @@ $arrAtivo       = array(
     </div>
   </div>
 
-  <a href="<?php echo base_url() ?>UsuarioCfgTipo" class="btn btn-default pull-right">
+  <a href="<?php echo base_url() ?>PessoaCfgTipo" class="btn btn-default pull-right">
     Voltar
     <div class="ripple-container"></div>
   </a>

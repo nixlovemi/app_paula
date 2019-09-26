@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class UsuarioCfg extends MY_Controller
+class PessoaCfg extends MY_Controller
 {
   public function __construct()
   {

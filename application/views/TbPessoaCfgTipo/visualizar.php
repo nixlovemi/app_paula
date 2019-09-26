@@ -1,12 +1,12 @@
 <?php
-$UsuarioCfgTipo = $UsuarioCfgTipo ?? array();
-$uctId          = $UsuarioCfgTipo["uct_id"] ?? "";
-$uctDescricao   = $UsuarioCfgTipo["uct_descricao"] ?? "";
-$uctAtivo       = $UsuarioCfgTipo["uct_ativo"] ?? "";
+$PessoaCfgTipo = $PessoaCfgTipo ?? array();
+$pctId         = $PessoaCfgTipo["pct_id"] ?? "";
+$pctDescricao  = $PessoaCfgTipo["pct_descricao"] ?? "";
+$pctAtivo      = $PessoaCfgTipo["pct_ativo"] ?? "";
 
 $strAtivo       = "";
-if($uctAtivo != ""){
-  $strAtivo = ($uctAtivo == 0) ? "Não": "Sim";
+if($pctAtivo != ""){
+  $strAtivo = ($pctAtivo == 0) ? "Não": "Sim";
 }
 ?>
 <form>
@@ -22,13 +22,13 @@ if($uctAtivo != ""){
             <div class="col-md-2">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">ID</label>
-                <input readonly="" maxlength="80" name="id" type="text" class="form-control" value="<?php echo $uctId; ?>" />
+                <input readonly="" maxlength="80" name="id" type="text" class="form-control" value="<?php echo $pctId; ?>" />
               </div>
             </div>
             <div class="col-md-8">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Descrição</label>
-                <input readonly="" maxlength="80" name="descricao" type="text" class="form-control" value="<?php echo $uctDescricao; ?>" />
+                <input readonly="" maxlength="80" name="descricao" type="text" class="form-control" value="<?php echo $pctDescricao; ?>" />
               </div>
             </div>
             <div class="col-md-2">
@@ -53,7 +53,7 @@ if($uctAtivo != ""){
     </div>
   </div>
 
-  <a href="<?php echo base_url() ?>UsuarioCfgTipo" class="btn btn-default pull-right">
+  <a href="<?php echo base_url() ?>PessoaCfgTipo" class="btn btn-default pull-right">
     &#60; Voltar
     <div class="ripple-container"></div>
   </a>

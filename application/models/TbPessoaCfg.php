@@ -1,20 +1,20 @@
 <?php
-function validaInsereUsuarioCfg($UsuarioCfg)
+function validaInserePessoaCfg($PessoaCfg)
 {
   $strValida = "";
 
   // validacao basica dos campos
-  $vUsuId = $UsuarioCfg["usc_usu_id"] ?? "";
-  if(!is_numeric($vUsuId)){
-    $strValida .= "<br />&nbsp;&nbsp;* Informe um usuário válido.";
+  $vPesId = $PessoaCfg["psc_pes_id"] ?? "";
+  if(!is_numeric($vPesId)){
+    $strValida .= "<br />&nbsp;&nbsp;* Informe uma pessoa válida.";
   }
 
-  $vUctId = $UsuarioCfg["usc_uct_id"] ?? "";
+  $vUctId = $PessoaCfg["psc_uct_id"] ?? "";
   if(!is_numeric($vUctId)){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma configuração válida.";
   }
 
-  $vValor = $UsuarioCfg["usc_valor"] ?? "";
+  $vValor = $PessoaCfg["psc_valor"] ?? "";
   if(strlen(trim($vValor)) <= 0){
     $strValida .= "<br />&nbsp;&nbsp;* Informe um valor válido.";
   }
@@ -25,14 +25,14 @@ function validaInsereUsuarioCfg($UsuarioCfg)
   $CI->load->database();
 
   $CI->db->select('COUNT(*) AS cnt');
-  $CI->db->from('tb_usuario_cfg');
-  $CI->db->where('usc_usu_id =', $vUsuId);
-  $CI->db->where('usc_uct_id =', $vUctId);
+  $CI->db->from('tb_pessoa_cfg');
+  $CI->db->where('psc_pes_id =', $vPesId);
+  $CI->db->where('psc_uct_id =', $vUctId);
 
   $query = $CI->db->get();
   $row   = $query->row();
   if (!isset($row) || $row->cnt > 0) {
-    $strValida .= "<br />&nbsp;&nbsp;* Você já tem essa configuração para esse usuário.";
+    $strValida .= "<br />&nbsp;&nbsp;* Você já tem essa configuração para essa pessoa.";
   }
   // ======================
 
@@ -43,13 +43,13 @@ function validaInsereUsuarioCfg($UsuarioCfg)
   return $strValida;
 }
 
-function insereUsuarioCfg($UsuarioCfg)
+function insereUsuarioCfg($PessoaCfg)
 {
   $arrRetorno         = [];
   $arrRetorno["erro"] = false;
   $arrRetorno["msg"]  = "";
 
-  $strValida = validaInsereUsuarioCfg($UsuarioCfg);
+  $strValida = validaInserePessoaCfg($PessoaCfg);
   if($strValida != ""){
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = $strValida;
@@ -57,101 +57,99 @@ function insereUsuarioCfg($UsuarioCfg)
     return $arrRetorno;
   }
 
-  $vUsuId = $UsuarioCfg["usc_usu_id"] ?? "";
-  $vUctId = $UsuarioCfg["usc_uct_id"] ?? "";
-  $vValor = $UsuarioCfg["usc_valor"] ?? "";
+  $vUsuId = $PessoaCfg["psc_pes_id"] ?? "";
+  $vUctId = $PessoaCfg["psc_uct_id"] ?? "";
+  $vValor = $PessoaCfg["psc_valor"] ?? "";
 
   $CI = pega_instancia();
   $CI->load->database();
 
   $data = array(
-    "usc_usu_id" => $vUsuId,
-    "usc_uct_id" => $vUctId,
-    "usc_valor"  => $vValor,
+    "psc_pes_id" => $vUsuId,
+    "psc_uct_id" => $vUctId,
+    "psc_valor"  => $vValor,
   );
-  $ret = $CI->db->insert('tb_usuario_cfg', $data);
+  $ret = $CI->db->insert('tb_pessoa_cfg', $data);
 
   if(!$ret){
     $error = $CI->db->error();
 
     $arrRetorno["erro"] = true;
-    $arrRetorno["msg"]  = "Erro ao inserir Configuração do Usuário. Mensagem: " . $error["message"];
+    $arrRetorno["msg"]  = "Erro ao inserir Configuração da Pessoa. Mensagem: " . $error["message"];
   } else {
     $arrRetorno["erro"] = false;
-    $arrRetorno["msg"]  = "Configuração do Usuário inserida com sucesso.";
+    $arrRetorno["msg"]  = "Configuração da Pessoa inserida com sucesso.";
   }
 
   return $arrRetorno;
 }
 
-function deletaUsuarioCfg($uscId)
+function deletaPessoaCfg($pscId)
 {
   $arrRetorno         = [];
   $arrRetorno["erro"] = false;
   $arrRetorno["msg"]  = "";
 
-  if(!is_numeric($uscId)){
+  if(!is_numeric($pscId)){
     $arrRetorno["erro"] = true;
-    $arrRetorno["msg"]  = "ID inválido para excluir Configuração de Usuário!";
+    $arrRetorno["msg"]  = "ID inválido para excluir Configuração da Pessoa!";
   } else {
     $CI = pega_instancia();
     $CI->load->database();
 
-    $CI->db->where('usc_id', $uscId);
-    $CI->db->delete('tb_usuario_cfg');
+    $CI->db->where('usc_id', $pscId);
+    $CI->db->delete('tb_pessoa_cfg');
 
     if($CI->db->affected_rows() <= 0){
       $arrRetorno["erro"] = true;
-      $arrRetorno["msg"]  = "Erro ao excluir essa Configuração de Usuário!";
+      $arrRetorno["msg"]  = "Erro ao excluir essa Configuração da Pessoa!";
     } else {
       $arrRetorno["erro"] = false;
-      $arrRetorno["msg"]  = "Configuração de Usuário excluída com sucesso!";
+      $arrRetorno["msg"]  = "Configuração da Pessoa excluída com sucesso!";
     }
   }
 
   return $arrRetorno;
 }
 
-function pegaListaUsuarioCfg($usuario="", $detalhes=false, $edicao=false, $exclusao=false)
+function pegaListaPessoaCfg($pessoa="", $detalhes=false, $edicao=false, $exclusao=false)
 {
   $CI = pega_instancia();
   $CI->load->database();
 
-  # usc_id
-
   require_once(FCPATH."/assets/Lista_CI/Lista_CI.php");
   $Lista_CI = new Lista_CII($CI->db);
-  $Lista_CI->setId("ListaUsuarioCfg");
-  $Lista_CI->addField("usu_nome AS \"Usuário\"", "L");
-  $Lista_CI->addField("uct_descricao AS \"Configuração\"", "L");
-  $Lista_CI->addField("usc_valor AS \"Valor\"");
+  $Lista_CI->setId("ListaPessoaCfg");
+  $Lista_CI->addField("pes_nome AS \"Pessoa\"", "L");
+  $Lista_CI->addField("pct_descricao AS \"Configuração\"", "L");
+  $Lista_CI->addField("psc_valor AS \"Valor\"");
   if($detalhes){
   }
   if($edicao){
   }
   if($exclusao){
-    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''ListaUsuarioCfg'', ''UsuarioCfg'', ''jsonDelete'', ''id={usc_id}'')\"><i class=\"material-icons text-info\">delete</i></a>', '{usc_id}', usc_id) AS \"Excluir\" ", "C", "3%");
+    $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"confirm_delete(''ListaPessoaCfg'', ''PessoaCfg'', ''jsonDelete'', ''id={psc_id}'')\"><i class=\"material-icons text-info\">delete</i></a>', '{psc_id}', psc_id) AS \"Excluir\" ", "C", "3%");
   }
-  $Lista_CI->addFrom("v_tb_usuario_cfg");
-  if(is_numeric($usuario) && $usuario > 0){
-    $Lista_CI->addWhere("usc_usu_id = $usuario");
+  $Lista_CI->addFrom("v_tb_pessoa_cfg");
+  if(is_numeric($pessoa) && $pessoa > 0){
+    $Lista_CI->addWhere("psc_pes_id = $pessoa");
   }
   $Lista_CI->changeOrderCol(2);
 
-  $Lista_CI->addFilter("usu_nome", "Usuário");
+  $Lista_CI->addFilter("pes_nome", "Pessoa");
   $Lista_CI->addFilter("uct_descricao", "Configuração");
 
   return $Lista_CI->getHtml();
 }
 
-function pegaMaximoUsuarios($usuId)
+function pegaMaximoUsuarios($pesId)
 {
   $arrRetorno          = [];
   $arrRetorno["erro"]  = false;
   $arrRetorno["msg"]   = "";
   $arrRetorno["valor"] = "";
 
-  if(!is_numeric($usuId)){
+  if(!is_numeric($pesId)){
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = "ID inválido para buscar informação 'Máximo Usuários'!";
 
@@ -161,10 +159,10 @@ function pegaMaximoUsuarios($usuId)
   $CI = pega_instancia();
   $CI->load->database();
 
-  $CI->db->select('usc_valor');
-  $CI->db->from('tb_usuario_cfg');
-  $CI->db->where('usc_usu_id =', $usuId);
-  $CI->db->where('usc_uct_id =', 2);
+  $CI->db->select('psc_valor');
+  $CI->db->from('tb_pessoa_cfg');
+  $CI->db->where('psc_pes_id =', $pesId);
+  $CI->db->where('psc_uct_id =', 2);
 
   $query = $CI->db->get();
   $row   = $query->row();
@@ -177,18 +175,18 @@ function pegaMaximoUsuarios($usuId)
   }
 
   $arrRetorno["msg"]   = "'Máximo Usuários' encontrado com sucesso!";
-  $arrRetorno["valor"] = (int) $row->usc_valor;
+  $arrRetorno["valor"] = (int) $row->psc_valor;
   return $arrRetorno;
 }
 
-function pegaCfgValidade($usuId)
+function pegaCfgValidade($pesId)
 {
   $arrRetorno          = [];
   $arrRetorno["erro"]  = false;
   $arrRetorno["msg"]   = "";
   $arrRetorno["valor"] = "";
 
-  if(!is_numeric($usuId)){
+  if(!is_numeric($pesId)){
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = "ID inválido para buscar informação 'Validade'!";
 
@@ -198,10 +196,10 @@ function pegaCfgValidade($usuId)
   $CI = pega_instancia();
   $CI->load->database();
 
-  $CI->db->select('usc_valor');
-  $CI->db->from('tb_usuario_cfg');
-  $CI->db->where('usc_usu_id =', $usuId);
-  $CI->db->where('usc_uct_id =', 1);
+  $CI->db->select('psc_valor');
+  $CI->db->from('tb_pessoa_cfg');
+  $CI->db->where('psc_pes_id =', $pesId);
+  $CI->db->where('psc_uct_id =', 1);
 
   $query = $CI->db->get();
   $row   = $query->row();

@@ -1,8 +1,8 @@
 <?php
-$UsuarioCfgTipo = $UsuarioCfgTipo ?? array();
-$uctDescricao   = $UsuarioCfgTipo["uct_descricao"] ?? "";
+$PessoaCfgTipo = $PessoaCfgTipo ?? array();
+$pctDescricao   = $PessoaCfgTipo["pct_descricao"] ?? "";
 ?>
-<form method="post" action="<?php echo base_url() ?>UsuarioCfgTipo/postNovo">
+<form method="post" action="<?php echo base_url() ?>PessoaCfgTipo/postNovo">
   <div class="row">
     <div class="col-md-12">
       <div class="card">
@@ -15,7 +15,7 @@ $uctDescricao   = $UsuarioCfgTipo["uct_descricao"] ?? "";
             <div class="col-md-12">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Descrição</label>
-                <input maxlength="80" name="descricao" type="text" class="form-control" value="<?php echo $uctDescricao; ?>" />
+                <input maxlength="80" name="descricao" type="text" class="form-control" value="<?php echo $pctDescricao; ?>" />
               </div>
             </div>
           </div>
@@ -24,7 +24,7 @@ $uctDescricao   = $UsuarioCfgTipo["uct_descricao"] ?? "";
     </div>
   </div>
 
-  <a href="<?php echo base_url() ?>UsuarioCfgTipo" class="btn btn-default pull-right">
+  <a href="<?php echo base_url() ?>PessoaCfgTipo" class="btn btn-default pull-right">
     Voltar
     <div class="ripple-container"></div>
   </a>

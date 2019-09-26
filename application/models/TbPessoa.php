@@ -550,3 +550,32 @@ function alteraSenhaPessoa($pesId, $novaSenha)
 
   return $arrRetorno;
 }
+
+function pegaTotalPessoasAtivas($usuId)
+{
+  $arrRetorno          = [];
+  $arrRetorno["erro"]  = false;
+  $arrRetorno["msg"]   = "";
+  $arrRetorno["total"] = "";
+
+  if(!is_numeric($usuId)){
+    $arrRetorno["erro"] = true;
+    $arrRetorno["msg"]  = "ID inválido para buscar total de pessoas ativas!";
+    return $arrRetorno;
+  }
+
+  $CI = pega_instancia();
+  $CI->load->database();
+
+  $CI->db->select('COUNT(*) AS cnt');
+  $CI->db->from('tb_pessoa');
+  $CI->db->where('pes_usu_id =', $usuId);
+  $CI->db->where('pes_ativo =', 1);
+
+  $query    = $CI->db->get();
+  $row      = $query->row();
+  $totAtivo = $row->cnt;
+
+  $arrRetorno["total"] = $totAtivo;
+  return $arrRetorno;
+}
