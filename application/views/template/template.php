@@ -227,8 +227,14 @@ if($GRP_ID > 0 && !$ehAdminLogado){
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
                   <?php #<a class="dropdown-item dropdown-item-info" href="#">Perfil</a> ?>
                   <strong class="dropdown-item dropdown-item-info"><?="Olá, " . $NOME_LOGADO?></strong>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item dropdown-item-info" href="<?=$URL_CONFIG?>">Configurações</a>
+                  <?php
+                  if(!$USUARIO_LOGADO->admin == 1){
+                    ?>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item dropdown-item-info" href="<?=$URL_CONFIG?>">Configurações</a>
+                    <?php
+                  }
+                  ?>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item dropdown-item-info" href="<?php echo $URL_LOGOUT; ?>">Sair</a>
                 </div>
