@@ -20,7 +20,7 @@ function pegaGrupoTimeline($vGrtId, $apenasCamposTabela = false)
 
     $camposTabela = "grt_id, grt_gru_id, grt_grp_id, grt_data, grt_titulo, grt_texto, grt_publico, grt_ativo, grt_resposta_id, grt_avaliacao";
     if (!$apenasCamposTabela) {
-        $camposTabela .= ", gru_id, gru_dt_inicio, gru_dt_termino, gru_ativo, grupo_ativo, usu_nome, str_dt_inicio, str_dt_termino, grp_id, grp_gru_id, grp_pes_id, grp_ativo, grupo_pessoa_ativo, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
+        $camposTabela .= ", gru_id, gru_dt_inicio, gru_dt_termino, gru_ativo, grupo_ativo, pes_dono_nome, str_dt_inicio, str_dt_termino, grp_id, grp_gru_id, grp_pes_id, grp_ativo, grupo_pessoa_ativo, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
     }
 
     $CI->db->select($camposTabela);
@@ -54,7 +54,7 @@ function pegaGrupoTimeline($vGrtId, $apenasCamposTabela = false)
         $GrupoTimeline["gru_dt_termino"]     = $row->gru_dt_termino;
         $GrupoTimeline["gru_ativo"]          = $row->gru_ativo;
         $GrupoTimeline["grupo_ativo"]        = $row->grupo_ativo;
-        $GrupoTimeline["usu_nome"]           = $row->usu_nome;
+        $GrupoTimeline["pes_dono_nome"]      = $row->pes_dono_nome;
         $GrupoTimeline["str_dt_inicio"]      = $row->str_dt_inicio;
         $GrupoTimeline["str_dt_termino"]     = $row->str_dt_termino;
         $GrupoTimeline["grp_id"]             = $row->grp_id;

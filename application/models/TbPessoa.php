@@ -2,8 +2,8 @@
 //!! lembrar de exibir apenas pra pessoa logada
 //=============================================
 
-define("CAMPOS_TABELA", "pes_id, pes_usu_id, pes_pet_id, pes_nome, pes_email, pes_senha, pes_foto, pes_sexo, pes_nascimento, pes_telefone, pes_celular, pes_cid_id, pes_ativo");
-define("CAMPOS_N_TABELA", ", usu_nome, pet_descricao, cid_descricao, est_descricao");
+define("CAMPOS_TABELA", "p.pes_id, p.pes_pes_id, p.pes_usa_id, p.pes_pet_id, p.pes_nome, p.pes_email, p.pes_senha, p.pes_foto, p.pes_sexo, p.pes_nascimento, p.pes_telefone, p.pes_celular, p.pes_cid_id, p.pes_ativo");
+define("CAMPOS_N_TABELA", ", pp.pes_nome AS pes_dono_nome, pet_descricao, cid_descricao, est_descricao");
 
 function pegaPessoa($pesId, $apenasCamposTabela=false)
 {
@@ -24,6 +24,8 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
 
   // so exibe de quem cadastrou
   $UsuarioLog = $CI->session->usuario_info ?? array();
+  $ehAdmin    = (isset($UsuarioLog->admin) && $UsuarioLog->admin == 1) ? true: false;
+  $ehCliente  = (isset($UsuarioLog->cliente) && $UsuarioLog->cliente == 1) ? true: false;
   $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
@@ -33,13 +35,15 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
   }
 
   $CI->db->select($camposTabela);
-  $CI->db->from('tb_pessoa');
-  $CI->db->join('tb_usuario', 'usu_id = pes_usu_id', 'left');
-  $CI->db->join('tb_pessoa_tipo', 'pet_id = pes_pet_id', 'left');
-  $CI->db->join('v_tb_cidade', 'cid_id = usu_cid_id', 'left');
-  $CI->db->where('pes_id =', $pesId);
-  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
-    $CI->db->where('pes_usu_id =', $UsuarioLog->id);
+  $CI->db->from('tb_pessoa p');
+  $CI->db->join('tb_pessoa pp', 'pp.pes_id = p.pes_pes_id', 'left');
+  $CI->db->join('tb_pessoa_tipo', 'pet_id = p.pes_pet_id', 'left');
+  $CI->db->join('v_tb_cidade', 'cid_id = p.pes_cid_id', 'left');
+  $CI->db->where('p.pes_id =', $pesId);
+  if($ehAdmin){
+    $CI->db->where('p.pes_usa_id IS NOT NULL');
+  } else if(!$ehAdmin && !$ehCliente && $vGrpId == NULL && isset($UsuarioLog->id)){
+    $CI->db->where('(p.pes_pes_id = ' . $UsuarioLog->id . ' OR p.pes_id = ' . $UsuarioLog->id . ')');
   }
 
   $query = $CI->db->get();
@@ -54,7 +58,8 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
 
   $Pessoa = [];
   $Pessoa["pes_id"]         = $row->pes_id;
-  $Pessoa["pes_usu_id"]     = $row->pes_usu_id;
+  $Pessoa["pes_pes_id"]     = $row->pes_pes_id;
+  $Pessoa["pes_usa_id"]     = $row->pes_usa_id;
   $Pessoa["pes_pet_id"]     = $row->pes_pet_id;
   $Pessoa["pes_nome"]       = $row->pes_nome;
   $Pessoa["pes_email"]      = $row->pes_email;
@@ -67,7 +72,7 @@ function pegaPessoa($pesId, $apenasCamposTabela=false)
   $Pessoa["pes_cid_id"]     = $row->pes_cid_id;
   $Pessoa["pes_ativo"]      = $row->pes_ativo;
   if(!$apenasCamposTabela){
-    $Pessoa["usu_nome"]      = $row->usu_nome;
+    $Pessoa["pes_dono_nome"] = $row->pes_dono_nome;
     $Pessoa["pet_descricao"] = $row->pet_descricao;
     $Pessoa["cid_descricao"] = $row->cid_descricao;
     $Pessoa["est_descricao"] = $row->est_descricao;
@@ -85,23 +90,23 @@ function pegaTodasPessoas($filtro)
   $arrRetorno["msg"]      = "";
   $arrRetorno["arrGrupo"] = [];
 
-  $usuId = $filtro["pes_usu_id"] ?? "";
+  $pesId = $filtro["pes_pes_id"] ?? "";
   $ativo = $filtro["pes_ativo"] ?? 1;
 
   $CI = pega_instancia();
   $CI->load->database();
 
-  $CI->db->select("pes_id");
-  $CI->db->from('tb_pessoa');
-  $CI->db->join('tb_usuario', 'usu_id = pes_usu_id', 'left');
-  $CI->db->join('tb_pessoa_tipo', 'pet_id = pes_pet_id', 'left');
-  if($usuId != ""){
-    $CI->db->where('pes_usu_id =', $usuId);
+  $CI->db->select("p.pes_id");
+  $CI->db->from('tb_pessoa p');
+  $CI->db->join('tb_pessoa pp', 'pp.pes_id = p.pes_pes_id', 'left');
+  $CI->db->join('tb_pessoa_tipo', 'pet_id = p.pes_pet_id', 'left');
+  if($pesId != ""){
+    $CI->db->where('p.pes_pes_id =', $pesId);
   }
   if($ativo != ""){
-    $CI->db->where('pes_ativo =', $ativo);
+    $CI->db->where('p.pes_ativo =', $ativo);
   }
-  $CI->db->order_by('pes_nome', 'ASC');
+  $CI->db->order_by('p.pes_nome', 'ASC');
 
   $query = $CI->db->get();
   if(!$query){
@@ -119,13 +124,16 @@ function pegaTodasPessoas($filtro)
   return $arrRetorno;
 }
 
-function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false)
+function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false, $cliente=false)
 {
   $CI = pega_instancia();
   $CI->load->database();
 
   // so exibe de quem cadastrou
   $UsuarioLog = $CI->session->usuario_info ?? array();
+  $ehAdmin    = (isset($UsuarioLog->admin) && $UsuarioLog->admin == 1) ? true: false;
+  $ehCliente  = (isset($UsuarioLog->cliente) && $UsuarioLog->cliente == 1) ? true: false;
+  $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
   require_once(FCPATH."/assets/Lista_CI/Lista_CI.php");
@@ -136,21 +144,37 @@ function pegaListaPessoa($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addField("pes_email AS \"Email\"", "L");
   $Lista_CI->addField("pet_descricao AS \"Tipo\"", "L");
   $Lista_CI->addField("ativo AS \"Ativo\"");
-  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonAlteraSenha(''Pessoa'', ''jsonPessoaAlteraSenha'', {pes_id})\"><i class=\"material-icons text-info\">vpn_key</i></a>', '{pes_id}', pes_id) AS \"Alterar Senha\" ", "C", "8%");
+  $Lista_CI->addField("REPLACE('<a href=\"javascript:;\" onclick=\"jsonAlteraSenha(''Json'', ''jsonPessoaAlteraSenha'', {pes_id})\"><i class=\"material-icons text-info\">vpn_key</i></a>', '{pes_id}', pes_id) AS \"Alterar Senha\" ", "C", "8%");
   if($detalhes){
-    $url = base_url() . "Pessoa/visualizar/{pes_id}";
+    if($cliente){
+      $url = base_url() . "Cliente/visualizar/{pes_id}";
+    } else {
+      $url = base_url() . "Pessoa/visualizar/{pes_id}";
+    }
     $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">visibility</i></a>', '{pes_id}', pes_id) AS \"Visualizar\" ", "C", "3%");
   }
   if($edicao){
-    $url = base_url() . "Pessoa/editar/{pes_id}";
+    if($cliente){
+      $url = base_url() . "Cliente/editar/{pes_id}";
+    } else {
+      $url = base_url() . "Pessoa/editar/{pes_id}";
+    }
     $Lista_CI->addField("REPLACE('<a href=\"$url\"><i class=\"material-icons text-info\">create</i></a>', '{pes_id}', pes_id) AS \"Editar\" ", "C", "3%");
   }
   if($exclusao){
   }
   $Lista_CI->addFrom("v_tb_pessoa");
-  
-  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
-    $Lista_CI->addWhere("pes_usu_id = " . $UsuarioLog->id);
+
+  if($ehAdmin){
+    $Lista_CI->addWhere("pes_usa_id IS NOT NULL");
+  } else if(!$ehAdmin && !$ehCliente && $vGrpId == NULL){
+    $Lista_CI->addWhere("pes_pes_id = " . $UsuarioLog->id);
+  }
+
+  if($cliente){
+    $Lista_CI->addWhere("pes_usa_id IS NOT NULL");
+  } else {
+    $Lista_CI->addWhere("pes_usa_id IS NULL");
   }
   $Lista_CI->changeOrderCol(2);
 
@@ -187,9 +211,12 @@ function validaPessoa($id, $idUsuLogado)
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Esta pessoa não está ativa.";
     }
-    if(isset($UsuarioLog->admin) && $Pessoa["pes_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
-      $arrRetorno["erro"]  = true;
-      $arrRetorno["msg"]   = "Esta pessoa não faz parte do seu cadastro.";
+    if(isset($UsuarioLog->admin) && $Pessoa["pes_pes_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
+      // se a PES_ID for quem tá logado, td bem
+      if($Pessoa["pes_id"] != $idUsuLogado){
+        $arrRetorno["erro"] = true;
+        $arrRetorno["msg"]  = "Esta pessoa não faz parte do seu cadastro.";
+      }
     }
   }
 
@@ -202,13 +229,19 @@ function validaInserePessoa($Pessoa)
   $strValida = "";
 
   // validacao basica dos campos
-  $vUsuId = $Pessoa["pes_usu_id"] ?? "";
-  if(!is_numeric($vUsuId)){
+  $vPesUsaId = $Pessoa["pes_usa_id"] ?? "";
+  $vPesPesId = $Pessoa["pes_pes_id"] ?? "";
+  
+  if(!is_numeric($vPesUsaId) && !$vPesPesId > 0){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'usuário de cadastro' é inválida.";
+  }
+  
+  if(!is_numeric($vPesPesId) && !$vPesUsaId > 0){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'pessoa de cadastro' é inválida.";
   }
 
   $vTipo = $Pessoa["pes_pet_id"] ?? "";
-  if(!is_numeric($vTipo)){
+  if(!is_numeric($vTipo) && !$vPesUsaId > 0){
     $strValida .= "<br />&nbsp;&nbsp;* Informe um tipo para a pessoa.";
   }
 
@@ -234,7 +267,7 @@ function validaInserePessoa($Pessoa)
   }
 
   $vNascimento = $Pessoa["pes_nascimento"] ?? "";
-  if($vNascimento != "" && !isValidDate($vNascimento, 'Y-m-d')){
+  if(!isValidDate($vNascimento, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'nascimento' é inválida.";
   }
 
@@ -250,19 +283,20 @@ function validaInserePessoa($Pessoa)
   // ===========================
 
   // valida limite ativos
-  require_once(APPPATH."/models/TbUsuarioCfg.php");
-  $retLim = pegaMaximoUsuarios($vUsuId);
-  if($retLim["erro"]){
-    $strValida .= "<br />&nbsp;&nbsp;* " . $retLim["msg"];
-  } else {
-    $maxUsuarios = $retLim["valor"];
+  if(!$vPesUsaId > 0){
+    require_once(APPPATH."/models/TbPessoaCfg.php");
+    $retLim = pegaMaximoUsuarios($vPesPesId);
+    if($retLim["erro"]){
+      $strValida .= "<br />&nbsp;&nbsp;* " . $retLim["msg"];
+    } else {
+      $maxUsuarios = $retLim["valor"];
 
-    require_once(APPPATH."/models/TbUsuario.php");
-    $retTot   = pegaTotalPessoasAtivas($vUsuId);
-    $totAtivo = ($retTot["erro"]) ? 999: $retTot["total"];
+      $retTot   = pegaTotalPessoasAtivas($vPesPesId);
+      $totAtivo = ($retTot["erro"]) ? 999: $retTot["total"];
 
-    if($totAtivo > $maxUsuarios){
-      $strValida .= "<br />&nbsp;&nbsp;* Você não pode cadastrar mais pessoas pois seu limite é " . $maxUsuarios;
+      if($totAtivo > $maxUsuarios){
+        $strValida .= "<br />&nbsp;&nbsp;* Você não pode cadastrar mais pessoas pois seu limite é " . $maxUsuarios;
+      }
     }
   }
   // ====================
@@ -273,7 +307,12 @@ function validaInserePessoa($Pessoa)
 
   $CI->db->select('COUNT(*) AS cnt');
   $CI->db->from('tb_pessoa');
-  $CI->db->where('pes_usu_id =', $vUsuId);
+  if($vPesPesId > 0){
+    $CI->db->where('pes_pes_id =', $vPesPesId);
+  } else if($vPesUsaId > 0){
+    $CI->db->where('pes_usa_id =', $vPesUsaId);
+  }
+  
   $CI->db->where('pes_email =', $vEmail);
 
   $query = $CI->db->get();
@@ -303,18 +342,19 @@ function inserePessoa($Pessoa)
     $arrRetorno["msg"]  = $strValida;
 
     return $arrRetorno;
-  }	 	 	 	 	 	 
+  }
 
-  $vUsuId      = $Pessoa["pes_usu_id"] ?? NULL;
+  $vPesId      = $Pessoa["pes_pes_id"] ?? NULL;
+  $vUsaId      = $Pessoa["pes_usa_id"] ?? NULL;
   $vPetId      = $Pessoa["pes_pet_id"] ?? NULL;
   $vNome       = $Pessoa["pes_nome"] ?? "";
   $vEmail      = $Pessoa["pes_email"] ?? "";
   $vSenha      = $Pessoa["pes_senha"] ?? "";
   $vFoto       = $Pessoa["pes_foto"] ?? NULL;
+  $vSexo       = $Pessoa["pes_sexo"] ?? NULL;
   $vNascimento = $Pessoa["pes_nascimento"] ?? NULL;
   $vTelefone   = $Pessoa["pes_telefone"] ?? NULL;
   $vCelular    = $Pessoa["pes_celular"] ?? NULL;
-  $vSexo       = $Pessoa["pes_sexo"] ?? NULL;
   $vCidId      = $Pessoa["pes_cid_id"] ?? NULL;
   $vAtivo      = $Pessoa["pes_ativo"] ?? 1;
 
@@ -322,16 +362,17 @@ function inserePessoa($Pessoa)
   $CI->load->database();
 
   $data = array(
-    "pes_usu_id"     => $vUsuId,
+    "pes_pes_id"     => $vPesId,
+    "pes_usa_id"     => $vUsaId,
     "pes_pet_id"     => $vPetId,
     "pes_nome"       => $vNome,
     "pes_email"      => $vEmail,
     "pes_senha"      => encripta_string($vSenha),
     "pes_foto"       => $vFoto,
+    "pes_sexo"       => $vSexo,
     "pes_nascimento" => $vNascimento,
     "pes_telefone"   => $vTelefone,
     "pes_celular"    => $vCelular,
-    "pes_sexo"       => $vSexo,
     "pes_cid_id"     => $vCidId,
     "pes_ativo"      => $vAtivo,
   );
@@ -362,13 +403,19 @@ function validaEditaPessoa($Pessoa, $adminAlterando=true)
     $strValida .= "<br />&nbsp;&nbsp;* ID inválido para editar Pessoa.";
   }
 
-  $vUsuId = $Pessoa["pes_usu_id"] ?? "";
-  if(!is_numeric($vUsuId)){
+  $vPesUsaId = $Pessoa["pes_usa_id"] ?? "";
+  $vPesPesId = $Pessoa["pes_pes_id"] ?? "";
+
+  if(!is_numeric($vPesUsaId) && !$vPesPesId > 0){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'usuário de cadastro' é inválida.";
   }
 
+  if(!is_numeric($vPesPesId) && !$vPesUsaId > 0){
+    $strValida .= "<br />&nbsp;&nbsp;* Informação 'pessoa de cadastro' é inválida.";
+  }
+
   $vTipo = $Pessoa["pes_pet_id"] ?? "";
-  if(!is_numeric($vTipo)){
+  if(!is_numeric($vTipo) && !$vPesUsaId > 0){
     $strValida .= "<br />&nbsp;&nbsp;* Informe um tipo para a pessoa.";
   }
 
@@ -388,7 +435,7 @@ function validaEditaPessoa($Pessoa, $adminAlterando=true)
   }
 
   $vNascimento = $Pessoa["pes_nascimento"] ?? "";
-  if($vNascimento != "" && !isValidDate($vNascimento, 'Y-m-d')){
+  if(!isValidDate($vNascimento, 'Y-m-d')){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'nascimento' é inválida.";
   }
 
@@ -413,15 +460,14 @@ function validaEditaPessoa($Pessoa, $adminAlterando=true)
 
       #estava inativo e agora vai pra ativo
       if($Pessoa["pes_ativo"] == 0 && $vAtivo == 1){
-        require_once(APPPATH."/models/TbUsuarioCfg.php");
-        $retLim = pegaMaximoUsuarios($vUsuId);
+        require_once(APPPATH."/models/TbPessoaCfg.php");
+        $retLim = pegaMaximoUsuarios($vPesPesId);
         if($retLim["erro"]){
           $strValida .= "<br />&nbsp;&nbsp;* " . $retLim["msg"];
         } else {
           $maxUsuarios = $retLim["valor"];
 
-          require_once(APPPATH."/models/TbUsuario.php");
-          $retTot   = pegaTotalPessoasAtivas($vUsuId);
+          $retTot   = pegaTotalPessoasAtivas($vPesPesId);
           $totAtivo = ($retTot["erro"]) ? 999: $retTot["total"];
 
           if($totAtivo > $maxUsuarios){
@@ -439,7 +485,11 @@ function validaEditaPessoa($Pessoa, $adminAlterando=true)
 
   $CI->db->select('COUNT(*) AS cnt');
   $CI->db->from('tb_pessoa');
-  $CI->db->where('pes_usu_id =', $vUsuId);
+   if($vPesPesId > 0){
+    $CI->db->where('pes_pes_id =', $vPesPesId);
+  } else if($vPesUsaId > 0){
+    $CI->db->where('pes_usa_id =', $vPesUsaId);
+  }
   $CI->db->where('pes_email =', $vEmail);
   $CI->db->where('pes_id <>', $vId);
 
@@ -551,14 +601,14 @@ function alteraSenhaPessoa($pesId, $novaSenha)
   return $arrRetorno;
 }
 
-function pegaTotalPessoasAtivas($usuId)
+function pegaTotalPessoasAtivas($pesId)
 {
   $arrRetorno          = [];
   $arrRetorno["erro"]  = false;
   $arrRetorno["msg"]   = "";
   $arrRetorno["total"] = "";
 
-  if(!is_numeric($usuId)){
+  if(!is_numeric($pesId)){
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = "ID inválido para buscar total de pessoas ativas!";
     return $arrRetorno;
@@ -569,7 +619,7 @@ function pegaTotalPessoasAtivas($usuId)
 
   $CI->db->select('COUNT(*) AS cnt');
   $CI->db->from('tb_pessoa');
-  $CI->db->where('pes_usu_id =', $usuId);
+  $CI->db->where('pes_pes_id =', $pesId);
   $CI->db->where('pes_ativo =', 1);
 
   $query    = $CI->db->get();

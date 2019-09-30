@@ -563,4 +563,37 @@ class Json extends CI_Controller
 
     echo json_encode($arrRet);
   }
+
+  public function jsonPessoaAlteraSenha()
+  {
+    $variaveisPost  = processaPost();
+    $vPesId         = $variaveisPost->id ?? "";
+    $vNovaSenha     = $variaveisPost->nova_senha ?? "";
+
+    $arrRet = [];
+
+    require_once(APPPATH."/models/TbPessoa.php");
+    $retUsu = pegaPessoa($vPesId);
+
+    if($retUsu["erro"]){
+      $arrRet["msg"]        = $retUsu["msg"];
+      $arrRet["msg_titulo"] = "Aviso!";
+      $arrRet["msg_tipo"]   = "warning";
+      $arrRet["callback"]   = "jsonAlteraSenha('Json', 'jsonPessoaAlteraSenha', $vPesId);";
+    } else {
+      $retSenha = alteraSenhaPessoa($vPesId, $vNovaSenha);
+      if($retSenha["erro"]){
+        $arrRet["msg"]        = $retSenha["msg"];
+        $arrRet["msg_titulo"] = "Aviso!";
+        $arrRet["msg_tipo"]   = "warning";
+        $arrRet["callback"]   = "jsonAlteraSenha('Json', 'jsonPessoaAlteraSenha', $vPesId);";
+      } else {
+        $arrRet["msg"]        = $retSenha["msg"];
+        $arrRet["msg_titulo"] = "Sucesso!";
+        $arrRet["msg_tipo"]   = "success";
+      }
+    }
+
+    echo json_encode($arrRet);
+  }
 }

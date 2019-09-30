@@ -1,6 +1,6 @@
 <?php
 define("CAMPOS_TABELA_GRUPO_PESSOA_INFO", "gpi_id, gpi_grp_id, gpi_data, gpi_altura, gpi_peso, gpi_peso_objetivo, gpi_inicial");
-define("CAMPOS_ADICIONAIS_TABELA_GRUPO_PESSOA_INFO", ", grp_id, grp_gru_id, grp_pes_id, grp_ativo, ativo, gru_usu_id, gru_descricao, pes_nome, pes_email, pet_descricao, pet_cliente");
+define("CAMPOS_ADICIONAIS_TABELA_GRUPO_PESSOA_INFO", ", grp_id, grp_gru_id, grp_pes_id, grp_ativo, ativo, gru_pes_id, gru_descricao, pes_nome, pes_email, pet_descricao, pet_cliente");
 
 /**
  * meio que uma função PRIVATE
@@ -23,7 +23,7 @@ function pegaArrGrupoPessoaInfoRow($row, $apenasCamposTabela=false)
       $GrupoPessoaInfo["grp_pes_id"]      = $row->grp_pes_id;
       $GrupoPessoaInfo["grp_ativo"]       = $row->grp_ativo;
       $GrupoPessoaInfo["ativo"]           = $row->ativo;
-      $GrupoPessoaInfo["gru_usu_id"]      = $row->gru_usu_id;
+      $GrupoPessoaInfo["gru_pes_id"]      = $row->gru_pes_id;
       $GrupoPessoaInfo["gru_descricao"]   = $row->gru_descricao;
       $GrupoPessoaInfo["pes_nome"]        = $row->pes_nome;
       $GrupoPessoaInfo["pes_email"]       = $row->pes_email;
@@ -63,7 +63,7 @@ function pegaListaGrupoPessoaInfo($grpId, $detalhes=false, $edicao=false, $exclu
   $Lista_CI->addWhere("gpi_inicial = 0");
   $Lista_CI->addWhere("grp_id = $grpId");
 
-  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && isset($UsuarioLog->cliente) && $UsuarioLog->cliente == 1){
     $Lista_CI->addWhere("grp_id = " . pegaGrupoPessoaLogadoId());
   }
   $Lista_CI->changeOrderCol(1);
@@ -100,7 +100,7 @@ function pegaGrupoPessoaInfo($grpId, $apenasCamposTabela=false)
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa_info');
   $CI->db->where('gpi_grp_id =', $grpId);
-  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
+  if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && isset($UsuarioLog->cliente) && $UsuarioLog->cliente == 1){
     $CI->db->where('grp_id =', pegaGrupoPessoaLogadoId());
   }
   $CI->db->order_by('gpi_data', 'ASC');
@@ -171,7 +171,7 @@ function pegaGrupoPessoaInfoId($gpiId, $apenasCamposTabela=false)
   $CI->db->from('v_tb_grupo_pessoa_info');
   $CI->db->where('gpi_id =', $gpiId);
   if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
-    $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+    $CI->db->where('gru_pes_id =', $UsuarioLog->id);
   }
   $CI->db->order_by('gpi_data', 'ASC');
 
@@ -286,8 +286,8 @@ function validaInsereGrupoPessoaInfo($GrupoPessoaInfo)
 
   $vGruId    = $row->grp_gru_id ?? "";
   $vPesId    = $row->grp_pes_id ?? "";
-  $vGruDtIni = $row->gru_dt_inicio ?? NULL;
-  $vGruDtFim = $row->gru_dt_termino ?? NULL;
+  $vGruDtIni = (isset($row->gru_dt_inicio) && $row->gru_dt_inicio != "") ? date("Y-m-d", strtotime($row->gru_dt_inicio)): NULL;
+  $vGruDtFim = (isset($row->gru_dt_termino) && $row->gru_dt_termino != "") ? date("Y-m-d", strtotime($row->gru_dt_termino)): NULL;
   // ===========================
 
   // valida grupo válido
@@ -489,8 +489,8 @@ function validaEditaGrupoPessoaInfo($GrupoPessoaInfo)
 
   $vGruId    = $row->grp_gru_id ?? "";
   $vPesId    = $row->grp_pes_id ?? "";
-  $vGruDtIni = $row->gru_dt_inicio ?? NULL;
-  $vGruDtFim = $row->gru_dt_termino ?? NULL;
+  $vGruDtIni = (isset($row->gru_dt_inicio) && $row->gru_dt_inicio != "") ? date("Y-m-d", strtotime($row->gru_dt_inicio)): NULL;
+  $vGruDtFim = (isset($row->gru_dt_termino) && $row->gru_dt_termino != "") ? date("Y-m-d", strtotime($row->gru_dt_termino)): NULL;
   // ===========================
 
   // valida grupo válido

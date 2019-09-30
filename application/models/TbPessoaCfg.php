@@ -9,8 +9,8 @@ function validaInserePessoaCfg($PessoaCfg)
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma pessoa válida.";
   }
 
-  $vUctId = $PessoaCfg["psc_uct_id"] ?? "";
-  if(!is_numeric($vUctId)){
+  $vPctId = $PessoaCfg["psc_pct_id"] ?? "";
+  if(!is_numeric($vPctId)){
     $strValida .= "<br />&nbsp;&nbsp;* Informe uma configuração válida.";
   }
 
@@ -27,7 +27,7 @@ function validaInserePessoaCfg($PessoaCfg)
   $CI->db->select('COUNT(*) AS cnt');
   $CI->db->from('tb_pessoa_cfg');
   $CI->db->where('psc_pes_id =', $vPesId);
-  $CI->db->where('psc_uct_id =', $vUctId);
+  $CI->db->where('psc_pct_id =', $vPctId);
 
   $query = $CI->db->get();
   $row   = $query->row();
@@ -43,7 +43,7 @@ function validaInserePessoaCfg($PessoaCfg)
   return $strValida;
 }
 
-function insereUsuarioCfg($PessoaCfg)
+function inserePessoaCfg($PessoaCfg)
 {
   $arrRetorno         = [];
   $arrRetorno["erro"] = false;
@@ -57,16 +57,16 @@ function insereUsuarioCfg($PessoaCfg)
     return $arrRetorno;
   }
 
-  $vUsuId = $PessoaCfg["psc_pes_id"] ?? "";
-  $vUctId = $PessoaCfg["psc_uct_id"] ?? "";
+  $vPesId = $PessoaCfg["psc_pes_id"] ?? "";
+  $vPctId = $PessoaCfg["psc_pct_id"] ?? "";
   $vValor = $PessoaCfg["psc_valor"] ?? "";
 
   $CI = pega_instancia();
   $CI->load->database();
 
   $data = array(
-    "psc_pes_id" => $vUsuId,
-    "psc_uct_id" => $vUctId,
+    "psc_pes_id" => $vPesId,
+    "psc_pct_id" => $vPctId,
     "psc_valor"  => $vValor,
   );
   $ret = $CI->db->insert('tb_pessoa_cfg', $data);
@@ -97,7 +97,7 @@ function deletaPessoaCfg($pscId)
     $CI = pega_instancia();
     $CI->load->database();
 
-    $CI->db->where('usc_id', $pscId);
+    $CI->db->where('psc_id', $pscId);
     $CI->db->delete('tb_pessoa_cfg');
 
     if($CI->db->affected_rows() <= 0){
@@ -135,6 +135,7 @@ function pegaListaPessoaCfg($pessoa="", $detalhes=false, $edicao=false, $exclusa
     $Lista_CI->addWhere("psc_pes_id = $pessoa");
   }
   $Lista_CI->changeOrderCol(2);
+  $Lista_CI->setAutoReload(false);
 
   $Lista_CI->addFilter("pes_nome", "Pessoa");
   $Lista_CI->addFilter("uct_descricao", "Configuração");
@@ -162,7 +163,7 @@ function pegaMaximoUsuarios($pesId)
   $CI->db->select('psc_valor');
   $CI->db->from('tb_pessoa_cfg');
   $CI->db->where('psc_pes_id =', $pesId);
-  $CI->db->where('psc_uct_id =', 2);
+  $CI->db->where('psc_pct_id =', 2);
 
   $query = $CI->db->get();
   $row   = $query->row();
@@ -199,7 +200,7 @@ function pegaCfgValidade($pesId)
   $CI->db->select('psc_valor');
   $CI->db->from('tb_pessoa_cfg');
   $CI->db->where('psc_pes_id =', $pesId);
-  $CI->db->where('psc_uct_id =', 1);
+  $CI->db->where('psc_pct_id =', 1);
 
   $query = $CI->db->get();
   $row   = $query->row();
@@ -212,6 +213,6 @@ function pegaCfgValidade($pesId)
   }
 
   $arrRetorno["msg"]   = "'Validade' encontrada com sucesso!";
-  $arrRetorno["valor"] = acerta_data($row->usc_valor);
+  $arrRetorno["valor"] = acerta_data($row->psc_valor);
   return $arrRetorno;
 }

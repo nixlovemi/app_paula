@@ -157,7 +157,7 @@ foreach($arrStaff as $staff){
         $arrLoopStaff["staff"] = [];
 
         foreach($arrStaff as $pessoa){
-          if($pessoa["grp_usu_id"] != 0){
+          if($pessoa["pet_descricao"] == "Proprietário"){
             $arrLoopStaff["dono"][] = $pessoa;
           } else {
             $arrLoopStaff["staff"][] = $pessoa;

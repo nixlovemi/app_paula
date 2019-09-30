@@ -194,7 +194,7 @@ function ehAdminGrupo($gruId)
   require_once(APPPATH."/models/TbGrupo.php");
   $retGrupo   = pegaGrupo($gruId);
   $Grupo      = (!$retGrupo["erro"]) ? $retGrupo["Grupo"]: array();
-  $vGruUsuId  = $Grupo["gru_usu_id"] ?? "";
+  $vGruUsuId  = $Grupo["gru_pes_id"] ?? "";
   $UsuarioLog = $_SESSION["usuario_info"] ?? array();
   $usuLogado  = $UsuarioLog->id ?? "";
   $cliente    = $UsuarioLog->cliente ?? 1;

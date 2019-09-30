@@ -30,11 +30,12 @@ function executaLogin($email, $senha, $adminLogin=false, $grupoLogin=false)
 
   if($grupoLogin){
     #usuario de algum grupo
-    $CI->db->select('pes_id AS id, pes_nome AS usuario, pes_email AS email, pes_senha AS senha, pes_ativo AS ativo, 0 AS admin, pt.pet_cliente AS cliente, pes_foto AS foto, pes_usu_id AS usuario_cad');
-    $CI->db->from('tb_pessoa');
-    $CI->db->join('tb_pessoa_tipo pt', 'pt.pet_id = pes_pet_id', 'left');
+    $CI->db->select('pes_id AS id, pes_nome AS usuario, pes_email AS email, pes_senha AS senha, pes_ativo AS ativo, 0 AS admin, pet_cliente AS cliente, pet_descricao AS pessoa_tipo, pes_foto AS foto, pes_pes_id AS usuario_cad');
+    $CI->db->from('v_tb_pessoa');
     $CI->db->where('pes_email =', $email);
     $CI->db->where('pes_senha =', encripta_string($senha));
+    # $CI->db->where('pes_pes_id IS NOT NULL');
+    # $CI->db->where('pes_usa_id IS NULL');
   } else if ($adminLogin) {
     #admin
     $CI->db->select('usa_id AS id, usa_usuario AS usuario, \'\' AS email, usa_senha AS senha, usa_ativo AS ativo, 1 AS admin, 0 AS cliente');
@@ -43,10 +44,12 @@ function executaLogin($email, $senha, $adminLogin=false, $grupoLogin=false)
     $CI->db->where('usa_senha =', encripta_string($senha));
   } else {
     #dono de algum grupo
-    $CI->db->select('usu_id AS id, usu_email AS usuario, usu_email AS email, usu_senha AS senha, usu_nome AS nome, usu_ativo AS ativo, 0 AS admin, 0 AS cliente, usu_foto AS foto');
-    $CI->db->from('tb_usuario');
-    $CI->db->where('usu_email =', $email);
-    $CI->db->where('usu_senha =', encripta_string($senha));
+    $CI->db->select('pes_id AS id, pes_nome AS usuario, pes_email AS email, pes_senha AS senha, pes_ativo AS ativo, 0 AS admin, pet_cliente AS cliente, pet_descricao AS pessoa_tipo, pes_foto AS foto');
+    $CI->db->from('v_tb_pessoa');
+    $CI->db->where('pes_email =', $email);
+    $CI->db->where('pes_senha =', encripta_string($senha));
+    $CI->db->where('pes_pes_id IS NULL');
+    $CI->db->where('pes_usa_id IS NOT NULL');
   }
 
   $query = $CI->db->get();
@@ -65,7 +68,7 @@ function executaLogin($email, $senha, $adminLogin=false, $grupoLogin=false)
     return array_ret_para_retorno($arrRet);
   }
   if(!$adminLogin && !$grupoLogin){
-    require_once(APPPATH."/models/TbUsuarioCfg.php");
+    require_once(APPPATH."/models/TbPessoaCfg.php");
     $retVal   = pegaCfgValidade($row->id);
     $validade = ($retVal["erro"]) ? "2000-01-01": $retVal["valor"];
 

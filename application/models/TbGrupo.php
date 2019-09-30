@@ -32,7 +32,7 @@ function pegaListaGrupo($detalhes=false, $edicao=false, $exclusao=false)
   $Lista_CI->addFrom("v_tb_grupo");
 
   if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
-    $Lista_CI->addWhere("gru_usu_id = " . $UsuarioLog->id);
+    $Lista_CI->addWhere("gru_pes_id = " . $UsuarioLog->id);
   }
   $Lista_CI->changeOrderCol(2);
 
@@ -67,17 +67,17 @@ function pegaGrupo($gruId, $apenasCamposTabela=false)
   $vGrpId     = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
-  $camposTabela = "gru_id, gru_usu_id, gru_descricao, gru_dt_inicio, gru_dt_termino, gru_ativo";
+  $camposTabela = "gru_id, gru_pes_id, gru_descricao, gru_dt_inicio, gru_dt_termino, gru_ativo";
   if(!$apenasCamposTabela){
-    $camposTabela .= ", usu_nome";
+    $camposTabela .= ", pes_nome";
   }
 
   $CI->db->select($camposTabela);
   $CI->db->from('tb_grupo');
-  $CI->db->join('tb_usuario', 'usu_id = gru_usu_id', 'left');
+  $CI->db->join('tb_pessoa', 'pes_id = gru_pes_id', 'left');
   $CI->db->where('gru_id =', $gruId);
   if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
-    $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+    $CI->db->where('gru_pes_id =', $UsuarioLog->id);
   }
 
   $query = $CI->db->get();
@@ -92,13 +92,13 @@ function pegaGrupo($gruId, $apenasCamposTabela=false)
 
   $Grupo = [];
   $Grupo["gru_id"]         = $row->gru_id;
-  $Grupo["gru_usu_id"]     = $row->gru_usu_id;
+  $Grupo["gru_pes_id"]     = $row->gru_pes_id;
   $Grupo["gru_descricao"]  = $row->gru_descricao;
   $Grupo["gru_dt_inicio"]  = $row->gru_dt_inicio;
   $Grupo["gru_dt_termino"] = $row->gru_dt_termino;
   $Grupo["gru_ativo"]      = $row->gru_ativo;
   if(!$apenasCamposTabela){
-    $Grupo["usu_nome"]     = $row->usu_nome;
+    $Grupo["pes_nome"]     = $row->pes_nome;
   }
 
   $arrRetorno["msg"]   = "Grupo encontrado com sucesso!";
@@ -106,7 +106,7 @@ function pegaGrupo($gruId, $apenasCamposTabela=false)
   return $arrRetorno;
 }
 
-function validaGrupo($id, $idUsuLogado)
+function validaGrupo($id, $idPesLogado)
 {
   $arrRetorno = [];
   $arrRetorno["erro"]  = false;
@@ -134,7 +134,7 @@ function validaGrupo($id, $idUsuLogado)
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Este grupo já está terminado.";
     }
-    if(isset($UsuarioLog->admin) && $Grupo["gru_usu_id"] != $idUsuLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
+    if(isset($UsuarioLog->admin) && $Grupo["gru_pes_id"] != $idPesLogado && $UsuarioLog->admin == 0 && $vGrpId == NULL){
       $arrRetorno["erro"]  = true;
       $arrRetorno["msg"]   = "Este grupo não faz parte do seu cadastro.";
     }
@@ -149,8 +149,8 @@ function validaInsereGrupo($Grupo)
   $strValida = "";
 
   // validacao basica dos campos
-  $vUsuId = $Grupo["gru_usu_id"] ?? "";
-  if(!is_numeric($vUsuId)){
+  $vPesId = $Grupo["gru_pes_id"] ?? "";
+  if(!is_numeric($vPesId)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'usuário de cadastro' é inválida.";
   }
 
@@ -189,7 +189,7 @@ function validaInsereGrupo($Grupo)
 
   $CI->db->select('COUNT(*) AS cnt');
   $CI->db->from('tb_grupo');
-  $CI->db->where('gru_usu_id =', $vUsuId);
+  $CI->db->where('gru_pes_id =', $vPesId);
   $CI->db->where('gru_descricao =', $vDesc);
 
   $query = $CI->db->get();
@@ -221,7 +221,7 @@ function insereGrupo($Grupo)
     return $arrRetorno;
   }
 
-  $vUsuId = $Grupo["gru_usu_id"] ?? NULL;
+  $vPesId = $Grupo["gru_pes_id"] ?? NULL;
   $vDesc  = $Grupo["gru_descricao"] ?? "";
   $vDtIni = $Grupo["gru_dt_inicio"] ?? "";
   $vDtFim = $Grupo["gru_dt_termino"] ?? "";
@@ -231,7 +231,7 @@ function insereGrupo($Grupo)
   $CI->load->database();
 
   $data = array(
-    "gru_usu_id"     => $vUsuId,
+    "gru_pes_id"     => $vPesId,
     "gru_descricao"  => $vDesc,
     "gru_dt_inicio"  => $vDtIni,
     "gru_dt_termino" => $vDtFim,
@@ -264,8 +264,8 @@ function validaEditaGrupo($Grupo)
     $strValida .= "<br />&nbsp;&nbsp;* ID inválido para editar grupo.";
   }
 
-  $vUsuId = $Grupo["gru_usu_id"] ?? "";
-  if(!is_numeric($vUsuId)){
+  $vPesId = $Grupo["gru_pes_id"] ?? "";
+  if(!is_numeric($vPesId)){
     $strValida .= "<br />&nbsp;&nbsp;* Informação 'usuário de cadastro' é inválida.";
   }
 
@@ -304,7 +304,7 @@ function validaEditaGrupo($Grupo)
 
   $CI->db->select('COUNT(*) AS cnt');
   $CI->db->from('tb_grupo');
-  $CI->db->where('gru_usu_id =', $vUsuId);
+  $CI->db->where('gru_pes_id =', $vPesId);
   $CI->db->where('gru_descricao =', $vDesc);
   $CI->db->where('gru_id <>', $vId);
 
@@ -396,10 +396,10 @@ function pegaInfoTempoGrupo($gruId)
 
   $CI->db->select("gru_dt_inicio, gru_dt_termino");
   $CI->db->from('tb_grupo');
-  $CI->db->join('tb_usuario', 'usu_id = gru_usu_id', 'left');
+  $CI->db->join('tb_pessoa', 'pes_id = gru_pes_id', 'left');
   $CI->db->where('gru_id =', $gruId);
   if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
-    $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+    $CI->db->where('gru_pes_id =', $UsuarioLog->id);
   }
 
   $query = $CI->db->get();

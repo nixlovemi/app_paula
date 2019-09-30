@@ -160,6 +160,18 @@ function atualizaNotificacaoStaff()
   });
 }
 
+function datetimepicker_zindex()
+{
+  var maxZindex   = pegaMaxZindex();
+  var alertZindex = maxZindex + 5;
+  setTimeout(function(){
+    $('.bootstrap-datetimepicker-widget').css({'z-index':alertZindex});
+  }, 500);
+}
+$(".datepicker, .datepicker_time").on("dp.show", function (e) {
+  datetimepicker_zindex();
+});
+
 function init_components()
 {
   $('.datepicker').datetimepicker({
@@ -175,7 +187,7 @@ function init_components()
       clear: 'fa fa-trash',
       close: 'fa fa-remove'
     },
-    locale: 'pt-br'
+    locale: 'pt-br',
   });
   $('.datepicker_time').datetimepicker({
     format: 'DD/MM/YYYY HH:mm',
@@ -190,7 +202,7 @@ function init_components()
       clear: 'fa fa-trash',
       close: 'fa fa-remove'
     },
-    locale: 'pt-br'
+    locale: 'pt-br',
   });
   
   try {
@@ -463,10 +475,10 @@ function mvc_post_ajax_var(controller, action, vars)
 }
 
 /* usuario cfg */
-function jsonAddUsuCfg(usuario, configuracao, valor)
+function jsonAddPesCfg(cliente, configuracao, valor)
 {
-  var vars = 'usuId=' + usuario + '&cfgId=' + configuracao + '&valor=' + valor;
-  mvc_post_ajax_var('UsuarioCfg', 'jsonAdd', vars);
+  var vars = 'pesId=' + cliente + '&cfgId=' + configuracao + '&valor=' + valor;
+  mvc_post_ajax_var('PessoaCfg', 'jsonAdd', vars);
 }
 /* =========== */
 

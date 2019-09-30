@@ -12,17 +12,17 @@ class PessoaCfg extends MY_Controller
   public function jsonAdd()
   {
     $variaveisPost  = processaPost();
-    $vUscUsuId = $variaveisPost->usuId ?? "";
+    $vUscPesId = $variaveisPost->pesId ?? "";
     $vUscUctId = $variaveisPost->cfgId ?? "";
     $vUscValor = $variaveisPost->valor ?? "";
 
-    $UsuarioCfg = [];
-    $UsuarioCfg["usc_usu_id"] = $vUscUsuId;
-    $UsuarioCfg["usc_uct_id"] = $vUscUctId;
-    $UsuarioCfg["usc_valor"]  = $vUscValor;
+    $PessoaCfg = [];
+    $PessoaCfg["psc_pes_id"] = $vUscPesId;
+    $PessoaCfg["psc_pct_id"] = $vUscUctId;
+    $PessoaCfg["psc_valor"]  = $vUscValor;
 
-    require_once(APPPATH."/models/TbUsuarioCfg.php");
-    $ret = insereUsuarioCfg($UsuarioCfg);
+    require_once(APPPATH."/models/TbPessoaCfg.php");
+    $ret = inserePessoaCfg($PessoaCfg);
 
     $arrRet = [];
     if($ret["erro"]){
@@ -30,10 +30,10 @@ class PessoaCfg extends MY_Controller
       $arrRet["msg_titulo"] = "Aviso!";
       $arrRet["msg_tipo"]   = "warning";
     } else {
-      $htmlLista = pegaListaUsuarioCfg($vUscUsuId, false, false, true);
+      $htmlLista = pegaListaPessoaCfg($vUscPesId, false, false, true);
 
       $arrRet["html"]          = $htmlLista;
-      $arrRet["html_selector"] = "#spnListaUsuarioConfig";
+      $arrRet["html_selector"] = "#spnListaClienteConfig";
 
       $arrRet["msg"]        = $ret["msg"];
       $arrRet["msg_titulo"] = "Sucesso!";
@@ -49,8 +49,8 @@ class PessoaCfg extends MY_Controller
     $id        = $variaveisPost->id ?? "";
     $listaCiId = $variaveisPost->lista_ci_id ?? "";
 
-    require_once(APPPATH."/models/TbUsuarioCfg.php");
-    $ret = deletaUsuarioCfg($id);
+    require_once(APPPATH."/models/TbPessoaCfg.php");
+    $ret = deletaPessoaCfg($id);
 
     $arrRet = [];
     if($ret["erro"]){

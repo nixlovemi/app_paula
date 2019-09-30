@@ -40,7 +40,7 @@ $strNasc  = ($pesNasc != "") ? date("d/m/Y", strtotime($pesNasc)): "";
                     $petDesc  = $PessoaTipo["pet_descricao"];
                     $selected = ($vTipo == $petId) ? "selected": "";
 
-                    echo "<option $selected value='$petId'>Tipo: $petDesc</option>";
+                    echo "<option $selected value='$petId'>$petDesc</option>";
                   }
                   ?>
                 </select>

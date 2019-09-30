@@ -33,7 +33,7 @@ class Pessoa extends MY_Controller
     $arrPessoaTipo = ($ret["erro"]) ? array(): $ret["arrPessoaTipo"];
 
     $this->template->load(TEMPLATE_STR, 'TbPessoa/novo', array(
-      "titulo"        => gera_titulo_template("Usuário - Novo"),
+      "titulo"        => gera_titulo_template("Pessoa - Novo"),
       "Pessoa"        => $Pessoa,
       "arrPessoaTipo" => $arrPessoaTipo,
     ));
@@ -64,7 +64,7 @@ class Pessoa extends MY_Controller
     $Pessoa["pes_sexo"]       = $vSexo;
     $Pessoa["pes_cid_id"]     = $vCidId;
     $Pessoa["cid_desc"]       = $vCidDesc; // nao gravo esse campo
-    $Pessoa["pes_usu_id"]     = pegaUsuarioLogadoId();
+    $Pessoa["pes_pes_id"]     = pegaUsuarioLogadoId();
     $this->session->set_flashdata('Pessoa', $Pessoa);
 
     require_once(APPPATH."/models/TbPessoa.php");
@@ -158,38 +158,5 @@ class Pessoa extends MY_Controller
         "Pessoa" => $ret["Pessoa"],
       ));
     }
-  }
-
-  public function jsonPessoaAlteraSenha()
-  {
-    $variaveisPost  = processaPost();
-    $vPesId         = $variaveisPost->id ?? "";
-    $vNovaSenha     = $variaveisPost->nova_senha ?? "";
-
-    $arrRet = [];
-
-    require_once(APPPATH."/models/TbPessoa.php");
-    $retUsu = pegaPessoa($vPesId);
-
-    if($retUsu["erro"]){
-      $arrRet["msg"]        = $retUsu["msg"];
-      $arrRet["msg_titulo"] = "Aviso!";
-      $arrRet["msg_tipo"]   = "warning";
-      $arrRet["callback"]   = "jsonAlteraSenha('Pessoa', 'jsonPessoaAlteraSenha', $vPesId);";
-    } else {
-      $retSenha = alteraSenhaPessoa($vPesId, $vNovaSenha);
-      if($retSenha["erro"]){
-        $arrRet["msg"]        = $retSenha["msg"];
-        $arrRet["msg_titulo"] = "Aviso!";
-        $arrRet["msg_tipo"]   = "warning";
-        $arrRet["callback"]   = "jsonAlteraSenha('Pessoa', 'jsonPessoaAlteraSenha', $vPesId);";
-      } else {
-        $arrRet["msg"]        = $retSenha["msg"];
-        $arrRet["msg_titulo"] = "Sucesso!";
-        $arrRet["msg_tipo"]   = "success";
-      }
-    }
-
-    echo json_encode($arrRet);
   }
 }

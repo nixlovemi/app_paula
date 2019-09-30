@@ -26,7 +26,7 @@ class Grupo extends MY_Controller
     $Grupo = $this->session->flashdata('Grupo') ?? array();
 
     require_once(APPPATH."/models/TbPessoa.php");
-    $filtro     = array("pes_usu_id"=>pegaUsuarioLogadoId());
+    $filtro     = array("pes_pes_id"=>pegaUsuarioLogadoId());
     $retP       = pegaTodasPessoas($filtro);
     $arrPessoas = ($retP["erro"]) ? array(): $retP["arrGrupo"];
 
@@ -51,7 +51,7 @@ class Grupo extends MY_Controller
     $Grupo["gru_descricao"]  = $vDescricao;
     $Grupo["gru_dt_inicio"]  = acerta_data($vInicio);
     $Grupo["gru_dt_termino"] = acerta_data($vTermino);
-    $Grupo["gru_usu_id"]     = pegaUsuarioLogadoId();
+    $Grupo["gru_pes_id"]     = pegaUsuarioLogadoId();
     $this->session->set_flashdata('Grupo', $Grupo);
 
     require_once(APPPATH."/models/TbGrupo.php");
@@ -61,22 +61,27 @@ class Grupo extends MY_Controller
       geraNotificacao("Aviso!", $retInserir["msg"], "warning");
       redirect(BASE_URL . 'Grupo/novo');
     } else {
+      $gruIdInserido = $retInserir["gruId"] ?? "";
+
       // insere as pessoas do grupo
       $arrGrupoPessoa = [];
       foreach($vArrPessoas as $idPessoa){
         $arrGrupoPessoa[] = array(
-          "grp_gru_id" => $retInserir["gruId"],
+          "grp_gru_id" => $gruIdInserido,
           "grp_pes_id" => $idPessoa,
         );
       }
+      $arrGrupoPessoa[] = array(
+        "grp_gru_id" => $gruIdInserido,
+        "grp_pes_id" => pegaUsuarioLogadoId(),
+      );
 
       require_once(APPPATH."/models/TbGrupoPessoa.php");
       insereGrupoPessoaBatch($arrGrupoPessoa);
-      insereGrupoPessoaDono($retInserir["gruId"], pegaUsuarioLogadoId());
       // ==========================
 
       geraNotificacao("Sucesso!", $retInserir["msg"], "success");
-      redirect(BASE_URL . 'Grupo/editar/' . $retInserir["gruId"]);
+      redirect(BASE_URL . 'Grupo/editar/' . $gruIdInserido);
     }
   }
   
@@ -160,31 +165,36 @@ class Grupo extends MY_Controller
       redirect(BASE_URL . 'Grupo/editar/' . $gru_id);
     } else {
       $GrupoPessoa = $ret["GrupoPessoa"] ?? array();
+      $vPetCliente = $GrupoPessoa["pet_cliente"] ?? 0;
+      if($vPetCliente == 0){
+        geraNotificacao("Aviso!", "Pessoa não é cliente para exibir essas informações!", "warning");
+        redirect(BASE_URL . 'Grupo/editar/' . $gru_id);
+      } else {
+        // info do grupo
+        require_once(APPPATH."/models/TbGrupo.php");
+        $retG = pegaGrupo($gru_id, false);
 
-      // info do grupo
-      require_once(APPPATH."/models/TbGrupo.php");
-      $retG = pegaGrupo($gru_id, false);
+        // info dos lancamentos
+        require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
+        $retI               = pegaGrupoPessoaInfoPesGru($pes_id, $gru_id);
+        $GrupoPessoaInfo    = $retI["GrupoPessoaInfo"] ?? array();
+        $retGrp             = agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo);
+        $GrupoPessoaInfoGrp = $retGrp["GrupoPessoaInfoGrp"] ?? array();
 
-      // info dos lancamentos
-      require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
-      $retI               = pegaGrupoPessoaInfoPesGru($pes_id, $gru_id);
-      $GrupoPessoaInfo    = $retI["GrupoPessoaInfo"] ?? array();
-      $retGrp             = agrupaGrupoPessoaInfoLancamentos($GrupoPessoaInfo);
-      $GrupoPessoaInfoGrp = $retGrp["GrupoPessoaInfoGrp"] ?? array();
-      
-      // lista das pesagens
-      require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
-      $vGrpId   = $GrupoPessoa["grp_id"] ?? "";
-      $htmlPeso = pegaListaGrupoPessoaInfo($vGrpId, false, $editar, $editar);
+        // lista das pesagens
+        require_once(APPPATH."/models/TbGrupoPessoaInfo.php");
+        $vGrpId   = $GrupoPessoa["grp_id"] ?? "";
+        $htmlPeso = pegaListaGrupoPessoaInfo($vGrpId, false, $editar, $editar);
 
-      $this->template->load(TEMPLATE_STR, 'TbGrupo/infoPessoa', array(
-        "titulo"             => gera_titulo_template("Grupo - Informação do Participante"),
-        "editar"             => $editar,
-        "GrupoPessoa"        => $GrupoPessoa,
-        "Grupo"              => $retG["Grupo"] ?? array(),
-        "GrupoPessoaInfoGrp" => $GrupoPessoaInfoGrp,
-        "htmlPeso"           => $htmlPeso
-      ));
+        $this->template->load(TEMPLATE_STR, 'TbGrupo/infoPessoa', array(
+          "titulo"             => gera_titulo_template("Grupo - Informação do Participante"),
+          "editar"             => $editar,
+          "GrupoPessoa"        => $GrupoPessoa,
+          "Grupo"              => $retG["Grupo"] ?? array(),
+          "GrupoPessoaInfoGrp" => $GrupoPessoaInfoGrp,
+          "htmlPeso"           => $htmlPeso
+        ));
+      }
     }
   }
 
@@ -197,15 +207,15 @@ class Grupo extends MY_Controller
       redirect(BASE_URL . 'Grupo');
     } else {
       $Grupo      = $ret["Grupo"] ?? array();
-      $vGruUsuId  = $Grupo["gru_usu_id"] ?? "";
+      $vGruPesId  = $Grupo["gru_pes_id"] ?? "";
       $vUsuLogado = pegaUsuarioLogadoId();
 
-      if($vGruUsuId != $vUsuLogado){
+      if($vGruPesId != $vUsuLogado){
         geraNotificacao("Aviso!", "Esse grupo não pertence a você!", "warning");
         redirect(BASE_URL . 'Grupo');
       } else {
         require_once(APPPATH."/models/TbGrupoPessoa.php");
-        $retGP = pegaGrupoPessoaUsuGru($vUsuLogado, $gruId);
+        $retGP = pegaGrupoPessoaPesGru($vUsuLogado, $gruId);
 
         if($retGP["erro"]){
           geraNotificacao("Aviso!", $retGP["msg"], "warning");
@@ -229,7 +239,7 @@ class Grupo extends MY_Controller
     require_once(APPPATH."/models/TbGrupoPessoa.php");
     $retGP       = pegaGrupoPessoa($vGrpId);
     $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
-    $vGruUsuId   = $GrupoPessoa["gru_usu_id"] ?? "";
+    $vGruPesId   = $GrupoPessoa["gru_pes_id"] ?? "";
     $vUsuLogado  = pegaUsuarioLogadoId();
 
     $vGrpLogado  = pegaGrupoPessoaLogadoId();
@@ -239,7 +249,7 @@ class Grupo extends MY_Controller
       $programado = 0;
     }
 
-    if($vGruUsuId != $vUsuLogado){
+    if($vGruPesId != $vUsuLogado){
       geraNotificacao("Aviso!", "Esse grupo não pertence a você!", "warning");
       redirect(BASE_URL . 'Grupo');
     } else {
@@ -258,10 +268,10 @@ class Grupo extends MY_Controller
     require_once(APPPATH."/models/TbGrupoPessoa.php");
     $retGP       = pegaGrupoPessoa($vGrpId);
     $GrupoPessoa = (!$retGP["erro"] && isset($retGP["GrupoPessoa"])) ? $retGP["GrupoPessoa"]: array();
-    $vGruUsuId   = $GrupoPessoa["gru_usu_id"] ?? "";
+    $vGruPesId   = $GrupoPessoa["gru_pes_id"] ?? "";
     $vUsuLogado  = pegaUsuarioLogadoId();
 
-    if($vGruUsuId != $vUsuLogado){
+    if($vGruPesId != $vUsuLogado){
       geraNotificacao("Aviso!", "Esse grupo não pertence a você!", "warning");
       redirect(BASE_URL . 'Grupo');
     } else {

@@ -7,7 +7,7 @@ $GrupoPessoa        = $GrupoPessoa ?? array();
 $Grupo              = $Grupo ?? array();
 $GrupoPessoaInfoGrp = $GrupoPessoaInfoGrp ?? array();
 $htmlPeso           = $htmlPeso ?? "";
-$lancar             = $lancar ?? true;
+$lancar             = $lancar ?? false;
 $editar             = $editar ?? false;
 $exibeVoltar        = $exibeVoltar ?? true;
 
@@ -241,8 +241,9 @@ $difAtual     = ($strPesoObj != "") ? number_format($pesoDifAtual / $infoDif * 1
 
     <?php
     if($exibeVoltar){
+      $txtVoltar = ($editar) ? "editar": "visualizar";
       ?>
-      <a href="<?php echo base_url() ?>Grupo/editar/<?php echo $gruId;?>" class="btn btn-default pull-right">
+      <a href="<?php echo base_url() ?>Grupo/<?=$txtVoltar?>/<?=$gruId?>" class="btn btn-default pull-right">
         Voltar
         <div class="ripple-container"></div>
       </a>

@@ -24,6 +24,7 @@ class Lista_CII
   private $_arrSize;
   private $_arrFormat;
   private $_arrFilter;
+  private $_autoRefresh;
 
   function __construct($database)
   {
@@ -40,6 +41,7 @@ class Lista_CII
     $this->_orderArrow       = "";
     $this->_pageSlideItens   = 3;
     $this->_baseUrl          = (function_exists("base_url")) ? base_url(): "";
+    $this->_autoRefresh      = true;
 
     $this->_arrSql           = [];
     $this->_arrSql["fields"] = [];
@@ -104,6 +106,11 @@ class Lista_CII
   public function setOffset($offset)
   {
     $this->_offset = $offset;
+  }
+
+  public function setAutoReload(bool $autoReload)
+  {
+    $this->_autoRefresh = $autoReload;
   }
 
   /**
@@ -343,7 +350,9 @@ class Lista_CII
         $V_ARR_BODY[] = (array) $row;
       }
 
-      $V_HTML .= "<table class='table' id='".$this->_ID."'>";
+      $strAutoReload = ($this->_autoRefresh) ? "t": "f";
+
+      $V_HTML .= "<table class='table' data-autoreload='$strAutoReload' id='".$this->_ID."'>";
       $V_HTML .= "  <thead class='text-".$this->_colorClass."'>";
       $V_HTML .= "    <tr>";
       $i       = 0;

@@ -64,8 +64,12 @@ $( document ).ready(function()
     var jsonParamLst = $(this).val();
     var varIdListaCi = $(this).attr("id").replace("inptHddnRecListaCi__", "");
     var dcRowLista   = $('div#dv-row-filter-lista-ci-' + varIdListaCi);
+    var tableLista   = $('table#'+varIdListaCi+'.table');
+    var autoReload   = tableLista.data("autoreload") === "t";
     
-    if(dcRowLista.length > 0){
+    console.log(dcRowLista, tableLista, autoReload);
+    
+    if(dcRowLista.length > 0 && tableLista.length > 0 && autoReload){
       var url_request_base = dcRowLista.data("url-request-base");
       $.ajax({
         url: url_request_base + 'Lista_CI/reload',

@@ -24,16 +24,16 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $vGrpId        = $CI->session->grp_id ?? NULL; # se está na session do grupo
   // ==========================
 
-  $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_usu_id, grp_ativo";
+  $camposTabela = "grp_id, grp_gru_id, grp_pes_id, grp_pes_id, grp_ativo";
   if(!$apenasCamposTabela){
-    $camposTabela .= ", ativo, gru_usu_id, gru_descricao, gru_dt_inicio, gru_dt_termino, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
+    $camposTabela .= ", ativo, gru_pes_id, gru_descricao, gru_dt_inicio, gru_dt_termino, pes_nome, pes_email, pes_foto, pet_descricao, pet_cliente";
   }
 
   $CI->db->select($camposTabela);
   $CI->db->from('v_tb_grupo_pessoa');
   $CI->db->where('grp_id =', $id);
   if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
-    $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+    $CI->db->where('gru_pes_id =', $UsuarioLog->id);
   }
 
   $query = $CI->db->get();
@@ -50,11 +50,11 @@ function pegaGrupoPessoa($id, $apenasCamposTabela=false)
   $Grupo["grp_id"]          = $row->grp_id;
   $Grupo["grp_gru_id"]      = $row->grp_gru_id;
   $Grupo["grp_pes_id"]      = $row->grp_pes_id;
-  $Grupo["grp_usu_id"]      = $row->grp_usu_id;
+  $Grupo["grp_pes_id"]      = $row->grp_pes_id;
   $Grupo["grp_ativo"]       = $row->grp_ativo;
   if(!$apenasCamposTabela){
     $Grupo["ativo"]          = $row->ativo;
-    $Grupo["gru_usu_id"]     = $row->gru_usu_id;
+    $Grupo["gru_pes_id"]     = $row->gru_pes_id;
     $Grupo["gru_descricao"]  = $row->gru_descricao;
     $Grupo["gru_dt_inicio"]  = $row->gru_dt_inicio;
     $Grupo["gru_dt_termino"] = $row->gru_dt_termino;
@@ -78,23 +78,6 @@ function pegaGrupoPessoaPesGru($pes_id, $gru_id, $apenasCamposTabela=false)
   $CI->db->select("grp_id");
   $CI->db->from('tb_grupo_pessoa');
   $CI->db->where('grp_pes_id =', $pes_id);
-  $CI->db->where('grp_gru_id =', $gru_id);
-
-  $query = $CI->db->get();
-  $row   = $query->row();
-  $id    = $row->grp_id ?? "";
-
-  return pegaGrupoPessoa($id, $apenasCamposTabela);
-}
-
-function pegaGrupoPessoaUsuGru($usu_id, $gru_id, $apenasCamposTabela=false)
-{
-  $CI = pega_instancia();
-  $CI->load->database();
-
-  $CI->db->select("grp_id");
-  $CI->db->from('tb_grupo_pessoa');
-  $CI->db->where('grp_usu_id =', $usu_id);
   $CI->db->where('grp_gru_id =', $gru_id);
 
   $query = $CI->db->get();
@@ -185,12 +168,12 @@ function pegaGrupoPessoasGru($gru_id, $apenas_staff=false)
       $CI->db->from('v_tb_grupo_pessoa');
       $CI->db->where('grp_gru_id =', $gru_id);
       if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0 && $vGrpId == NULL){
-        $CI->db->where('gru_usu_id =', $UsuarioLog->id);
+        $CI->db->where('gru_pes_id =', $UsuarioLog->id);
       }
       if($apenas_staff){
         $CI->db->where('pet_cliente =', 0);
       }
-      $CI->db->order_by('grp_usu_id', 'DESC');
+      $CI->db->order_by('ordem_pet', 'ASC');
       $query = $CI->db->get();
 
       if(!$query){
@@ -252,7 +235,7 @@ function pegaListaGrupoPessoa($vGruId, $detalhes=false, $edicao=false, $exclusao
 
   $Lista_CI->addWhere("grp_gru_id = " . $vGruId);
   if(isset($UsuarioLog->admin) && $UsuarioLog->admin == 0){
-    $Lista_CI->addWhere("gru_usu_id = " . $UsuarioLog->id);
+    $Lista_CI->addWhere("gru_pes_id = " . $UsuarioLog->id);
   }
   $Lista_CI->changeOrderCol(1);
 
@@ -366,66 +349,6 @@ function insereGrupoPessoaBatch($arrGrupoPessoa)
   } else {
     $arrRetorno["erro"] = true;
     $arrRetorno["msg"]  = "Nenhuma pessoa encontrada para inserir no Grupo.";
-  }
-
-  return $arrRetorno;
-}
-
-function insereGrupoPessoaDono($gru_id, $usu_id)
-{
-  $arrRetorno          = [];
-  $arrRetorno["erro"]  = false;
-  $arrRetorno["msg"]   = "";
-  $idUsuLogado         = pegaUsuarioLogadoId();
-
-  // validacao basica dos campos
-  $strValida   = "";
-
-  if(!is_numeric($gru_id)){
-    $strValida .= "<br />&nbsp;&nbsp;* Grupo inválido para adicionar pessoa.";
-  }
-
-  if(!is_numeric($usu_id)){
-    $strValida .= "<br />&nbsp;&nbsp;* Usuário inválido para gerenciar grupo.";
-  }
-  // ===========================
-
-  // valida grupo válido
-  require_once(APPPATH."/models/TbGrupo.php");
-  $retGrp = validaGrupo($gru_id, $idUsuLogado);
-  if($retGrp["erro"]){
-    $strValida .= "<br />&nbsp;&nbsp;* " . $retGrp["msg"];
-  }
-  // ===================
-  
-  if($strValida != ""){
-    $strValida  = "Corrija essas informações antes de prosseguir:<br />$strValida";
-      
-    $arrRetorno["erro"] = true;
-    $arrRetorno["msg"]  = $strValida;
-  } else {
-    $data = array(
-      "grp_gru_id" => $gru_id,
-      "grp_usu_id" => $usu_id,
-      "grp_ativo"  => (int) 1,
-    );
-
-    $CI = pega_instancia();
-    $CI->load->database();
-
-    if(count($data) > 0){
-      $retInsert = $CI->db->insert('tb_grupo_pessoa', $data);
-      if($retInsert === false){
-        $arrRetorno["erro"] = true;
-        $arrRetorno["msg"]  = "Erro ao inserir as pessoas no Grupo.";
-      } else {
-        $arrRetorno["erro"]  = false;
-        $arrRetorno["msg"]   = "Pessoas inseridas no grupo com sucesso.";
-      }
-    } else {
-      $arrRetorno["erro"] = true;
-      $arrRetorno["msg"]  = "Nenhuma pessoa encontrada para inserir no Grupo.";
-    }   
   }
 
   return $arrRetorno;

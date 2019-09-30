@@ -1,22 +1,21 @@
 <?php
-$Usuario        = $Usuario ?? array();
-$arrUsuCfgTipo  = $arrUsuCfgTipo ?? array();
+$Pessoa         = $Cliente ?? array();
+$arrPesCfgTipo  = $arrPesCfgTipo ?? array();
 $htmlConfigList = $htmlConfigList ?? "";
 
-$vUsuId      = $Usuario["usu_id"] ?? "";
-$vUsuEmail   = $Usuario["usu_email"] ?? "";
-$vUsuNome    = $Usuario["usu_nome"] ?? "";
-$vUsuAtivo   = $Usuario["usu_ativo"] ?? "";
-$vUsaUsuario = $Usuario["usa_usuario"] ?? "";
-$usuNasc     = $Usuario["usu_nascimento"] ?? "";
-$usuTel      = $Usuario["usu_telefone"] ?? "";
-$usuCel      = $Usuario["usu_celular"] ?? "";
-$usuSexo     = $Usuario["usu_sexo"] ?? "";
-$usuCidId    = $Usuario["usu_cid_id"] ?? "";
-$cidDesc     = $Usuario["cid_descricao"] ?? "";
-$estDesc     = $Usuario["est_descricao"] ?? "";
-if(isset($Usuario["cid_desc"])){
-  $usuCidDesc = $Usuario["cid_desc"] ?? "";
+$vPesId      = $Pessoa["pes_id"] ?? "";
+$vPesEmail   = $Pessoa["pes_email"] ?? "";
+$vPesNome    = $Pessoa["pes_nome"] ?? "";
+$vPesAtivo   = $Pessoa["pes_ativo"] ?? "";
+$usuNasc     = $Pessoa["pes_nascimento"] ?? "";
+$usuTel      = $Pessoa["pes_telefone"] ?? "";
+$usuCel      = $Pessoa["pes_celular"] ?? "";
+$usuSexo     = $Pessoa["pes_sexo"] ?? "";
+$usuCidId    = $Pessoa["pes_cid_id"] ?? "";
+$cidDesc     = $Pessoa["cid_descricao"] ?? "";
+$estDesc     = $Pessoa["est_descricao"] ?? "";
+if(isset($Pessoa["cid_desc"])){
+  $usuCidDesc = $Pessoa["cid_desc"] ?? "";
 } else {
   $usuCidDesc = ($cidDesc != "" && $estDesc != "") ? "$cidDesc - $estDesc": "";
 }
@@ -32,7 +31,7 @@ $arrSexo  = array(
 $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
 ?>
 
-<form id="frmEditaUsuario" method="post" action="<?php echo BASE_URL?>Usuario/postEditar">
+<form id="frmEditaCliente" method="post" action="<?php echo BASE_URL?>Cliente/postEditar">
   <div class="row">
     <div class="col-md-12">
       <div class="card">
@@ -45,19 +44,19 @@ $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
             <div class="col-md-2">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">ID</label>
-                <input readonly="" maxlength="80" name="id" id="id" type="text" class="form-control" value="<?php echo $vUsuId; ?>" />
+                <input readonly="" maxlength="80" name="id" id="id" type="text" class="form-control" value="<?php echo $vPesId; ?>" />
               </div>
             </div>
             <div class="col-md-5">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Nome</label>
-                <input maxlength="100" name="nome" type="text" class="form-control" value="<?php echo $vUsuNome; ?>" />
+                <input maxlength="100" name="nome" type="text" class="form-control" value="<?php echo $vPesNome; ?>" />
               </div>
             </div>
             <div class="col-md-5">
               <div class="form-group bmd-form-group has-info">
                 <label class="bmd-label-floating">Email</label>
-                <input maxlength="150" name="email" type="text" class="form-control" value="<?php echo $vUsuEmail; ?>" />
+                <input maxlength="150" name="email" type="text" class="form-control" value="<?php echo $vPesEmail; ?>" />
               </div>
             </div>
           </div>
@@ -82,7 +81,7 @@ $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
             </div>
           </div>
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group bmd-form-group has-info">
                 <label class="label-control bmd-label-static text-default">Sexo</label>
                 <select name="sexo" class="form-control" size="">
@@ -95,31 +94,23 @@ $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
                 </select>
               </div>
             </div>
-            <div class="col-md-8">
-              <div class="form-group bmd-form-group has-info">
-                <label class="label-control bmd-label-static text-default">Cidade</label>
-                <input maxlength="100" name="cidade" type="text" class="form-control inpt-seleciona-modal" data-id="<?=$usuCidId?>" data-controller="Json" data-action="jsonCidadeSeleciona" data-title="Pesquisar Cidade" value="<?=$usuCidDesc?>" />
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group bmd-form-group has-info">
                 <label class="label-control bmd-label-static text-default">Ativo</label>
                 <select name="ativo" class="form-control" size="">
                   <?php
                   foreach($arrAtivo as $id => $text){
-                    $selected = ($id == $vUsuAtivo) ? "selected": "";
+                    $selected = ($id == $vPesAtivo) ? "selected": "";
                     echo "<option value='$id' $selected>$text</option>";
                   }
                   ?>
                 </select>
               </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
               <div class="form-group bmd-form-group has-info">
-                <label class="bmd-label-floating">Cadastrado Por</label>
-                <input readonly="" maxlength="80" name="cadastrado_por" type="text" class="form-control" value="<?php echo $vUsaUsuario; ?>" />
+                <label class="label-control bmd-label-static text-default">Cidade</label>
+                <input maxlength="100" name="cidade" type="text" class="form-control inpt-seleciona-modal" data-id="<?=$usuCidId?>" data-controller="Json" data-action="jsonCidadeSeleciona" data-title="Pesquisar Cidade" value="<?=$usuCidDesc?>" />
               </div>
             </div>
           </div>
@@ -140,9 +131,9 @@ $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
               <div class="form-group bmd-form-group has-info">
                 <select name="configuracao" id="configuracao" class="form-control" size="">
                   <?php
-                  foreach($arrUsuCfgTipo as $UsuCfgTipo){
-                    $value = $UsuCfgTipo["uct_id"] ?? "";
-                    $text  = $UsuCfgTipo["uct_descricao"] ?? "";
+                  foreach($arrPesCfgTipo as $UsuCfgTipo){
+                    $value = $UsuCfgTipo["pct_id"] ?? "";
+                    $text  = $UsuCfgTipo["pct_descricao"] ?? "";
 
                     echo "<option value='$value'>$text</option>";
                   }
@@ -157,7 +148,7 @@ $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
               </div>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-info btn-sm" onclick="jsonAddUsuCfg( $('form#frmEditaUsuario #id').val(), $('form#frmEditaUsuario #configuracao').val(), $('form#frmEditaUsuario #valor').val() );">
+              <button type="button" class="btn btn-info btn-sm" onclick="jsonAddPesCfg( $('form#frmEditaCliente #id').val(), $('form#frmEditaCliente #configuracao').val(), $('form#frmEditaCliente #valor').val() );">
                 Inserir
                 <div class="ripple-container"></div>
               </button>
@@ -170,7 +161,7 @@ $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
           </div>
           <div class="row">
             <div class="col-md-12">
-              <span id="spnListaUsuarioConfig">
+              <span id="spnListaClienteConfig">
                 <?php echo $htmlConfigList; ?>
               </span>
             </div>
@@ -180,7 +171,7 @@ $strNasc = ($usuNasc != "") ? date("d/m/Y", strtotime($usuNasc)): "";
     </div>
   </div>
   
-  <a href="<?php echo base_url() ?>Usuario" class="btn btn-default pull-right">
+  <a href="<?php echo base_url() ?>Cliente" class="btn btn-default pull-right">
     Voltar
     <div class="ripple-container"></div>
   </a>
