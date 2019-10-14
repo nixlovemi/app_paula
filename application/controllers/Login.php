@@ -131,10 +131,19 @@ class Login extends CI_Controller
         redirect(BASE_URL . 'Login/grupo');
       } else {
         $GruposPessoa          = $retGrp["GruposPessoa"] ?? array();
-        $vGrpId                = $GruposPessoa[0]["grp_id"] ?? NULL; #@todo aqui peguei o primeiro que veio / o certo é mostrar tds e a pessoa escolher
-        $this->session->grp_id = $vGrpId;
-        
-        redirect(BASE_URL . 'SisGrupo');
+        $qtGrupos              = count($GruposPessoa);
+        $token                 = encripta_string(json_encode($GruposPessoa));
+
+        if($qtGrupos > 1){
+          $this->session->set_flashdata('vGruposPessoa', $GruposPessoa);
+          $this->session->set_flashdata('vToken', $token);
+          redirect(BASE_URL . 'SisGrupo/escolheGrupo');
+        } else {
+          $vGrpId                = $GruposPessoa[0]["grp_id"] ?? NULL;
+          $this->session->grp_id = $vGrpId;
+
+          redirect(BASE_URL . 'SisGrupo');
+        }
       }
     }
   }

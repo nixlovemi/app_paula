@@ -105,4 +105,51 @@ class SisGrupo extends MY_Controller
       "apenas_privado" => true
     ));
   }
+
+  public function escolheGrupo()
+  {
+    $vGruposPessoa = $this->session->flashdata('vGruposPessoa') ?? array();
+    $vToken        = $this->session->flashdata('vToken') ?? "";
+
+    if(count($vGruposPessoa) <= 0){
+      $this->session->set_flashdata('LoginMessage', 'Erro ao buscar os grupos! Faça o login novamente!');
+      redirect(BASE_URL . 'Login/grupo');
+    } else {
+      $this->session->set_flashdata('vToken', $vToken);
+      $this->load->view('Login/escolheGrupo', array(
+        "vGruposPessoa" => $vGruposPessoa,
+      ));
+    }
+  }
+
+  public function postEscolheGrupo($grpId)
+  {
+    $vToken = $this->session->flashdata('vToken') ?? "";
+    if($vToken == ""){
+      $this->session->set_flashdata('LoginMessage', 'Erro ao buscar os grupos do usuário! Faça o login novamente!');
+      redirect(BASE_URL . 'Login/grupo');
+    } else {
+      require_once(APPPATH."/models/TbGrupoPessoa.php");
+      $retGRP = pegaGrupoPessoa($grpId);
+      if($retGRP["erro"]){
+        $this->session->set_flashdata('LoginMessage', $retGRP["msg"]);
+        redirect(BASE_URL . 'Login/grupo');
+      } else {
+        $GrupoPessoa = $retGRP["GrupoPessoa"] ?? array();
+        $vPesId      = $GrupoPessoa["grp_pes_id"] ?? 0;
+        
+        $retGrupos    = pegaGruposPessoaId($vPesId);
+        $GruposPessoa = $retGrupos["GruposPessoa"] ?? array();
+        $tokenAtual   = encripta_string(json_encode($GruposPessoa));
+        
+        if($tokenAtual == $vToken){
+          $this->session->grp_id = $grpId;
+          redirect(BASE_URL . 'SisGrupo');
+        } else {
+          $this->session->set_flashdata('LoginMessage', 'Erro ao logar no grupo selecionado! Faça o login novamente!');
+          redirect(BASE_URL . 'Login/grupo');
+        }
+      }
+    }
+  }
 }

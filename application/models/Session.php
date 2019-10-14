@@ -8,6 +8,7 @@ function getArrSession()
     "usuario_info"  => "",
     "grp_id"        => "",
     "foto"          => "",
+    "ehLoginGrupo"  => false,
   );
 }
 

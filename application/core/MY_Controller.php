@@ -55,9 +55,12 @@ class MY_Controller extends CI_Controller
     $ehAdmin       = (isset($this->_usuario_info->admin)) && $this->_usuario_info->admin == 1;
     $idUsuarioOk   = ($this->_usuario_info === false) ? false: ($this->_usuario_info->id > 0 && !$ehAdmin);
     $vGrpId        = $this->session->grp_id ?? NULL;
-    $temUsuCad     = isset($this->_usuario_info->usuario_cad); #se tem usu cad, eh pessoa (nao usuario)
+    
+    require_once(APPPATH."/helpers/utils_helper.php");
+    $CI = pega_instancia();
+    $CI->session->set_userdata("ehLoginGrupo", true);
 
-    if($credenciaisOk === false || $idUsuarioOk === false || !$vGrpId > 0 || !$temUsuCad){
+    if($credenciaisOk === false || $idUsuarioOk === false || !$vGrpId > 0){
       $this->session->set_flashdata('LoginMessage', 'Sua sessão expirou. Faça o login novamente.');
       redirect(BASE_URL . 'Login/grupo');
       return;

@@ -53,7 +53,7 @@ $ehAdminLogado = ehAdminGrupo($gruId);
 // ======================
 
 // qdo tiver na tela do grupo
-if($GRP_ID > 0 && !$ehAdminLogado){
+if($GRP_ID > 0 && $_SESSION["ehLoginGrupo"]){
   $URL_HOME       = $BASE_URL . "SisGrupo";
   $URL_LOGOUT     = $BASE_URL . "Login/grupo";
   $URL_CONFIG     = $BASE_URL . "GrpConfig";
