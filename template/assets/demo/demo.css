@@ -363,6 +363,12 @@ label.text-default{
   margin-bottom: 5px;
 }
 
+/* grafico grupoPerfil */
+.ct-chart .ct-series-b .ct-point, .ct-chart .ct-series-b .ct-line, .ct-chart .ct-series-b .ct-bar, .ct-chart .ct-series-b .ct-slice-donut, .ct-chart .ct-series-b .ct-slice-pie, .ct-chart .ct-series-b .ct-slice-donut-solid, .ct-chart .ct-series-b .ct-area {
+  stroke: #b006c5;
+}
+/* =================== */
+
 @media (max-width: 720px) 
 {
   .spn_Lista_CI{

@@ -43,6 +43,7 @@ $strDif      = ($strPesoObj != "" && $strPeso != "") ? number_format($infoDif, 3
 // @todo refatorar essa parte!!!!!!!!!!!!!
 $arrLabel     = [];
 $arrSerie     = [];
+$arrObjetivo  = [];
 $arrLoopChart = [];
 
 $vLabel      = $infoInicial["gpi_data"] ?? "";
@@ -61,9 +62,10 @@ foreach($arrLoop as $info){
   $vSerie = $info["gpi_peso"] ?? "";
 
   if($vLabel != "" && $vSerie != ""){
-    #$arrLabel[] = "'$vLabel'";
-    $arrLabel[] = "'$i'";
-    $arrSerie[] = $vSerie;
+    #$arrLabel[]   = "'$vLabel'";
+    $arrLabel[]    = "'$i'";
+    $arrSerie[]    = $vSerie;
+    $arrObjetivo[] = $infoInicial["gpi_peso_objetivo"] ?? 0;
 
     $lastPeso = $vSerie;
     $i++;
@@ -207,6 +209,8 @@ $difAtual     = ($strPesoObj != "") ? number_format($pesoDifAtual / $infoDif * 1
                 labels: [<?php echo implode(",", $arrLabel); ?>],
                 series: [
                   [<?php echo implode(",", $arrSerie); ?>]
+                  ,
+                  [<?php echo implode(",", $arrObjetivo); ?>]
                 ]
               }, {
                 fullWidth: true,
